@@ -114,6 +114,11 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 .fresh.stale b{color:var(--bad)}
 .fresh-btn{border:2px solid var(--bad);background:var(--bad);color:#fff;font:inherit;font-weight:700;
            padding:10px 16px;border-radius:4px;cursor:pointer;flex:0 0 auto}
+/* "New today" - the contract counter. Tabular numerals so the digit does not jump between builds. */
+.newtoday{flex:0 0 auto;font-size:15px;font-weight:800;letter-spacing:.01em;font-variant-numeric:tabular-nums;
+          border:2px solid var(--good);border-radius:4px;padding:8px 14px;white-space:nowrap;
+          background:color-mix(in srgb, var(--good) 16%, transparent)}
+.newtoday.none{border-color:var(--bad);color:var(--bad);background:color-mix(in srgb, var(--bad) 16%, transparent)}
 </style>
 <div class="wrap">
 <header>
@@ -122,11 +127,13 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-07-31T04:33:34Z">
+<div id="freshbar" class="fresh" data-built="2026-07-31T04:55:49Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Fri Jul 31, 12:33</b>
+    <b id="freshtitle">This page was updated Fri Jul 31, 12:55</b>
     <span id="freshage"></span>
   </div>
+  <span class="newtoday" id="newtoday" data-new="11"
+        title="Clips whose covers finished in the last 24 hours">New today: 11</span>
   <button type="button" id="freshreload" class="fresh-btn" hidden>Get the newest version</button>
 </div>
 
