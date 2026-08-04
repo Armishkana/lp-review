@@ -68,6 +68,21 @@ h1{font-size:clamp(21px,4.5vw,27px);line-height:1.15;margin:0;font-weight:800;le
 .minibtn:hover,.flagbtn:hover{border-color:var(--accent);color:var(--ink)}
 .copyttl{font:inherit;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:none;border:1px solid var(--line);color:var(--dim);border-radius:3px;padding:5px 8px;cursor:pointer;align-self:flex-start;margin:0 3px 3px}
 .copyttl:hover{border-color:var(--accent);color:var(--ink)}
+/* TITLE ACCURACY (added 2026-08-04). Guy, the only paying customer, rejected a batch of titles for
+   describing a different video than the one they sat on, and named the risk himself: "If the video
+   title is too far removed from the content people would stop trusting my videos." The page printed
+   the title and offered NO WAY AT ALL to say it was wrong - the only judgements on offer were "bad
+   cut" and "bad cover", and he had explicitly said "the editing itself is good, its just the video
+   framing". So the one person who reviews every clip had no channel for the one complaint the
+   customer actually made, and a checklist without a control would have been decoration. */
+.ttlrow{display:flex;gap:var(--s1);flex-wrap:wrap;align-items:center;width:100%}
+.ttlbtn{font:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:var(--surface);border:1px solid var(--line);color:var(--dim);border-radius:3px;padding:7px 13px;min-height:40px;cursor:pointer}
+.ttlbtn[aria-pressed=true]{background:var(--bad);border-color:var(--bad);color:#fff}
+.ttlbtn:hover{border-color:var(--accent);color:var(--ink)}
+.ttlhint{font-size:12px;color:var(--dim);line-height:1.4}
+.ttlwhy{width:100%}
+.ttlwhy textarea{width:100%;min-height:52px;font:inherit;font-size:13px;background:var(--ground);color:var(--ink);border:1px solid var(--bad);border-radius:3px;padding:8px;resize:vertical}
+.clip.badttl .ctitle{text-decoration:line-through;text-decoration-color:var(--bad);text-decoration-thickness:2px}
 #lb{background:var(--surface);padding:0;max-width:min(1100px,96vw)}
 #lb img{width:100%;height:auto;display:block;border-radius:4px 4px 0 0}
 #lbbar{display:flex;gap:var(--s2);align-items:center;justify-content:space-between;padding:var(--s2) var(--s3);flex-wrap:wrap}
@@ -127,13 +142,13 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-04T00:33:43Z">
+<div id="freshbar" class="fresh" data-built="2026-08-04T02:22:06Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Tue Aug 4, 08:33</b>
+    <b id="freshtitle">This page was updated Tue Aug 4, 10:22</b>
     <span id="freshage"></span>
   </div>
-  <span class="newtoday" id="newtoday" data-new="6"
-        title="Clips whose covers finished in the last 24 hours">New today: 6</span>
+  <span class="newtoday none" id="newtoday" data-new="0"
+        title="Clips whose covers finished in the last 24 hours">New today: 0</span>
   <button type="button" id="freshreload" class="fresh-btn" hidden>Get the newest version</button>
 </div>
 
@@ -150,6 +165,14 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
   <h2>What to do</h2>
   <ol>
     <li>Press <span class="kbd">Watch</span>, then say whether the <b>cut</b> is good or bad, and add a note if something is wrong.</li>
+    <li><b>Check the title against the video.</b> You do not need to know anything about the topic to do this. While you watch, just ask: <b>does the video actually say the thing the title says?</b>
+      <ul>
+        <li>Title says <b>secret</b>, <b>hidden</b>, or <b>behind their back</b> - did anyone actually say it was secret? If not, the title is wrong.</li>
+        <li>Title says something big like <b>civil war</b>, <b>coup</b>, or <b>invasion</b> - did they actually say those words? If not, the title is wrong.</li>
+        <li>Title names a place or a person, like <b>Europe</b> or <b>Trump</b> - is the video really about them? If they are barely mentioned, the title is wrong.</li>
+        <li>Is the title about the <b>main thing</b> in the video, or about a small part near the end? It should be the main thing.</li>
+      </ul>
+      If any answer is no, press <span class="kbd">Title does not match the video</span> and write what is wrong in your own words. <b>You do not have to fix it or think of a better title</b> - just say what does not match.</li>
     <li><b>All three covers get published</b> - YouTube tests them against each other, so you are not choosing one. Only press <span class="kbd">Report a problem</span> on a cover if something is actually wrong with it (wrong face, text over someone, makes no sense).</li>
     <li>Tap any cover to see it full size. To save one, press <span class="kbd">Save this cover</span> - if your browser does not start the download, right-click that same button and choose <span class="kbd">Save link as</span>. Either way <b>the file is already named after the video's title</b>, so you never have to rename it. <span class="kbd">Copy title</span> gives you the matching title text.</li>
     <li><b>If a clip has a Subtitles box, upload that file too.</b> Right-click <span class="kbd">Save subtitles</span>, choose <span class="kbd">Save link as</span>, then on YouTube go to <span class="kbd">Subtitles</span>, <span class="kbd">ADD LANGUAGE</span>, English, <span class="kbd">Upload file</span>, <span class="kbd">With timing</span>. It takes about 20 seconds and it is worth it: our subtitles spell the Iranian names correctly and YouTube's automatic ones do not, and those names are what people search for. Not every clip will have one - only the longer ones to start with.</li>
@@ -161,6 +184,8 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 <div class="streamhdr"><h2>Guy (with Sapir) - liberal Jews, Houthi plan, Netanyahu&#39;s AI ad, Eisenkot platform, Khamenei health, Israel&#39;s left (Aug 1)</h2><span class="new">Newest</span><span class="cnt">6 clips</span></div>
 <section class="clip" data-seg="2026-08-01-guy::1" data-stream="Guy (with Sapir) - liberal Jews, Houthi plan, Netanyahu&#39;s AI ad, Eisenkot platform, Khamenei health, Israel&#39;s left (Aug 1)">
   <div class="chead"><span class="num">Seg 1</span><span class="ctitle">Why Liberal Jews Have &#39;Suicidal Empathy&#39;</span><a class="watch" href="https://share.descript.com/view/Qj3GqkMIAFx" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Aug 1 &middot; Covers made Aug 2 &middot; Ready Aug 2 &middot; <b>4:43</b> <span class="nomid">no mid-roll</span></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="THE SUICIDAL EMPATHY QUESTION" data-title="Why Liberal Jews Have &#39;Suicidal Empathy&#39;">
@@ -218,6 +243,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-08-01-guy::2" data-stream="Guy (with Sapir) - liberal Jews, Houthi plan, Netanyahu&#39;s AI ad, Eisenkot platform, Khamenei health, Israel&#39;s left (Aug 1)">
   <div class="chead"><span class="num">Seg 2</span><span class="ctitle">Smotrich&#39;s Squeeze Doctrine and the Houthi Plan</span><a class="watch" href="https://share.descript.com/view/f2A9rWzcvaI" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Aug 1 &middot; Covers made Aug 2 &middot; Ready Aug 2 &middot; <b>7:16</b> <span class="nomid">no mid-roll</span></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="THE PLAN TO END THE HOUTHIS" data-title="Smotrich&#39;s Squeeze Doctrine and the Houthi Plan">
@@ -270,6 +297,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-08-01-guy::3" data-stream="Guy (with Sapir) - liberal Jews, Houthi plan, Netanyahu&#39;s AI ad, Eisenkot platform, Khamenei health, Israel&#39;s left (Aug 1)">
   <div class="chead"><span class="num">Seg 3</span><span class="ctitle">Netanyahu&#39;s AI Ad Attacks Eisenkot</span><a class="watch" href="https://share.descript.com/view/gOPH261X5Iw" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Aug 1 &middot; Covers made Aug 2 &middot; Ready Aug 2 &middot; <b>5:46</b> <span class="nomid">no mid-roll</span></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="THE AI AD THAT WENT TOO FAR" data-title="Netanyahu&#39;s AI Ad Attacks Eisenkot">
@@ -322,6 +351,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-08-01-guy::4" data-stream="Guy (with Sapir) - liberal Jews, Houthi plan, Netanyahu&#39;s AI ad, Eisenkot platform, Khamenei health, Israel&#39;s left (Aug 1)">
   <div class="chead"><span class="num">Seg 4</span><span class="ctitle">Sapir Breaks Down Eisenkot&#39;s Platform</span><a class="watch" href="https://share.descript.com/view/2zJkrq1Bxru" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Aug 1 &middot; Covers made Aug 2 &middot; Ready Aug 2 &middot; <b>11:21</b></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="THE MAN LIKELY TO REPLACE BIBI" data-title="Sapir Breaks Down Eisenkot&#39;s Platform">
@@ -379,6 +410,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-08-01-guy::5" data-stream="Guy (with Sapir) - liberal Jews, Houthi plan, Netanyahu&#39;s AI ad, Eisenkot platform, Khamenei health, Israel&#39;s left (Aug 1)">
   <div class="chead"><span class="num">Seg 5</span><span class="ctitle">Is Khamenei Incapacitated?</span><a class="watch" href="https://share.descript.com/view/8Dn8ahAvoEJ" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Aug 1 &middot; Covers made Aug 2 &middot; Ready Aug 2 &middot; <b>1:28</b> <span class="nomid">no mid-roll</span></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="IS KHAMENEI STILL FUNCTIONING" data-title="Is Khamenei Incapacitated?">
@@ -431,6 +464,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-08-01-guy::6" data-stream="Guy (with Sapir) - liberal Jews, Houthi plan, Netanyahu&#39;s AI ad, Eisenkot platform, Khamenei health, Israel&#39;s left (Aug 1)">
   <div class="chead"><span class="num">Seg 6</span><span class="ctitle">Why Israel&#39;s Left Has No Leader</span><a class="watch" href="https://share.descript.com/view/xvzdb7w5VFW" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Aug 1 &middot; Covers made Aug 2 &middot; Ready Aug 2 &middot; <b>2:40</b> <span class="nomid">no mid-roll</span></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="WHY THE LEFT HAS NO LEADER" data-title="Why Israel&#39;s Left Has No Leader">
@@ -489,6 +524,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 <div class="streamhdr"><h2>Guy (with Sapir) - Trump&#39;s Gaza deal, Hamas disarmament, Ben-Gvir, Bibi&#39;s future (Jul 31)</h2><span class="cnt">7 clips</span></div>
 <section class="clip" data-seg="2026-07-31-guy::1" data-stream="Guy (with Sapir) - Trump&#39;s Gaza deal, Hamas disarmament, Ben-Gvir, Bibi&#39;s future (Jul 31)">
   <div class="chead"><span class="num">Seg 1</span><span class="ctitle">Trump&#39;s Gaza Deal Is Already Dead, Says Guy</span><a class="watch" href="https://share.descript.com/view/AsXwt04GJ40" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Aug 1 &middot; Covers made Aug 2 &middot; Ready Aug 1 &middot; <b>4:48</b> <span class="nomid">no mid-roll</span></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="TRUMPS GAZA DEAL IS ALREADY DEAD" data-title="Trump&#39;s Gaza Deal Is Already Dead, Says Guy">
@@ -541,6 +578,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-31-guy::2" data-stream="Guy (with Sapir) - Trump&#39;s Gaza deal, Hamas disarmament, Ben-Gvir, Bibi&#39;s future (Jul 31)">
   <div class="chead"><span class="num">Seg 2</span><span class="ctitle">Israel Wasn&#39;t Even in the Room for Its Own Gaza Deal</span><a class="watch" href="https://share.descript.com/view/bXmIXMXg2Gp" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Aug 1 &middot; Covers made Aug 2 &middot; Ready Aug 1 &middot; <b>5:17</b> <span class="nomid">no mid-roll</span></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="ISRAEL WASNT EVEN IN THE ROOM" data-title="Israel Wasn&#39;t Even in the Room for Its Own Gaza Deal">
@@ -593,6 +632,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-31-guy::3" data-stream="Guy (with Sapir) - Trump&#39;s Gaza deal, Hamas disarmament, Ben-Gvir, Bibi&#39;s future (Jul 31)">
   <div class="chead"><span class="num">Seg 3</span><span class="ctitle">Ahmed Al-Khatib&#39;s Warning: Hamas Won&#39;t Really Disarm</span><a class="watch" href="https://share.descript.com/view/DxDoX3x4WU4" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Aug 1 &middot; Covers made Aug 2 &middot; Ready Aug 1 &middot; <b>2:52</b> <span class="nomid">no mid-roll</span></div>
   <div class="covers">
     <div class="cov" data-var="B" data-head="A PALESTINIAN ANALYSTS WARNING" data-title="The Palestinian Analyst Calling the Pledge a Smokescreen">
@@ -635,6 +676,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-31-guy::4" data-stream="Guy (with Sapir) - Trump&#39;s Gaza deal, Hamas disarmament, Ben-Gvir, Bibi&#39;s future (Jul 31)">
   <div class="chead"><span class="num">Seg 4</span><span class="ctitle">Gaza&#39;s Median Age Is 18 - That&#39;s Why Hamas Wins</span><a class="watch" href="https://share.descript.com/view/5UyOpx0NMz3" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Aug 1 &middot; Covers made Aug 2 &middot; Ready Aug 1 &middot; <b>3:00</b> <span class="nomid">no mid-roll</span></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="GAZAS MEDIAN AGE IS 18" data-title="Gaza&#39;s Median Age Is 18 - That&#39;s Why Hamas Wins">
@@ -687,6 +730,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-31-guy::5" data-stream="Guy (with Sapir) - Trump&#39;s Gaza deal, Hamas disarmament, Ben-Gvir, Bibi&#39;s future (Jul 31)">
   <div class="chead"><span class="num">Seg 5</span><span class="ctitle">Hamas Executes Traitors in Public Squares</span><a class="watch" href="https://share.descript.com/view/pMUkyom6fOD" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Aug 1 &middot; Covers made Aug 2 &middot; Ready Aug 1 &middot; <b>1:45</b> <span class="nomid">no mid-roll</span></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="EXECUTED IN THE TOWN SQUARE" data-title="Hamas Executes Traitors in Public Squares">
@@ -739,6 +784,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-31-guy::6" data-stream="Guy (with Sapir) - Trump&#39;s Gaza deal, Hamas disarmament, Ben-Gvir, Bibi&#39;s future (Jul 31)">
   <div class="chead"><span class="num">Seg 6</span><span class="ctitle">Why Guy Says Ben-Gvir Is Just a Thug</span><a class="watch" href="https://share.descript.com/view/r0qJaYUb78k" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Aug 1 &middot; Covers made Aug 2 &middot; Ready Aug 1 &middot; <b>18:33</b></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="THE MINISTER WITH A TERROR PHOTO" data-title="Why Guy Says Ben-Gvir Is Just a Thug">
@@ -791,6 +838,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-31-guy::7" data-stream="Guy (with Sapir) - Trump&#39;s Gaza deal, Hamas disarmament, Ben-Gvir, Bibi&#39;s future (Jul 31)">
   <div class="chead"><span class="num">Seg 7</span><span class="ctitle">I Don&#39;t Think Bibi Should Stay PM, Says Sapir</span><a class="watch" href="https://share.descript.com/view/0fpuKQTdjGd" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Aug 1 &middot; Covers made Aug 2 &middot; Ready Aug 1 &middot; <b>2:56</b> <span class="nomid">no mid-roll</span></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="SHOULD BIBI STAY PRIME MINISTER" data-title="I Don&#39;t Think Bibi Should Stay PM, Says Sapir">
@@ -844,6 +893,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 <div class="streamhdr"><h2>Guy&#39;s shows - Qatar, Trump and Netanyahu, radicalisation (Jul 29)</h2><span class="cnt">6 clips</span></div>
 <section class="clip" data-seg="2026-07-29-guy::1" data-stream="Guy&#39;s shows - Qatar, Trump and Netanyahu, radicalisation (Jul 29)">
   <div class="chead"><span class="num">Seg 1</span><span class="ctitle">You Must Believe in Two States Before You Can Be an Expert</span><a class="watch" href="https://share.descript.com/view/ZzjTPQlxCjW" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Jul 30 &middot; Covers made Aug 1 &middot; Ready Aug 2 &middot; <b>4:59</b> <span class="nomid">no mid-roll</span></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="550 GENERALS WROTE TO TRUMP" data-title="How Israel&#39;s Security Establishment Manufactures &#39;Expert&#39; Consensus on Peace">
@@ -886,6 +937,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-29-guy::2" data-stream="Guy&#39;s shows - Qatar, Trump and Netanyahu, radicalisation (Jul 29)">
   <div class="chead"><span class="num">Seg 2</span><span class="ctitle">Naftali Bennett Just Declared Qatar an Enemy State</span><a class="watch" href="https://share.descript.com/view/noaVfwpG2fj" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Jul 30 &middot; Covers made Jul 31 &middot; Ready Aug 2 &middot; <b>3:43</b> <span class="nomid">no mid-roll</span></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="BENNETT NAMES QATAR THE ENEMY" data-title="Naftali Bennett Just Called Qatar an Enemy State - Here&#39;s Why It Matters">
@@ -938,6 +991,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-29-guy::3" data-stream="Guy&#39;s shows - Qatar, Trump and Netanyahu, radicalisation (Jul 29)">
   <div class="chead"><span class="num">Seg 3</span><span class="ctitle">Trump &amp; Netanyahu&#39;s Meeting as Iran Rearms for War</span><a class="watch" href="https://share.descript.com/view/5N1POjpcZvk" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Jul 30 &middot; Covers made Jul 31 &middot; Ready Aug 2 &middot; <b>5:33</b> <span class="nomid">no mid-roll</span></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="TRUMP MEETS BIBI AS IRAN REARMS" data-title="Inside the High-Stakes Trump-Netanyahu Meeting as Iran Rebuilds Its Arsenal">
@@ -980,6 +1035,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-29-guy::4" data-stream="Guy&#39;s shows - Qatar, Trump and Netanyahu, radicalisation (Jul 29)">
   <div class="chead"><span class="num">Seg 4</span><span class="ctitle">Rubio vs Vance: Who Actually Controls Trump&#39;s Coalition?</span><a class="watch" href="https://share.descript.com/view/11hPxbzndQa" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Jul 30 &middot; Covers made Jul 31 &middot; Ready Aug 2 &middot; <b>4:56</b> <span class="nomid">no mid-roll</span></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="RUBIO VS VANCE, THE REAL FIGHT" data-title="Rubio or Vance: Who Really Speaks for Trump on Foreign Policy?">
@@ -1032,6 +1089,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-29-guy::5" data-stream="Guy&#39;s shows - Qatar, Trump and Netanyahu, radicalisation (Jul 29)">
   <div class="chead"><span class="num">Seg 5</span><span class="ctitle">Nick Fuentes Trolls His Own Antisemitic Movement</span><a class="watch" href="https://share.descript.com/view/GyKekhmGWFD" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Jul 30 &middot; Covers made Jul 31 &middot; Ready Aug 2 &middot; <b>17:09</b></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="THE MOVEMENT EATS ITS OWN" data-title="Nick Fuentes Is Now Turning on the Antisemitic Movement He Built">
@@ -1084,6 +1143,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-29-guy::6" data-stream="Guy&#39;s shows - Qatar, Trump and Netanyahu, radicalisation (Jul 29)">
   <div class="chead"><span class="num">Seg 6</span><span class="ctitle">Why Young Men Are Radicalized - And How Israel Solved It</span><a class="watch" href="https://share.descript.com/view/iRbe51RGy7t" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Jul 30 &middot; Covers made Aug 1 &middot; Ready Aug 2 &middot; <b>13:46</b></div>
   <div class="covers">
     <div class="cov" data-var="A" data-head="WHY YOUNG MEN GO EXTREME" data-title="Why So Many Young Western Men Are Drifting Toward Extremism">
@@ -1137,6 +1198,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 <div class="streamhdr"><h2>Guy&#39;s shows - Jul 14 &amp; Jul 17 streams</h2><span class="cnt">8 clips</span></div>
 <section class="clip" data-seg="2026-07-28-guy-shows::1" data-stream="Guy&#39;s shows - Jul 14 &amp; Jul 17 streams">
   <div class="chead"><span class="num">Seg 1</span><span class="ctitle">Czechia Is Now Israel&#39;s Shield Against EU Sanctions</span><a class="watch" href="https://share.descript.com/view/kXC5yvX2pKx" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Jul 27 &middot; Covers made Jul 27 &middot; Ready Jul 30 &middot; <b>11:28</b></div>
   <div class="pending">Covers made and reviewed earlier - images not shown so this page stays fast. The files live on disk in covers\2026-07-28-guy-shows. Ask Claude to re-send any of them.</div>
   <div class="descbox">
@@ -1158,6 +1221,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-28-guy-shows::2" data-stream="Guy&#39;s shows - Jul 14 &amp; Jul 17 streams">
   <div class="chead"><span class="num">Seg 2</span><span class="ctitle">Israel Is Ready to Rejoin the War. It Is Waiting on Trump.</span><a class="watch" href="https://share.descript.com/view/SQqx4G0p5WL" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Jul 27 &middot; Covers made Jul 27 &middot; Ready Jul 30 &middot; <b>9:03</b></div>
   <div class="pending">Covers made and reviewed earlier - images not shown so this page stays fast. The files live on disk in covers\2026-07-28-guy-shows. Ask Claude to re-send any of them.</div>
   <div class="descbox">
@@ -1179,6 +1244,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-28-guy-shows::3" data-stream="Guy&#39;s shows - Jul 14 &amp; Jul 17 streams">
   <div class="chead"><span class="num">Seg 3</span><span class="ctitle">Why Israel&#39;s Secret Police Has to Answer to Elected Politicians</span><a class="watch" href="https://share.descript.com/view/m0LkJhKXmUw" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Jul 27 &middot; Covers made Jul 27 &middot; Ready Jul 30 &middot; <b>5:00</b> <span class="nomid">no mid-roll</span></div>
   <div class="pending">Covers made and reviewed earlier - images not shown so this page stays fast. The files live on disk in covers\2026-07-28-guy-shows. Ask Claude to re-send any of them.</div>
   <div class="descbox">
@@ -1200,6 +1267,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-28-guy-shows::4" data-stream="Guy&#39;s shows - Jul 14 &amp; Jul 17 streams">
   <div class="chead"><span class="num">Seg 4</span><span class="ctitle">The Full Map of Israeli Media, Explained by an Israeli</span><a class="watch" href="https://share.descript.com/view/1EIBbhzfdKU" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Jul 27 &middot; Covers made Jul 27 &middot; Ready Jul 30 &middot; <b>11:04</b></div>
   <div class="pending">Covers made and reviewed earlier - images not shown so this page stays fast. The files live on disk in covers\2026-07-28-guy-shows. Ask Claude to re-send any of them.</div>
   <div class="descbox">
@@ -1221,6 +1290,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-28-guy-shows::5" data-stream="Guy&#39;s shows - Jul 14 &amp; Jul 17 streams">
   <div class="chead"><span class="num">Seg 5</span><span class="ctitle">Is Vance Throwing Israel Under the Bus to Save Himself?</span><a class="watch" href="https://share.descript.com/view/kh0brbOseYQ" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Jul 27 &middot; Covers made Jul 27 &middot; Ready Jul 30 &middot; <b>3:51</b> <span class="nomid">no mid-roll</span></div>
   <div class="pending">Covers made and reviewed earlier - images not shown so this page stays fast. The files live on disk in covers\2026-07-28-guy-shows. Ask Claude to re-send any of them.</div>
   <div class="descbox">
@@ -1242,6 +1313,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-28-guy-shows::6" data-stream="Guy&#39;s shows - Jul 14 &amp; Jul 17 streams">
   <div class="chead"><span class="num">Seg 6</span><span class="ctitle">The UN Finally Admits Hamas Was Blocking the Aid</span><a class="watch" href="https://share.descript.com/view/Z1Y1rzM2lZq" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Jul 27 &middot; Covers made Jul 27 &middot; Ready Jul 30 &middot; <b>2:12</b> <span class="nomid">no mid-roll</span></div>
   <div class="pending">Covers made and reviewed earlier - images not shown so this page stays fast. The files live on disk in covers\2026-07-28-guy-shows. Ask Claude to re-send any of them.</div>
   <div class="descbox">
@@ -1263,6 +1336,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-28-guy-shows::7" data-stream="Guy&#39;s shows - Jul 14 &amp; Jul 17 streams">
   <div class="chead"><span class="num">Seg 7</span><span class="ctitle">If Israel Goes Back In, It Goes All In. No Half Measures.</span><a class="watch" href="https://share.descript.com/view/vjMn1sZTEm6" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Jul 27 &middot; Covers made Jul 27 &middot; Ready Jul 30 &middot; <b>4:46</b> <span class="nomid">no mid-roll</span></div>
   <div class="pending">Covers made and reviewed earlier - images not shown so this page stays fast. The files live on disk in covers\2026-07-28-guy-shows. Ask Claude to re-send any of them.</div>
   <div class="descbox">
@@ -1284,6 +1359,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </section>
 <section class="clip" data-seg="2026-07-28-guy-shows::8" data-stream="Guy&#39;s shows - Jul 14 &amp; Jul 17 streams">
   <div class="chead"><span class="num">Seg 8</span><span class="ctitle">100,000 Iranian Deaths and Almost No Coverage</span><a class="watch" href="https://share.descript.com/view/QkGLCZ1g1G9" target="_blank" rel="noopener">Watch</a></div>
+  <div class="ttlrow"><button class="ttlbtn" type="button" aria-pressed="false">Title does not match the video</button><span class="ttlhint">Only if the title says something the video does not say. You do not need to suggest a new one.</span></div>
+  <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="What does the title say that the video does not? e.g. it says secret but nobody says it was secret; it says Europe but he never mentions Europe"></textarea></div>
   <div class="cliptime">Added Jul 27 &middot; Covers made Jul 27 &middot; Ready Jul 30 &middot; <b>1:10</b> <span class="nomid">no mid-roll</span></div>
   <div class="pending">Covers made and reviewed earlier - images not shown so this page stays fast. The files live on disk in covers\2026-07-28-guy-shows. Ask Claude to re-send any of them.</div>
   <div class="descbox">
@@ -1409,8 +1486,14 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
         return { v: o.getAttribute('data-var'), why: o.querySelector('.whytext').value };
       });
       var v = c.querySelector('.vbtn[aria-pressed=true]');
+      var tb = c.querySelector('.ttlbtn');
+      var tt = c.querySelector('.ttltext');
       d[seg] = {
         flagged: flagged,
+        // Title verdict is stored separately from the cut vote and the cover flags because it is a
+        // separate judgement: the customer's complaint was a good edit under a wrong title.
+        titleBad: tb ? (tb.getAttribute('aria-pressed') === 'true') : false,
+        titleWhy: tt ? tt.value : '',
         vote:  v ? v.getAttribute('data-v') : '',
         // MUST be '.fb textarea'. A plain querySelector('textarea') now matches the per-cover
         // "what is wrong with this cover" box first, because covers come earlier in the DOM.
@@ -1454,6 +1537,15 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
           if (f && f.why) { t.querySelector('.whytext').value = f.why; }
         }
       });
+      if (s.titleBad){
+        var tb0 = c.querySelector('.ttlbtn');
+        if (tb0){
+          tb0.setAttribute('aria-pressed','true');
+          c.classList.add('badttl');
+          c.querySelector('.ttlwhy').hidden = false;
+          if (s.titleWhy) { c.querySelector('.ttltext').value = s.titleWhy; }
+        }
+      }
       if (s.vote){
         var b = c.querySelector('.vbtn[data-v="'+s.vote+'"]');
         if (b) b.setAttribute('aria-pressed','true');
@@ -1463,7 +1555,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     tally();
   }
   function tally(){
-    var n = clips.filter(function(c){ return c.querySelector('.vbtn[aria-pressed=true]') || c.querySelector('.cov.on'); }).length;
+    var n = clips.filter(function(c){ return c.querySelector('.vbtn[aria-pressed=true]') || c.querySelector('.cov.on') || c.querySelector('.ttlbtn[aria-pressed=true]'); }).length;
     document.getElementById('count').textContent = n + ' of ' + clips.length + ' done';
   }
 
@@ -1515,6 +1607,22 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
         save();
       });
     });
+    // Title mismatch. Same interaction shape as a cover flag, so there is one thing to learn:
+    // press it, the box opens and takes focus, unpress it and the box clears.
+    var ttlBtn = c.querySelector('.ttlbtn');
+    if (ttlBtn){
+      ttlBtn.addEventListener('click', function(){
+        var on = ttlBtn.getAttribute('aria-pressed') === 'true';
+        ttlBtn.setAttribute('aria-pressed', on ? 'false' : 'true');
+        c.classList.toggle('badttl', !on);
+        var w = c.querySelector('.ttlwhy');
+        w.hidden = on;
+        if (!on) { w.querySelector('.ttltext').focus(); }
+        else { w.querySelector('.ttltext').value = ''; }
+        save();
+      });
+      c.querySelector('.ttltext').addEventListener('input', save);
+    }
     c.querySelector('.fb textarea').addEventListener('input', save);
     c.querySelector('.descbox .copyttl').addEventListener('click', function(){
       toast(copyText(c.querySelector('.desctext').textContent) ? 'Description copied' : 'Could not copy - select it by hand');
@@ -1541,8 +1649,15 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
       });
       var v = c.querySelector('.vbtn[aria-pressed=true]');
       var note = c.querySelector('.fb textarea').value.replace(/\s+/g,' ').trim();
+      // The title verdict is its own field in the report. Folding it into the free-text note would
+      // bury the customer's actual complaint inside a paragraph nobody greps.
+      var tB = c.querySelector('.ttlbtn');
+      var tBad = !!(tB && tB.getAttribute('aria-pressed') === 'true');
+      var tE = c.querySelector('.ttltext');
+      var tWhy = tE ? tE.value.replace(/\s+/g,' ').trim() : '';
       lines.push('SEG ' + seg
         + ' | cut: ' + (v ? v.getAttribute('data-v').toUpperCase() : '-')
+        + ' | title: ' + (tBad ? ('DOES NOT MATCH' + (tWhy ? ' (' + tWhy + ')' : '')) : 'ok')
         + ' | bad covers: ' + (flagged.length ? flagged.join('; ') : 'none')
         + (note ? ' | video: ' + note : ''));
     });
