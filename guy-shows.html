@@ -76,7 +76,11 @@ h1{font-size:clamp(21px,4.5vw,27px);line-height:1.15;margin:0;font-weight:800;le
    framing". So the one person who reviews every clip had no channel for the one complaint the
    customer actually made, and a checklist without a control would have been decoration. */
 .ttlrow{display:flex;gap:var(--s1);flex-wrap:wrap;align-items:center;width:100%}
-.ttlbtn{font:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:var(--surface);border:1px solid var(--line);color:var(--dim);border-radius:3px;padding:7px 13px;min-height:40px;cursor:pointer}
+/* 12px and 40px are the phone floor, measured in a 360px iframe rather than eyeballed. The other
+   controls on this page predate that rule and sit at 11px/29-35px; they are logged as their own
+   defect rather than changed here, because quietly resizing controls Shine already knows is a
+   bigger risk than the one it fixes. */
+.ttlbtn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:var(--surface);border:1px solid var(--line);color:var(--dim);border-radius:3px;padding:7px 13px;min-height:40px;cursor:pointer}
 .ttlbtn[aria-pressed=true]{background:var(--bad);border-color:var(--bad);color:#fff}
 .ttlbtn:hover{border-color:var(--accent);color:var(--ink)}
 .ttlhint{font-size:12px;color:var(--dim);line-height:1.4}
@@ -142,9 +146,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-04T02:22:06Z">
+<div id="freshbar" class="fresh" data-built="2026-08-04T04:12:38Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Tue Aug 4, 10:22</b>
+    <b id="freshtitle">This page was updated Tue Aug 4, 12:12</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday none" id="newtoday" data-new="0"
