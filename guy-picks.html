@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guy - pick your uploads</title>
+<style>
+  :root{
+    --bg:#ffffff; --fg:#14161a; --muted:#5b6270; --line:#e2e5ea;
+    --card:#ffffff; --accent:#1668dc; --yes:#0f7b3f; --yesbg:#e7f5ec;
+    --no:#8a8f98; --nobg:#f1f2f4; --warnbg:#fff4e5; --warn:#9a5b00;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#11131a; --fg:#e9ecf1; --muted:#a0a7b4; --line:#2a2f3a;
+      --card:#171a22; --accent:#5aa2ff; --yes:#5ed08d; --yesbg:#123023;
+      --no:#8a8f98; --nobg:#1e222b; --warnbg:#3a2a10; --warn:#f0b756;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#11131a; --fg:#e9ecf1; --muted:#a0a7b4; --line:#2a2f3a;
+    --card:#171a22; --accent:#5aa2ff; --yes:#5ed08d; --yesbg:#123023;
+    --no:#8a8f98; --nobg:#1e222b; --warnbg:#3a2a10; --warn:#f0b756;
+  }
+  :root[data-theme="light"]{
+    --bg:#ffffff; --fg:#14161a; --muted:#5b6270; --line:#e2e5ea;
+    --card:#ffffff; --accent:#1668dc; --yes:#0f7b3f; --yesbg:#e7f5ec;
+    --no:#8a8f98; --nobg:#f1f2f4; --warnbg:#fff4e5; --warn:#9a5b00;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       overflow-x:hidden;-webkit-text-size-adjust:100%}
+  .wrap{max-width:760px;margin:0 auto;padding:16px 14px 120px}
+  h1{font-size:22px;line-height:1.25;margin:0 0 6px}
+  .lede{color:var(--muted);font-size:14px;margin:0 0 18px}
+  .lede b{color:var(--fg)}
+  .stream{margin:26px 0 0}
+  .stream h2{font-size:17px;margin:0 0 4px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+  .streamsub{color:var(--muted);font-size:13px;margin:0 0 12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+        padding:14px;margin:0 0 12px}
+  .card.picked{border-color:var(--yes);background:var(--yesbg)}
+  .card.skipped{opacity:.55}
+  .segno{color:var(--muted);font-size:13px;font-weight:600;letter-spacing:.02em}
+  .title{font-size:16px;font-weight:650;margin:2px 0 6px;overflow-wrap:break-word}
+  .desc{color:var(--muted);font-size:14px;margin:0 0 10px;overflow-wrap:break-word}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 12px;font-size:13px}
+  .pill{border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--muted);font-size:13px}
+  .watch{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;
+         color:var(--accent);font-size:14px;font-weight:600;text-decoration:none}
+  .watch:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .picks{display:flex;gap:8px}
+  .btn{flex:1 1 0;min-height:48px;border-radius:10px;border:1.5px solid var(--line);
+       background:transparent;color:var(--fg);font-size:15px;font-weight:650;cursor:pointer;
+       padding:0 8px}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn[aria-pressed="true"].yes{background:var(--yes);border-color:var(--yes);color:#fff}
+  .btn[aria-pressed="true"].no{background:var(--nobg);border-color:var(--no);color:var(--muted)}
+  .flagrow{margin-top:10px}
+  .flag{width:100%;min-height:44px;border-radius:10px;border:1.5px solid var(--line);
+        background:transparent;color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;
+        padding:0 10px;text-align:left}
+  .flag[aria-pressed="true"]{background:var(--warnbg);border-color:var(--warn);color:var(--warn)}
+  .why{display:none;width:100%;margin-top:8px;min-height:72px;padding:10px;font-size:15px;
+       border-radius:10px;border:1.5px solid var(--warn);background:var(--bg);color:var(--fg);
+       font-family:inherit}
+  .why.show{display:block}
+  .bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);
+       border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+       display:flex;gap:10px;align-items:center}
+  .count{flex:1 1 auto;font-size:14px;color:var(--muted);min-width:0}
+  .send{min-height:48px;border-radius:10px;border:none;background:var(--accent);color:#fff;
+        font-size:15px;font-weight:700;padding:0 18px;cursor:pointer;white-space:nowrap}
+  .send:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+  .out{display:none;margin-top:14px}
+  .out.show{display:block}
+  .out textarea{width:100%;min-height:220px;padding:12px;font-size:14px;line-height:1.5;
+       border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--fg);
+       font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .note{font-size:13px;color:var(--muted);margin:8px 0 0}
+  .built{margin-top:28px;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Pick the clips you want uploaded</h1>
+  <p class="lede">Every stream is broken into topics below. Tap <b>Upload</b> on the ones you want published and <b>Skip</b> on the ones you do not. Nothing goes out that you have not picked.<br><br>If a title does not match what you actually said, tap <b>Title is wrong</b> and say why. You do not have to rewrite it.</p>
+  <section class="stream" data-stream="2026-08-02-guy">
+    <h2>August 2 stream</h2>
+    <p class="streamsub">12 topics</p>
+    <article class="card" data-key="2026-08-02-guy|1">
+      <div class="segno">Topic 1</div>
+      <div class="title">How a Hebrew Holiday Billboard in Cyprus Became a Conquest Conspiracy</div>
+      <p class="desc">A claim in a chat group that Jews want to destroy the Greeks turns out to trace back to a single Hebrew holiday billboard in Cyprus, put up for Israeli tourists during an election campaign and re-captioned into something it never said. Guy walks through what the billboard actually reads and how the conspiracy was built on top of it.</p>
+      <div class="meta">
+        <span class="pill">5:38</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/R5WtoWJXVYu" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-08-02-guy|2">
+      <div class="segno">Topic 2</div>
+      <div class="title">Convicted of Inciting Violence, Sentenced to Community Service</div>
+      <p class="desc">The second in command of the banned northern branch of Israel&#39;s Islamic Movement stood trial for five years over three explicit calls to violence he never denied making. Prosecutors asked for forty months in prison. The judge gave nine months of community service, and cited his children&#39;s education among the reasons. The prosecution is appealing.</p>
+      <div class="meta">
+        <span class="pill">4:20</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/6d6ehnZweN7" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-08-02-guy|3">
+      <div class="segno">Topic 3</div>
+      <div class="title">The Lieberman Dark Horse Theory in the Netanyahu vs Eisenkot Race</div>
+      <p class="desc">The Israeli race is between Eisenkot and Netanyahu with Bennett a distant third, but the seat count is not the whole story. Guy lays out the theory doing the rounds among people who follow this closely: that Avigdor Lieberman repeats the Bennett manoeuvre and demands the premiership as the price of crossing blocs, and why a unity party probably kills it.</p>
+      <div class="meta">
+        <span class="pill">2:27</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/pVZMiYrAh82" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-08-02-guy|4">
+      <div class="segno">Topic 4</div>
+      <div class="title">Why Gay Communities Still Vote Left, and What the Berlin Attack Exposed</div>
+      <p class="desc">An Islamist attacked a gay pride parade in Berlin, and Guy argues that was predictable rather than shocking. He traces why persecuted minorities historically aligned with the left, why that instinct now extends protection to people who would not extend it back, and why the real problem underneath European immigration policy is a birth rate below replacement.</p>
+      <div class="meta">
+        <span class="pill">5:38</span>
+        <span class="pill">Evergreen</span>
+        <a class="watch" href="https://share.descript.com/view/xOq0c8Zqhkq" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-08-02-guy|5">
+      <div class="segno">Topic 5</div>
+      <div class="title">A Lebanese Christian on Live TV: We Do Not Want Cold Peace, We Want Normalization</div>
+      <p class="desc">Guy translates a Lebanese debate show where a Christian guest says he wanted Nasrallah to stand trial for the Beirut port explosion, argues that the cold peace Israel has with Egypt and Jordan is worthless, and says what Lebanon should want is normalization of the kind Israelis have with the Emirates.</p>
+      <div class="meta">
+        <span class="pill">7:28</span>
+        <span class="pill">Evergreen</span>
+        <a class="watch" href="https://share.descript.com/view/hwKPkAl9j79" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-08-02-guy|6">
+      <div class="segno">Topic 6</div>
+      <div class="title">Syria&#39;s President Says He Is Working Toward a Security Agreement With Israel</div>
+      <p class="desc">In an Al Jazeera interview, Syria&#39;s president says he is working with several countries toward a security agreement with Israel, has no interest in a confrontation, and wants Lebanon to be the only party holding weapons. He also refuses to drop the Golan claim. Guy reads the whole list and explains why a pipeline route may be doing the work.</p>
+      <div class="meta">
+        <span class="pill">3:25</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/J1GT0OyGBLr" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-08-02-guy|7">
+      <div class="segno">Topic 7</div>
+      <div class="title">Can Jolani Be Trusted, and the Blackstone Conspiracy Answered Live</div>
+      <p class="desc">Audience questions: whether Syria&#39;s new leader genuinely changed while in prison and why Guy says to assume he is ISIS until the ranks are actually cleared, whether the Druze want their own country, why the Blackstone and Israel conspiracy falls apart the moment you check it, and the case for breaking Lebanon into three states.</p>
+      <div class="meta">
+        <span class="pill">5:42</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/ggKe9GwFO1O" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-08-02-guy|8">
+      <div class="segno">Topic 8</div>
+      <div class="title">Bibi Derangement Syndrome and Why One Side Models the Other Worse</div>
+      <p class="desc">Armin asks who the people in those Israeli street interviews actually are. Guy explains that the protest median age is sixty plus, connects it to unquestioned trust in legacy media, and uses Jonathan Haidt&#39;s moral foundations research to explain why one side consistently produces a worse caricature of the other when asked to argue its case.</p>
+      <div class="meta">
+        <span class="pill">9:10</span>
+        <span class="pill">Evergreen</span>
+        <a class="watch" href="https://share.descript.com/view/43aoWQlg8ZX" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-08-02-guy|9">
+      <div class="segno">Topic 9</div>
+      <div class="title">A Lebanese Guest Defends Israel on Live TV and Traps the Host</div>
+      <p class="desc">Guy translates a Lebanese television debate in which the guest refuses to call the IDF an occupation army, points out that Lebanon&#39;s own president sent an envoy to sign a framework agreement with Israel, and answers the terrorist state charge by listing what the region&#39;s own governments have done. Guy also corrects the guest&#39;s October 7 casualty figure on air.</p>
+      <div class="meta">
+        <span class="pill">11:29</span>
+        <span class="pill">Evergreen</span>
+        <a class="watch" href="https://share.descript.com/view/zA4feWQyoD5" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-08-02-guy|10">
+      <div class="segno">Topic 10</div>
+      <div class="title">The Lebanon Polling Numbers on Peace With Israel, Sect by Sect</div>
+      <p class="desc">Guy reads and translates Lebanese polling on the peace agreement with Israel, broken down by community: Druze 84.2 percent in favour, Maronites 76.5, Orthodox 72.2, Sunnis 51.6 for against 44.1 against, and Shia 92.1 percent against.</p>
+      <div class="meta">
+        <span class="pill">1:33</span>
+        <span class="pill">Evergreen</span>
+        <a class="watch" href="https://share.descript.com/view/bgU4smmwaQQ" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-08-02-guy|11">
+      <div class="segno">Topic 11</div>
+      <div class="title">Israel&#39;s Yes to a 200 Soldier Stabilization Force, and What It Actually Means</div>
+      <p class="desc">Israel agrees in principle to an international stabilization force entering the Hamas-controlled part of Gaza, but only around two hundred soldiers and only from friendly countries. Guy explains what that yes is really for, plus a Dutch pride parade carrying almost nothing but Palestinian flags and Colombia cancelling planned embassies.</p>
+      <div class="meta">
+        <span class="pill">1:38</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/zqOHLpbgUpa" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-08-02-guy|12">
+      <div class="segno">Topic 12</div>
+      <div class="title">Why Qatar Should Be Treated as an Enemy State</div>
+      <p class="desc">Guy makes the case that Qatar is the most destructive state to Israel by volume of funded incitement: it has hosted Hamas leaders since before October 7, backs the Muslim Brotherhood, funds Western universities, and runs Al Jazeera. A co-host argues America should name it an enemy state as well, and Guy explains why Qatar&#39;s leverage disappears when the Iranian regime falls.</p>
+      <div class="meta">
+        <span class="pill">4:12</span>
+        <span class="pill">Evergreen</span>
+        <a class="watch" href="https://share.descript.com/view/zzebNRtjevy" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+  </section>
+  <section class="stream" data-stream="2026-08-01-guy">
+    <h2>August 1 stream</h2>
+    <p class="streamsub">6 topics</p>
+    <article class="card" data-key="2026-08-01-guy|1">
+      <div class="segno">Topic 1</div>
+      <div class="title">Why Liberal Jews Have &#39;Suicidal Empathy&#39;</div>
+      <p class="desc">Guy answers a viewer&#39;s question on why liberal Western Jews lean toward suicidal empathy, tracing it to self-selection, generational persecution, and a strange dual identity as both minority and elite.</p>
+      <div class="meta">
+        <span class="pill">4:43</span>
+        <span class="pill">Evergreen</span>
+        <a class="watch" href="https://share.descript.com/view/Qj3GqkMIAFx" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-08-01-guy|2">
+      <div class="segno">Topic 2</div>
+      <div class="title">Smotrich&#39;s Squeeze Doctrine and the Houthi Plan</div>
+      <p class="desc">Israel&#39;s finance minister lays out an economic-strangulation strategy against Iran&#39;s regime. Then Guy pitches the follow-through: strike the Houthis in Yemen and break their grip on the Bab el-Mandab chokepoint.</p>
+      <div class="meta">
+        <span class="pill">7:16</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/f2A9rWzcvaI" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-08-01-guy|3">
+      <div class="segno">Topic 3</div>
+      <div class="title">Netanyahu&#39;s AI Ad Attacks Eisenkot</div>
+      <p class="desc">Netanyahu&#39;s campaign posts an AI video that appears to evoke Eisenkot&#39;s son, killed in Lebanon, sparking a raw, self-critical debate about how far this election has already gone.</p>
+      <div class="meta">
+        <span class="pill">5:46</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/gOPH261X5Iw" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-08-01-guy|4">
+      <div class="segno">Topic 4</div>
+      <div class="title">Sapir Breaks Down Eisenkot&#39;s Platform</div>
+      <p class="desc">Sapir and Guy dig into frontrunner Eisenkot&#39;s 2022 interview: his warning that Israel&#39;s internal division, not its enemies, is the real long-term threat, and his case for an actual national security doctrine.</p>
+      <div class="meta">
+        <span class="pill">11:21</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/2zJkrq1Bxru" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-08-01-guy|5">
+      <div class="segno">Topic 5</div>
+      <div class="title">Is Khamenei Incapacitated?</div>
+      <p class="desc">Fresh reports say Iran&#39;s Supreme Leader is alive but barely functioning, while Trump calls the IRGC savages and flatly rejects a Qatar-brokered ceasefire offer.</p>
+      <div class="meta">
+        <span class="pill">1:28</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/8Dn8ahAvoEJ" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-08-01-guy|6">
+      <div class="segno">Topic 6</div>
+      <div class="title">Why Israel&#39;s Left Has No Leader</div>
+      <p class="desc">Netanyahu dominated the right for two decades, but Israel&#39;s left keeps burning through candidates. Guy explains why the opposition never coalesced into a coherent brand.</p>
+      <div class="meta">
+        <span class="pill">2:40</span>
+        <span class="pill">Evergreen</span>
+        <a class="watch" href="https://share.descript.com/view/xvzdb7w5VFW" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+  </section>
+  <section class="stream" data-stream="2026-07-31-guy">
+    <h2>July 31 stream</h2>
+    <p class="streamsub">7 topics</p>
+    <article class="card" data-key="2026-07-31-guy|1">
+      <div class="segno">Topic 1</div>
+      <div class="title">Trump&#39;s Gaza Deal Is Already Dead, Says Guy</div>
+      <p class="desc">Trump just declared Gaza&#39;s disarmament a done deal. Guy and Sapir break down the ambiguous fine print, and why Hamas has already signaled it has no intention of complying.</p>
+      <div class="meta">
+        <span class="pill">4:48</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/AsXwt04GJ40" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-31-guy|2">
+      <div class="segno">Topic 2</div>
+      <div class="title">Israel Wasn&#39;t Even in the Room for Its Own Gaza Deal</div>
+      <p class="desc">The Gaza disarmament draft was hammered out by the US, Egypt, Qatar and Turkey, without Israel at the table. Guy translates the actual document and explains why it may be built to fail.</p>
+      <div class="meta">
+        <span class="pill">5:17</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/bXmIXMXg2Gp" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-31-guy|3">
+      <div class="segno">Topic 3</div>
+      <div class="title">Ahmed Al-Khatib&#39;s Warning: Hamas Won&#39;t Really Disarm</div>
+      <p class="desc">Palestinian analyst Ahmed Fuad Al-Khatib calls Hamas&#39;s disarmament pledge a smokescreen. Guy reads his full warning about who actually holds power on the ground in Gaza.</p>
+      <div class="meta">
+        <span class="pill">2:52</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/DxDoX3x4WU4" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-31-guy|4">
+      <div class="segno">Topic 4</div>
+      <div class="title">Gaza&#39;s Median Age Is 18 - That&#39;s Why Hamas Wins</div>
+      <p class="desc">Hamas won a razor-thin 2006 election, then massacred its rivals to lock in control. Guy and Sapir explain why two decades of indoctrination means most of Gaza has never known anything else.</p>
+      <div class="meta">
+        <span class="pill">3:00</span>
+        <span class="pill">Evergreen</span>
+        <a class="watch" href="https://share.descript.com/view/5UyOpx0NMz3" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-31-guy|5">
+      <div class="segno">Topic 5</div>
+      <div class="title">Hamas Executes Traitors in Public Squares</div>
+      <p class="desc">Hamas publicly executes suspected collaborators in Gaza&#39;s town squares while crowds cheer. Guy lays out the grim logic of why Israel can&#39;t just bomb the problem away.</p>
+      <div class="meta">
+        <span class="pill">1:45</span>
+        <span class="pill">Evergreen</span>
+        <a class="watch" href="https://share.descript.com/view/pMUkyom6fOD" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-31-guy|6">
+      <div class="segno">Topic 6</div>
+      <div class="title">Why Guy Says Ben-Gvir Is Just a Thug</div>
+      <p class="desc">Israel&#39;s Minister of National Security kept a terrorist&#39;s photo on his wall, was convicted over a terror group, and wrote a law with a built-in loophole. Guy and Sapir make the full case against Itamar Ben-Gvir.</p>
+      <div class="meta">
+        <span class="pill">18:33</span>
+        <span class="pill">Evergreen</span>
+        <a class="watch" href="https://share.descript.com/view/r0qJaYUb78k" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-31-guy|7">
+      <div class="segno">Topic 7</div>
+      <div class="title">I Don&#39;t Think Bibi Should Stay PM, Says Sapir</div>
+      <p class="desc">Guy trusts Netanyahu&#39;s geopolitical instincts but not his coalition choices. Sapir goes further: she doesn&#39;t think Bibi should remain prime minister at all.</p>
+      <div class="meta">
+        <span class="pill">2:56</span>
+        <span class="pill">Evergreen</span>
+        <a class="watch" href="https://share.descript.com/view/0fpuKQTdjGd" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+  </section>
+  <section class="stream" data-stream="2026-07-29-guy">
+    <h2>July 29 stream</h2>
+    <p class="streamsub">6 topics</p>
+    <article class="card" data-key="2026-07-29-guy|1">
+      <div class="segno">Topic 1</div>
+      <div class="title">You Must Believe in Two States Before You Can Be an Expert</div>
+      <p class="desc">Guy breaks down how a letter signed by hundreds of retired generals gets used to manufacture an &quot;expert consensus&quot; on Israel and Iran policy, and why that consensus is far less neutral than it looks.</p>
+      <div class="meta">
+        <span class="pill">4:59</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/ZzjTPQlxCjW" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-29-guy|2">
+      <div class="segno">Topic 2</div>
+      <div class="title">Naftali Bennett Just Declared Qatar an Enemy State</div>
+      <p class="desc">Naftali Bennett has openly branded Qatar an enemy state. Guy explains what Qatar actually funds across the region, why Western capitals keep treating it as an ally, and what Bennett&#39;s warning really means.</p>
+      <div class="meta">
+        <span class="pill">3:43</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/noaVfwpG2fj" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-29-guy|3">
+      <div class="segno">Topic 3</div>
+      <div class="title">Trump &amp; Netanyahu&#39;s Meeting as Iran Rearms for War</div>
+      <p class="desc">As Trump and Netanyahu meet, Iran is quietly rebuilding its missile and nuclear capacity. Guy walks through what is on the table, what the maps show about Iran&#39;s rearmament, and why this moment could decide war or peace.</p>
+      <div class="meta">
+        <span class="pill">5:33</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/5N1POjpcZvk" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-29-guy|4">
+      <div class="segno">Topic 4</div>
+      <div class="title">Rubio vs Vance: Who Actually Controls Trump&#39;s Coalition?</div>
+      <p class="desc">Marco Rubio and JD Vance represent two very different futures for Trump&#39;s foreign policy. Guy examines who really holds the coalition together, where the America First base is splitting, and what it means for Israel and Iran.</p>
+      <div class="meta">
+        <span class="pill">4:56</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/11hPxbzndQa" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-29-guy|5">
+      <div class="segno">Topic 5</div>
+      <div class="title">Nick Fuentes Trolls His Own Antisemitic Movement</div>
+      <p class="desc">Nick Fuentes has started openly mocking the antisemitic movement he helped build. Guy unpacks whether it is a genuine turn, a troll, or a grift, and what it says about the state of online extremism.</p>
+      <div class="meta">
+        <span class="pill">17:09</span>
+        <span class="pill">News</span>
+        <a class="watch" href="https://share.descript.com/view/GyKekhmGWFD" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-29-guy|6">
+      <div class="segno">Topic 6</div>
+      <div class="title">Why Young Men Are Radicalized - And How Israel Solved It</div>
+      <p class="desc">Why are so many young Western men drawn to extremism and despair? Guy explores the roots of male radicalization, why the West keeps losing its young men, and what Israel understands about meaning and belonging that the West forgot.</p>
+      <div class="meta">
+        <span class="pill">13:46</span>
+        <span class="pill">Evergreen</span>
+        <a class="watch" href="https://share.descript.com/view/iRbe51RGy7t" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+  </section>
+  <section class="stream" data-stream="2026-07-28-guy-shows">
+    <h2>July 28 stream</h2>
+    <p class="streamsub">8 topics</p>
+    <article class="card" data-key="2026-07-28-guy-shows|1">
+      <div class="segno">Topic 1</div>
+      <div class="title">Czechia Is Now Israel&#39;s Shield Against EU Sanctions</div>
+      <p class="desc">Guy breaks down the Israeli-Czech business forum in Tel Aviv and why it matters far more than it looks. EU sanctions on Israel need consensus, so a single reliable no vote blocks them. Hungary played that role until Orban lost; Czechia has now taken it over and is deepening ties fast. He also covers the Lebanon agreement, the India partnership, and the two X accounts he rates most for debunking anti-Israel misinformation.</p>
+      <div class="meta">
+        <span class="pill">11:28</span>
+        <a class="watch" href="https://share.descript.com/view/kXC5yvX2pKx" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-28-guy-shows|2">
+      <div class="segno">Topic 2</div>
+      <div class="title">Israel Is Ready to Rejoin the War. It Is Waiting on Trump.</div>
+      <p class="desc">Guy lays out Israel&#39;s position plainly: the target bank is ready, the will is there, and the home front emergency status has been extended, but whether Israel rejoins the strikes on the Islamic Republic is Trump&#39;s call. He then answers chat on the Mossad plan that tapped Ahmadinejad to replace the regime, and on why Netanyahu was a polarizing figure years before Trump was.</p>
+      <div class="meta">
+        <span class="pill">9:03</span>
+        <a class="watch" href="https://share.descript.com/view/SQqx4G0p5WL" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-28-guy-shows|3">
+      <div class="segno">Topic 3</div>
+      <div class="title">Why Israel&#39;s Secret Police Has to Answer to Elected Politicians</div>
+      <p class="desc">A chat question about the new Shin Bet chief turns into Guy&#39;s clearest argument about democracy. The previous leadership openly refused to carry out what the elected government wanted, which he says is a police state in reverse. Zini&#39;s own leaked line was that the Shin Bet answers to the elected branch, whoever that happens to be. Guy also explains why the Americans already knew about the Mossad plan, and why that is not evidence it was leaked.</p>
+      <div class="meta">
+        <span class="pill">5:00</span>
+        <a class="watch" href="https://share.descript.com/view/m0LkJhKXmUw" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-28-guy-shows|4">
+      <div class="segno">Topic 4</div>
+      <div class="title">The Full Map of Israeli Media, Explained by an Israeli</div>
+      <p class="desc">There is no neutral news channel in Israel, and Guy walks through the whole landscape to show why. Channel 12 and 13, Ynet, Haaretz, the state broadcaster Kan, i24, Israel Hayom and Channel 14, with where each one actually sits. He also explains why the outlets foreigners read, Jerusalem Post and Times of Israel, are outward-facing and not what Israelis consume, and how the left-right line moved from economics to security after 1967.</p>
+      <div class="meta">
+        <span class="pill">11:04</span>
+        <a class="watch" href="https://share.descript.com/view/1EIBbhzfdKU" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-28-guy-shows|5">
+      <div class="segno">Topic 5</div>
+      <div class="title">Is Vance Throwing Israel Under the Bus to Save Himself?</div>
+      <p class="desc">Guy&#39;s read on the Vance and Rubio 2028 problem. He argues Vance&#39;s conduct since the MOU was signed has been unserious, that he is panicking, and that distancing himself from Israel is an attempt to save his own career that people can see through. Rubio, he says, has the inherent advantage before he has even started running, and could win a Reagan-level landslide.</p>
+      <div class="meta">
+        <span class="pill">3:51</span>
+        <a class="watch" href="https://share.descript.com/view/kh0brbOseYQ" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-28-guy-shows|6">
+      <div class="segno">Topic 6</div>
+      <div class="title">The UN Finally Admits Hamas Was Blocking the Aid</div>
+      <p class="desc">Three years late, a senior UN official has condemned Hamas for armed obstruction of aid delivery and for halting food distribution. Guy reads the post from Ahmed Fouad Alkhatib laying out what it means: years of stolen aid, intimidated NGO staff, and anyone who tried to say so being smeared as a genocide denier. He also explains why Alkhatib is the Palestinian voice he tells people to follow.</p>
+      <div class="meta">
+        <span class="pill">2:12</span>
+        <a class="watch" href="https://share.descript.com/view/Z1Y1rzM2lZq" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-28-guy-shows|7">
+      <div class="segno">Topic 7</div>
+      <div class="title">If Israel Goes Back In, It Goes All In. No Half Measures.</div>
+      <p class="desc">Asked why Israel has been left out of hitting the IRGC, Guy is blunt: there is no version where Israel rejoins the war and does half measures. If it fights, it goes for the kill, because anything less invites retaliation it would then have to answer harder. That is exactly why the decision sits with Trump. He also takes super chats on Rubio&#39;s chances and on who is actually prime minister right now.</p>
+      <div class="meta">
+        <span class="pill">4:46</span>
+        <a class="watch" href="https://share.descript.com/view/vjMn1sZTEm6" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+    <article class="card" data-key="2026-07-28-guy-shows|8">
+      <div class="segno">Topic 8</div>
+      <div class="title">100,000 Iranian Deaths and Almost No Coverage</div>
+      <p class="desc">The media has spent three years covering 73,000 Gaza deaths. Credible estimates put Iranian deaths from the current conflict at 100,000 in days, with almost no coverage at all.</p>
+      <div class="meta">
+        <span class="pill">1:10</span>
+        <a class="watch" href="https://share.descript.com/view/QkGLCZ1g1G9" target="_blank" rel="noopener">Watch this clip</a>
+      </div>
+      <div class="picks">
+        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
+      </div>
+      <div class="flagrow">
+        <button type="button" class="flag" aria-pressed="false">Title is wrong</button>
+        <textarea class="why" placeholder="What is wrong with it? A few words is plenty."></textarea>
+      </div>
+    </article>
+  </section>
+  <div class="out" id="out">
+    <textarea id="report" readonly></textarea>
+    <p class="note">Copied. Paste it straight into Telegram.</p>
+  </div>
+  <p class="built">39 topics across 5 streams. Updated 2026-08-06T07:48:48Z.</p>
+</div>
+
+<div class="bar">
+  <span class="count" id="count">0 to upload, 0 skipped</span>
+  <button type="button" class="send" id="send">Copy my picks</button>
+</div><script type="application/json" id="seed">[{"id":"2026-08-02-guy","date":"2026-08-02","label":"August 2","segs":[{"seg":1,"title":"How a Hebrew Holiday Billboard in Cyprus Became a Conquest Conspiracy","desc":"A claim in a chat group that Jews want to destroy the Greeks turns out to trace back to a single Hebrew holiday billboard in Cyprus, put up for Israeli tourists during an election campaign and re-captioned into something it never said. Guy walks through what the billboard actually reads and how the conspiracy was built on top of it.","kind":"news","len":"5:38","secs":338,"watch":"https://share.descript.com/view/R5WtoWJXVYu"},{"seg":2,"title":"Convicted of Inciting Violence, Sentenced to Community Service","desc":"The second in command of the banned northern branch of Israel\u0027s Islamic Movement stood trial for five years over three explicit calls to violence he never denied making. Prosecutors asked for forty months in prison. The judge gave nine months of community service, and cited his children\u0027s education among the reasons. The prosecution is appealing.","kind":"news","len":"4:20","secs":260,"watch":"https://share.descript.com/view/6d6ehnZweN7"},{"seg":3,"title":"The Lieberman Dark Horse Theory in the Netanyahu vs Eisenkot Race","desc":"The Israeli race is between Eisenkot and Netanyahu with Bennett a distant third, but the seat count is not the whole story. Guy lays out the theory doing the rounds among people who follow this closely: that Avigdor Lieberman repeats the Bennett manoeuvre and demands the premiership as the price of crossing blocs, and why a unity party probably kills it.","kind":"news","len":"2:27","secs":147,"watch":"https://share.descript.com/view/pVZMiYrAh82"},{"seg":4,"title":"Why Gay Communities Still Vote Left, and What the Berlin Attack Exposed","desc":"An Islamist attacked a gay pride parade in Berlin, and Guy argues that was predictable rather than shocking. He traces why persecuted minorities historically aligned with the left, why that instinct now extends protection to people who would not extend it back, and why the real problem underneath European immigration policy is a birth rate below replacement.","kind":"evergreen","len":"5:38","secs":338,"watch":"https://share.descript.com/view/xOq0c8Zqhkq"},{"seg":5,"title":"A Lebanese Christian on Live TV: We Do Not Want Cold Peace, We Want Normalization","desc":"Guy translates a Lebanese debate show where a Christian guest says he wanted Nasrallah to stand trial for the Beirut port explosion, argues that the cold peace Israel has with Egypt and Jordan is worthless, and says what Lebanon should want is normalization of the kind Israelis have with the Emirates.","kind":"evergreen","len":"7:28","secs":448,"watch":"https://share.descript.com/view/hwKPkAl9j79"},{"seg":6,"title":"Syria\u0027s President Says He Is Working Toward a Security Agreement With Israel","desc":"In an Al Jazeera interview, Syria\u0027s president says he is working with several countries toward a security agreement with Israel, has no interest in a confrontation, and wants Lebanon to be the only party holding weapons. He also refuses to drop the Golan claim. Guy reads the whole list and explains why a pipeline route may be doing the work.","kind":"news","len":"3:25","secs":205,"watch":"https://share.descript.com/view/J1GT0OyGBLr"},{"seg":7,"title":"Can Jolani Be Trusted, and the Blackstone Conspiracy Answered Live","desc":"Audience questions: whether Syria\u0027s new leader genuinely changed while in prison and why Guy says to assume he is ISIS until the ranks are actually cleared, whether the Druze want their own country, why the Blackstone and Israel conspiracy falls apart the moment you check it, and the case for breaking Lebanon into three states.","kind":"news","len":"5:42","secs":342,"watch":"https://share.descript.com/view/ggKe9GwFO1O"},{"seg":8,"title":"Bibi Derangement Syndrome and Why One Side Models the Other Worse","desc":"Armin asks who the people in those Israeli street interviews actually are. Guy explains that the protest median age is sixty plus, connects it to unquestioned trust in legacy media, and uses Jonathan Haidt\u0027s moral foundations research to explain why one side consistently produces a worse caricature of the other when asked to argue its case.","kind":"evergreen","len":"9:10","secs":550,"watch":"https://share.descript.com/view/43aoWQlg8ZX"},{"seg":9,"title":"A Lebanese Guest Defends Israel on Live TV and Traps the Host","desc":"Guy translates a Lebanese television debate in which the guest refuses to call the IDF an occupation army, points out that Lebanon\u0027s own president sent an envoy to sign a framework agreement with Israel, and answers the terrorist state charge by listing what the region\u0027s own governments have done. Guy also corrects the guest\u0027s October 7 casualty figure on air.","kind":"evergreen","len":"11:29","secs":689,"watch":"https://share.descript.com/view/zA4feWQyoD5"},{"seg":10,"title":"The Lebanon Polling Numbers on Peace With Israel, Sect by Sect","desc":"Guy reads and translates Lebanese polling on the peace agreement with Israel, broken down by community: Druze 84.2 percent in favour, Maronites 76.5, Orthodox 72.2, Sunnis 51.6 for against 44.1 against, and Shia 92.1 percent against.","kind":"evergreen","len":"1:33","secs":93,"watch":"https://share.descript.com/view/bgU4smmwaQQ"},{"seg":11,"title":"Israel\u0027s Yes to a 200 Soldier Stabilization Force, and What It Actually Means","desc":"Israel agrees in principle to an international stabilization force entering the Hamas-controlled part of Gaza, but only around two hundred soldiers and only from friendly countries. Guy explains what that yes is really for, plus a Dutch pride parade carrying almost nothing but Palestinian flags and Colombia cancelling planned embassies.","kind":"news","len":"1:38","secs":98,"watch":"https://share.descript.com/view/zqOHLpbgUpa"},{"seg":12,"title":"Why Qatar Should Be Treated as an Enemy State","desc":"Guy makes the case that Qatar is the most destructive state to Israel by volume of funded incitement: it has hosted Hamas leaders since before October 7, backs the Muslim Brotherhood, funds Western universities, and runs Al Jazeera. A co-host argues America should name it an enemy state as well, and Guy explains why Qatar\u0027s leverage disappears when the Iranian regime falls.","kind":"evergreen","len":"4:12","secs":252,"watch":"https://share.descript.com/view/zzebNRtjevy"}]},{"id":"2026-08-01-guy","date":"2026-08-01","label":"August 1","segs":[{"seg":1,"title":"Why Liberal Jews Have \u0027Suicidal Empathy\u0027","desc":"Guy answers a viewer\u0027s question on why liberal Western Jews lean toward suicidal empathy, tracing it to self-selection, generational persecution, and a strange dual identity as both minority and elite.","kind":"evergreen","len":"4:43","secs":283,"watch":"https://share.descript.com/view/Qj3GqkMIAFx"},{"seg":2,"title":"Smotrich\u0027s Squeeze Doctrine and the Houthi Plan","desc":"Israel\u0027s finance minister lays out an economic-strangulation strategy against Iran\u0027s regime. Then Guy pitches the follow-through: strike the Houthis in Yemen and break their grip on the Bab el-Mandab chokepoint.","kind":"news","len":"7:16","secs":436,"watch":"https://share.descript.com/view/f2A9rWzcvaI"},{"seg":3,"title":"Netanyahu\u0027s AI Ad Attacks Eisenkot","desc":"Netanyahu\u0027s campaign posts an AI video that appears to evoke Eisenkot\u0027s son, killed in Lebanon, sparking a raw, self-critical debate about how far this election has already gone.","kind":"news","len":"5:46","secs":346,"watch":"https://share.descript.com/view/gOPH261X5Iw"},{"seg":4,"title":"Sapir Breaks Down Eisenkot\u0027s Platform","desc":"Sapir and Guy dig into frontrunner Eisenkot\u0027s 2022 interview: his warning that Israel\u0027s internal division, not its enemies, is the real long-term threat, and his case for an actual national security doctrine.","kind":"news","len":"11:21","secs":681,"watch":"https://share.descript.com/view/2zJkrq1Bxru"},{"seg":5,"title":"Is Khamenei Incapacitated?","desc":"Fresh reports say Iran\u0027s Supreme Leader is alive but barely functioning, while Trump calls the IRGC savages and flatly rejects a Qatar-brokered ceasefire offer.","kind":"news","len":"1:28","secs":88,"watch":"https://share.descript.com/view/8Dn8ahAvoEJ"},{"seg":6,"title":"Why Israel\u0027s Left Has No Leader","desc":"Netanyahu dominated the right for two decades, but Israel\u0027s left keeps burning through candidates. Guy explains why the opposition never coalesced into a coherent brand.","kind":"evergreen","len":"2:40","secs":160,"watch":"https://share.descript.com/view/xvzdb7w5VFW"}]},{"id":"2026-07-31-guy","date":"2026-07-31","label":"July 31","segs":[{"seg":1,"title":"Trump\u0027s Gaza Deal Is Already Dead, Says Guy","desc":"Trump just declared Gaza\u0027s disarmament a done deal. Guy and Sapir break down the ambiguous fine print, and why Hamas has already signaled it has no intention of complying.","kind":"news","len":"4:48","secs":288,"watch":"https://share.descript.com/view/AsXwt04GJ40"},{"seg":2,"title":"Israel Wasn\u0027t Even in the Room for Its Own Gaza Deal","desc":"The Gaza disarmament draft was hammered out by the US, Egypt, Qatar and Turkey, without Israel at the table. Guy translates the actual document and explains why it may be built to fail.","kind":"news","len":"5:17","secs":317,"watch":"https://share.descript.com/view/bXmIXMXg2Gp"},{"seg":3,"title":"Ahmed Al-Khatib\u0027s Warning: Hamas Won\u0027t Really Disarm","desc":"Palestinian analyst Ahmed Fuad Al-Khatib calls Hamas\u0027s disarmament pledge a smokescreen. Guy reads his full warning about who actually holds power on the ground in Gaza.","kind":"news","len":"2:52","secs":172,"watch":"https://share.descript.com/view/DxDoX3x4WU4"},{"seg":4,"title":"Gaza\u0027s Median Age Is 18 - That\u0027s Why Hamas Wins","desc":"Hamas won a razor-thin 2006 election, then massacred its rivals to lock in control. Guy and Sapir explain why two decades of indoctrination means most of Gaza has never known anything else.","kind":"evergreen","len":"3:00","secs":180,"watch":"https://share.descript.com/view/5UyOpx0NMz3"},{"seg":5,"title":"Hamas Executes Traitors in Public Squares","desc":"Hamas publicly executes suspected collaborators in Gaza\u0027s town squares while crowds cheer. Guy lays out the grim logic of why Israel can\u0027t just bomb the problem away.","kind":"evergreen","len":"1:45","secs":105,"watch":"https://share.descript.com/view/pMUkyom6fOD"},{"seg":6,"title":"Why Guy Says Ben-Gvir Is Just a Thug","desc":"Israel\u0027s Minister of National Security kept a terrorist\u0027s photo on his wall, was convicted over a terror group, and wrote a law with a built-in loophole. Guy and Sapir make the full case against Itamar Ben-Gvir.","kind":"evergreen","len":"18:33","secs":1113,"watch":"https://share.descript.com/view/r0qJaYUb78k"},{"seg":7,"title":"I Don\u0027t Think Bibi Should Stay PM, Says Sapir","desc":"Guy trusts Netanyahu\u0027s geopolitical instincts but not his coalition choices. Sapir goes further: she doesn\u0027t think Bibi should remain prime minister at all.","kind":"evergreen","len":"2:56","secs":176,"watch":"https://share.descript.com/view/0fpuKQTdjGd"}]},{"id":"2026-07-29-guy","date":"2026-07-29","label":"July 29","segs":[{"seg":1,"title":"You Must Believe in Two States Before You Can Be an Expert","desc":"Guy breaks down how a letter signed by hundreds of retired generals gets used to manufacture an \"expert consensus\" on Israel and Iran policy, and why that consensus is far less neutral than it looks.","kind":"news","len":"4:59","secs":299,"watch":"https://share.descript.com/view/ZzjTPQlxCjW"},{"seg":2,"title":"Naftali Bennett Just Declared Qatar an Enemy State","desc":"Naftali Bennett has openly branded Qatar an enemy state. Guy explains what Qatar actually funds across the region, why Western capitals keep treating it as an ally, and what Bennett\u0027s warning really means.","kind":"news","len":"3:43","secs":223,"watch":"https://share.descript.com/view/noaVfwpG2fj"},{"seg":3,"title":"Trump \u0026 Netanyahu\u0027s Meeting as Iran Rearms for War","desc":"As Trump and Netanyahu meet, Iran is quietly rebuilding its missile and nuclear capacity. Guy walks through what is on the table, what the maps show about Iran\u0027s rearmament, and why this moment could decide war or peace.","kind":"news","len":"5:33","secs":333,"watch":"https://share.descript.com/view/5N1POjpcZvk"},{"seg":4,"title":"Rubio vs Vance: Who Actually Controls Trump\u0027s Coalition?","desc":"Marco Rubio and JD Vance represent two very different futures for Trump\u0027s foreign policy. Guy examines who really holds the coalition together, where the America First base is splitting, and what it means for Israel and Iran.","kind":"news","len":"4:56","secs":296,"watch":"https://share.descript.com/view/11hPxbzndQa"},{"seg":5,"title":"Nick Fuentes Trolls His Own Antisemitic Movement","desc":"Nick Fuentes has started openly mocking the antisemitic movement he helped build. Guy unpacks whether it is a genuine turn, a troll, or a grift, and what it says about the state of online extremism.","kind":"news","len":"17:09","secs":1029,"watch":"https://share.descript.com/view/GyKekhmGWFD"},{"seg":6,"title":"Why Young Men Are Radicalized - And How Israel Solved It","desc":"Why are so many young Western men drawn to extremism and despair? Guy explores the roots of male radicalization, why the West keeps losing its young men, and what Israel understands about meaning and belonging that the West forgot.","kind":"evergreen","len":"13:46","secs":826,"watch":"https://share.descript.com/view/iRbe51RGy7t"}]},{"id":"2026-07-28-guy-shows","date":"2026-07-28","label":"July 28","segs":[{"seg":1,"title":"Czechia Is Now Israel\u0027s Shield Against EU Sanctions","desc":"Guy breaks down the Israeli-Czech business forum in Tel Aviv and why it matters far more than it looks. EU sanctions on Israel need consensus, so a single reliable no vote blocks them. Hungary played that role until Orban lost; Czechia has now taken it over and is deepening ties fast. He also covers the Lebanon agreement, the India partnership, and the two X accounts he rates most for debunking anti-Israel misinformation.","kind":"","len":"11:28","secs":688,"watch":"https://share.descript.com/view/kXC5yvX2pKx"},{"seg":2,"title":"Israel Is Ready to Rejoin the War. It Is Waiting on Trump.","desc":"Guy lays out Israel\u0027s position plainly: the target bank is ready, the will is there, and the home front emergency status has been extended, but whether Israel rejoins the strikes on the Islamic Republic is Trump\u0027s call. He then answers chat on the Mossad plan that tapped Ahmadinejad to replace the regime, and on why Netanyahu was a polarizing figure years before Trump was.","kind":"","len":"9:03","secs":543,"watch":"https://share.descript.com/view/SQqx4G0p5WL"},{"seg":3,"title":"Why Israel\u0027s Secret Police Has to Answer to Elected Politicians","desc":"A chat question about the new Shin Bet chief turns into Guy\u0027s clearest argument about democracy. The previous leadership openly refused to carry out what the elected government wanted, which he says is a police state in reverse. Zini\u0027s own leaked line was that the Shin Bet answers to the elected branch, whoever that happens to be. Guy also explains why the Americans already knew about the Mossad plan, and why that is not evidence it was leaked.","kind":"","len":"5:00","secs":300,"watch":"https://share.descript.com/view/m0LkJhKXmUw"},{"seg":4,"title":"The Full Map of Israeli Media, Explained by an Israeli","desc":"There is no neutral news channel in Israel, and Guy walks through the whole landscape to show why. Channel 12 and 13, Ynet, Haaretz, the state broadcaster Kan, i24, Israel Hayom and Channel 14, with where each one actually sits. He also explains why the outlets foreigners read, Jerusalem Post and Times of Israel, are outward-facing and not what Israelis consume, and how the left-right line moved from economics to security after 1967.","kind":"","len":"11:04","secs":664,"watch":"https://share.descript.com/view/1EIBbhzfdKU"},{"seg":5,"title":"Is Vance Throwing Israel Under the Bus to Save Himself?","desc":"Guy\u0027s read on the Vance and Rubio 2028 problem. He argues Vance\u0027s conduct since the MOU was signed has been unserious, that he is panicking, and that distancing himself from Israel is an attempt to save his own career that people can see through. Rubio, he says, has the inherent advantage before he has even started running, and could win a Reagan-level landslide.","kind":"","len":"3:51","secs":231,"watch":"https://share.descript.com/view/kh0brbOseYQ"},{"seg":6,"title":"The UN Finally Admits Hamas Was Blocking the Aid","desc":"Three years late, a senior UN official has condemned Hamas for armed obstruction of aid delivery and for halting food distribution. Guy reads the post from Ahmed Fouad Alkhatib laying out what it means: years of stolen aid, intimidated NGO staff, and anyone who tried to say so being smeared as a genocide denier. He also explains why Alkhatib is the Palestinian voice he tells people to follow.","kind":"","len":"2:12","secs":132,"watch":"https://share.descript.com/view/Z1Y1rzM2lZq"},{"seg":7,"title":"If Israel Goes Back In, It Goes All In. No Half Measures.","desc":"Asked why Israel has been left out of hitting the IRGC, Guy is blunt: there is no version where Israel rejoins the war and does half measures. If it fights, it goes for the kill, because anything less invites retaliation it would then have to answer harder. That is exactly why the decision sits with Trump. He also takes super chats on Rubio\u0027s chances and on who is actually prime minister right now.","kind":"","len":"4:46","secs":286,"watch":"https://share.descript.com/view/vjMn1sZTEm6"},{"seg":8,"title":"100,000 Iranian Deaths and Almost No Coverage","desc":"The media has spent three years covering 73,000 Gaza deaths. Credible estimates put Iranian deaths from the current conflict at 100,000 in days, with almost no coverage at all.","kind":"","len":"1:10","secs":70,"watch":"https://share.descript.com/view/QkGLCZ1g1G9"}]}]</script>
+<script>
+(function(){
+  "use strict";
+  var KEY = "guyPicks.v1";
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { state = {}; }
+
+  function save(){
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  }
+  function entry(k){
+    if (!state[k]) { state[k] = { pick: "", flag: false, why: "" }; }
+    return state[k];
+  }
+
+  var cards = Array.prototype.slice.call(document.querySelectorAll(".card"));
+
+  function paint(card){
+    var k = card.getAttribute("data-key");
+    var e = entry(k);
+    var yes = card.querySelector('[data-pick="yes"]');
+    var no  = card.querySelector('[data-pick="no"]');
+    yes.setAttribute("aria-pressed", e.pick === "yes" ? "true" : "false");
+    no.setAttribute("aria-pressed",  e.pick === "no"  ? "true" : "false");
+    card.classList.toggle("picked",  e.pick === "yes");
+    card.classList.toggle("skipped", e.pick === "no");
+    var flag = card.querySelector(".flag");
+    var why  = card.querySelector(".why");
+    flag.setAttribute("aria-pressed", e.flag ? "true" : "false");
+    why.classList.toggle("show", !!e.flag);
+    if (why.value !== e.why) { why.value = e.why || ""; }
+  }
+
+  cards.forEach(function(card){
+    var k = card.getAttribute("data-key");
+    card.querySelectorAll("[data-pick]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var e = entry(k);
+        var v = btn.getAttribute("data-pick");
+        e.pick = (e.pick === v) ? "" : v;   // tapping again clears it
+        save(); paint(card); count();
+      });
+    });
+    var flag = card.querySelector(".flag");
+    var why  = card.querySelector(".why");
+    flag.addEventListener("click", function(){
+      var e = entry(k);
+      e.flag = !e.flag;
+      if (!e.flag) { e.why = ""; }
+      save(); paint(card); count();
+      if (e.flag) { why.focus(); }
+    });
+    why.addEventListener("input", function(){
+      var e = entry(k); e.why = why.value; save();
+    });
+    paint(card);
+  });
+
+  var countEl = document.getElementById("count");
+  function count(){
+    var y = 0, n = 0, f = 0;
+    cards.forEach(function(card){
+      var e = entry(card.getAttribute("data-key"));
+      if (e.pick === "yes") { y++; }
+      if (e.pick === "no")  { n++; }
+      if (e.flag) { f++; }
+    });
+    var bits = [y + " to upload", n + " skipped"];
+    if (f) { bits.push(f + " title" + (f > 1 ? "s" : "") + " flagged"); }
+    countEl.textContent = bits.join(", ");
+  }
+
+  function build(){
+    var lines = [];
+    document.querySelectorAll(".stream").forEach(function(sec){
+      var name = sec.querySelector("h2").textContent;
+      var up = [], skip = [], flags = [];
+      sec.querySelectorAll(".card").forEach(function(card){
+        var e = entry(card.getAttribute("data-key"));
+        var no = card.querySelector(".segno").textContent.replace("Topic ", "");
+        var title = card.querySelector(".title").textContent;
+        if (e.pick === "yes") { up.push(no + ". " + title); }
+        if (e.pick === "no")  { skip.push(no); }
+        if (e.flag) { flags.push("  " + no + ". " + title + (e.why ? " -- " + e.why : "")); }
+      });
+      if (!up.length && !skip.length && !flags.length) { return; }
+      lines.push(name.toUpperCase());
+      if (up.length)    { lines.push("Upload these:"); up.forEach(function(x){ lines.push("  " + x); }); }
+      if (skip.length)  { lines.push("Skip: " + skip.join(", ")); }
+      if (flags.length) { lines.push("Titles that do not match:"); flags.forEach(function(x){ lines.push(x); }); }
+      lines.push("");
+    });
+    if (!lines.length) { return "Nothing picked yet."; }
+    return lines.join("\n").trim();
+  }
+
+  document.getElementById("send").addEventListener("click", function(){
+    var text = build();
+    var out = document.getElementById("out");
+    var ta = document.getElementById("report");
+    ta.value = text;
+    out.classList.add("show");
+    var done = function(){ ta.scrollIntoView({ block: "center" }); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function(){
+        ta.removeAttribute("readonly"); ta.select(); done();
+      });
+    } else {
+      ta.removeAttribute("readonly"); ta.select(); done();
+    }
+  });
+
+  count();
+})();
+</script>
+</body>
+</html>
