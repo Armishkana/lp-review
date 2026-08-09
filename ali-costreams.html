@@ -5258,11 +5258,20 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
   color:var(--fb-ink)}
 @media (min-width:700px){ .fbkbar{left:auto;right:14px;width:420px} }
 </style>
-<script id="fbkHandled" type="application/json">{"pages":{"Messages":[],"To-Do List":[],"Questions for you":[],"Money":[],"Arm Us: ready to post":[]}}</script>
+<script id="fbkHandled" type="application/json">{"pages":{"Messages":[{"id":"utdnmkp8","said":"There\u0027s so much text and unnecessary stuff at the bottom of the screen that I don\u0027t know what the hell they are there for. Why is there so much garbage and things that I\u0027m not using at the bottom of the screen?","did":"You were right and most of it was mine. The feedback area at the bottom was showing a heading, a sentence naming the page you were already on, an empty-state paragraph and a two-line hint about copying - all before you had written anything, which is exactly when none of it means anything. It is now a single line until you actually write a note, and the explanations appear next to what they explain."}],"To-Do List":[{"id":"uwy6g4yh-tabbar","said":"for some reason, the tabs bar at the top sometimes gets a white background, and it gets fixed when I refresh it. Fix that so it doesn\u0027t turn like that.","did":"Fixed, and it was a real race, not a mystery. The bar copied the page\u0027s colour at three fixed moments after loading, but the light/dark theme is applied a moment later, so on an unlucky load the bar kept the pre-theme white - and a refresh just won the race the other way. It now watches for the theme changing instead of guessing when it lands. Tested by switching the theme four seconds after load: the bar follows it. The same fault was in the feedback box picking its own colours and is fixed there too. The calendar half of your note is NOT done and is still on my list."}],"Questions for you":[],"Money":[],"Arm Us: ready to post":[]}}</script>
 <div class="fbk" id="fbk">
-<h2 class="fbkh">Feedback on this page</h2>
+<!-- DELIBERATELY ALMOST EMPTY WHEN THERE ARE NO NOTES. Armin, 2026-08-09, on the Messages page:
+     "There's so much text and unnecessary stuff at the bottom of the screen that I don't know what
+     the hell they are there for. Why is there so much garbage and things that I'm not using at the
+     bottom of the screen?"
+     He was right and most of it was mine: a heading, a sentence naming the page he was already on,
+     an empty-state paragraph, and a two-line hint about how copying works - all shown BEFORE he had
+     written anything, i.e. at the exact moment none of it was useful. Explanation belongs next to
+     the thing being explained, at the moment it applies. The heading and the hint now appear only
+     once he has written something; until then the bottom of the page is one line. -->
+<h2 class="fbkh" id="fbkH" hidden>Your feedback on this page</h2>
 <p class="fbkstore" id="fbkStore" hidden></p>
-<p class="who" id="fbkWho"></p>
+<p class="who" id="fbkWho" hidden></p>
 <div class="fbkdone" id="fbkDone" hidden>
 <p class="fbkdoneh">Done, and taken off the page for you</p>
 <div id="fbkDoneList"></div>
@@ -5273,7 +5282,7 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
 <div class="fbkrow" id="fbkActions"></div>
 <p class="fbkmsg" id="fbkMsg" hidden></p>
 <textarea class="fbkfall" id="fbkFall" hidden readonly></textarea>
-<p class="fbkhint" id="fbkHint">Write notes next to the sections they are about. When you are done, press Copy and send the whole lot to Armin however you normally message him. Nothing leaves this page on its own.</p>
+<p class="fbkhint" id="fbkHint" hidden>Write notes next to the sections they are about. When you are done, press Copy and send the whole lot to Armin however you normally message him. Nothing leaves this page on its own.</p>
 </div>
 <div class="fbkbar" id="fbkBar" hidden>
 <span class="t" id="fbkBarTxt"></span>
@@ -5391,7 +5400,30 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
     }
     return "rgb(255,255,255)";
   }
-  d.documentElement.setAttribute("data-fbk", lum(paintedBg(d.body)) < 0.5 ? "dark" : "light");
+  // SAME RACE AS THE TAB STRIP, AND IT WAS HERE TOO. Read once at load, this picks light/dark
+  // BEFORE the frame runtime has stamped the theme onto <html>, so on an unlucky load the box
+  // renders its light palette on a dark page - the same intermittent fault Armin reported on the
+  // tab strip on 2026-08-09, in a second place, which is why it is fixed in both rather than only
+  // where he happened to see it. Observe the value; never guess when it settles.
+  function fbkTheme(){
+    d.documentElement.setAttribute("data-fbk", lum(paintedBg(d.body)) < 0.5 ? "dark" : "light");
+  }
+  fbkTheme();
+  try{
+    new W.MutationObserver(fbkTheme).observe(d.documentElement,
+      { attributes:true, attributeFilter:["data-theme","style","class"] });
+    new W.MutationObserver(fbkTheme).observe(d.body,
+      { attributes:true, attributeFilter:["data-theme","style","class"] });
+  }catch(e){}
+  try{
+    var fbkMq = W.matchMedia("(prefers-color-scheme: dark)");
+    if(fbkMq.addEventListener){ fbkMq.addEventListener("change", fbkTheme); }
+    else if(fbkMq.addListener){ fbkMq.addListener(fbkTheme); }
+  }catch(e){}
+  try{
+    var fbkT=0;
+    (function fbkTick(){ fbkTheme(); if(++fbkT<120){ W.requestAnimationFrame(fbkTick); } })();
+  }catch(e){}
 
   // ---- 1. THE SECTIONS, READ OFF THE PAGE ITSELF -------------------------------------------
   // The top card if there is one, then every heading outside this box. Nothing is configured per
@@ -5598,18 +5630,27 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
       for(var k=0;k<m.length;k++){ ns.appendChild(noteRow(m[k], false)); }
     }
 
-    // WHICH DASHBOARD THIS IS. Printed on the page and repeated in the copied text, so a note can
-    // never arrive detached from the board it was written on.
+    // WHICH DASHBOARD THIS IS. Repeated in the copied text always; shown on the page only once he
+    // has actually written something, because until then it explains a thing that does not exist.
     whoEl.innerHTML="";
     whoEl.appendChild(d.createTextNode("These notes are about "));
     var b=d.createElement("b"); b.textContent=PAGE; whoEl.appendChild(b);
-    whoEl.appendChild(d.createTextNode(" and nothing else. They stay on this dashboard until you copy them."));
+    whoEl.appendChild(d.createTextNode(" and nothing else. They stay here until you copy them."));
 
     var u=unsent(), sn=sentOnes();
+    // Everything explanatory hides until there is something to explain. This whole block used to
+    // render unconditionally and it was the bulk of what he called garbage at the bottom.
+    var has=notes.length>0;
+    var hEl=d.getElementById("fbkH"), hintEl=d.getElementById("fbkHint");
+    if(hEl){ hEl.hidden=!has; }
+    if(hintEl){ hintEl.hidden=!has; }
+    whoEl.hidden=!has;
+
     listEl.innerHTML="";
     if(!notes.length){
+      // ONE line, and it names the control rather than describing a workflow.
       var e=d.createElement("p"); e.className="fbkempty";
-      e.textContent="No notes yet. Tap Feedback next to any section above and write it there, while you are looking at it.";
+      e.textContent="Feedback? Tap the button next to whichever section it is about, above.";
       listEl.appendChild(e);
     } else {
       if(u.length){ listEl.appendChild(head("Not sent yet ("+u.length+")"));

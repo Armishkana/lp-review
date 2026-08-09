@@ -139,6 +139,45 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
           border:2px solid var(--good);border-radius:4px;padding:8px 14px;white-space:nowrap;
           background:color-mix(in srgb, var(--good) 16%, transparent)}
 .newtoday.none{border-color:var(--bad);color:var(--bad);background:color-mix(in srgb, var(--bad) 16%, transparent)}
+
+/* ================= THE PHONE FLOOR - added 2026-08-09, MEASURED, not guessed ====================
+   CLAUDE.md: "THE PHONE IS THE DEVICE... no body text under 12px, no tap target under 40px", and it
+   is measured in a 360px iframe, never eyeballed. This page had never been measured that way, and
+   when it finally was it came back with 674 bits of text under 12px and 379 tap targets under 40px
+   tall - the "Watch" button at 35px, "Copy title" and "Save this cover" at 33px, "Seg 1" at 11px.
+   Sol does this review on her phone EVERY DAY and Guy is a paying client, so this is the page where
+   a 33px button costs the most, and it is the page that had the smallest ones.
+
+   WHY IT IS AN APPENDED BLOCK AND NOT TWENTY EDITED RULES: the type scale above is tuned for the
+   desktop layout, where the density is a feature and nothing here is too small for a mouse. Editing
+   each declaration would have changed both surfaces at once to fix one of them. This block is last
+   in the cascade, scoped to the width where the problem exists, so the desktop page is byte-for-byte
+   what it was and the phone gets the floor. Re-measured after: 0 and 0.
+
+   The overlay chips (the zoom hint, the PROBLEM badge, "Newest") are in here too. They are
+   decorative and pointer-events:none, and CLAUDE.md still names them: "nothing decorative drops
+   below 12px" - because unreadable is unreadable whether or not it is tappable.
+   ============================================================================================== */
+@media (max-width: 767px) {
+  /* 1 - the text floor */
+  .num, .flagbtn, .minibtn, .copyttl, .lbl, .cliptime,
+  .zoomhint, .streamhdr .new { font-size: 12px }
+  .cov.on .zoombtn::after { font-size: 12px }
+  .covttl { font-size: 13px }
+
+  /* 2 - the tap-target floor. min-height alone leaves the label sitting at the top of a taller box,
+     so each one becomes a centred flex box at the same time. 44px, not 40: 40 is the floor the check
+     enforces and a floor is not a target. */
+  .watch, .flagbtn, .minibtn, .copyttl, .vbtn, .ttlbtn, .dlbtn, .bar button, #sheet button {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* The cover action row wraps to two lines at this width; without this the buttons stretch unevenly
+     and read as different controls. */
+  .covacts { gap: 6px }
+}
 </style>
 <div class="wrap">
 <header>
@@ -147,9 +186,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-09T12:57:25Z">
+<div id="freshbar" class="fresh" data-built="2026-08-09T13:44:13Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Sun Aug 9, 20:57</b>
+    <b id="freshtitle">This page was updated Sun Aug 9, 21:44</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday none" id="newtoday" data-new="0"
@@ -2496,8 +2535,24 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   document.getElementById('lb').addEventListener('click', function(e){ if (e.target === this) this.close(); });
 
   // ONE bundled submission, every line tagged with its segment number so it can be matched back.
+  //
+  // THE HEADER IS THE SHARED ENVELOPE, byte-identical in shape to the one the section-feedback box
+  // at the bottom of this page emits and to the one on all nine other dashboards. Armin, 2026-08-09:
+  // "even if I collect all your feedback from all the dashboards and dump it here all at the same
+  // time, you could immediately see what's happening."
+  // Before this, the report opened with a bare '<Show> REVIEW' - a human-readable name, no machine
+  // key, no page version, no URL, and no closing fence. It could be told apart from another SHOW by
+  // eye, but not from the OTHER kind of feedback this same page now produces, and a paste truncated
+  // by a phone clipboard was indistinguishable from a short review.
   function buildReport(){
-    var lines = ['Guy\'s shows REVIEW'];
+    var BOARD = (window.__BOARD || 'UNKNOWN-not-injected');
+    var built = (function(){ var e=document.querySelector('[data-built]');
+                             return e ? (e.getAttribute('data-built')||'').trim() : ''; })();
+    var lines = ['=== FEEDBACK | ' + document.title + ' | ' + BOARD + ' ==='];
+    lines.push('url: ' + window.location.href);
+    if (built) { lines.push('page built: ' + built); }
+    lines.push('written: ' + new Date().toISOString().slice(0,16).replace('T',' ') + ' UTC');
+    lines.push('clip review of ' + clips.length + ' clips');
     var curStream = null;
     clips.forEach(function(c){
       // The page spans several streams now, so every line has to say which stream it belongs to
@@ -2523,6 +2578,10 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
         + ' | bad covers: ' + (flagged.length ? flagged.join('; ') : 'none')
         + (note ? ' | video: ' + note : ''));
     });
+    // The closing fence repeats the key and the count, so a clipboard that truncated on her phone is
+    // detectable instead of arriving quietly as a shorter review.
+    lines.push('');
+    lines.push('=== END FEEDBACK | ' + BOARD + ' | ' + clips.length + ' clips ===');
     return lines.join('\n');
   }
   document.getElementById('submit').addEventListener('click', function(){
@@ -2655,11 +2714,20 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   color:var(--fb-ink)}
 @media (min-width:700px){ .fbkbar{left:auto;right:14px;width:420px} }
 </style>
-<script id="fbkHandled" type="application/json">{"pages":{"Messages":[],"To-Do List":[],"Questions for you":[],"Money":[],"Arm Us: ready to post":[]}}</script>
+<script id="fbkHandled" type="application/json">{"pages":{"Messages":[{"id":"utdnmkp8","said":"There\u0027s so much text and unnecessary stuff at the bottom of the screen that I don\u0027t know what the hell they are there for. Why is there so much garbage and things that I\u0027m not using at the bottom of the screen?","did":"You were right and most of it was mine. The feedback area at the bottom was showing a heading, a sentence naming the page you were already on, an empty-state paragraph and a two-line hint about copying - all before you had written anything, which is exactly when none of it means anything. It is now a single line until you actually write a note, and the explanations appear next to what they explain."}],"To-Do List":[{"id":"uwy6g4yh-tabbar","said":"for some reason, the tabs bar at the top sometimes gets a white background, and it gets fixed when I refresh it. Fix that so it doesn\u0027t turn like that.","did":"Fixed, and it was a real race, not a mystery. The bar copied the page\u0027s colour at three fixed moments after loading, but the light/dark theme is applied a moment later, so on an unlucky load the bar kept the pre-theme white - and a refresh just won the race the other way. It now watches for the theme changing instead of guessing when it lands. Tested by switching the theme four seconds after load: the bar follows it. The same fault was in the feedback box picking its own colours and is fixed there too. The calendar half of your note is NOT done and is still on my list."}],"Questions for you":[],"Money":[],"Arm Us: ready to post":[]}}</script>
 <div class="fbk" id="fbk">
-<h2 class="fbkh">Feedback on this page</h2>
+<!-- DELIBERATELY ALMOST EMPTY WHEN THERE ARE NO NOTES. Armin, 2026-08-09, on the Messages page:
+     "There's so much text and unnecessary stuff at the bottom of the screen that I don't know what
+     the hell they are there for. Why is there so much garbage and things that I'm not using at the
+     bottom of the screen?"
+     He was right and most of it was mine: a heading, a sentence naming the page he was already on,
+     an empty-state paragraph, and a two-line hint about how copying works - all shown BEFORE he had
+     written anything, i.e. at the exact moment none of it was useful. Explanation belongs next to
+     the thing being explained, at the moment it applies. The heading and the hint now appear only
+     once he has written something; until then the bottom of the page is one line. -->
+<h2 class="fbkh" id="fbkH" hidden>Your feedback on this page</h2>
 <p class="fbkstore" id="fbkStore" hidden></p>
-<p class="who" id="fbkWho"></p>
+<p class="who" id="fbkWho" hidden></p>
 <div class="fbkdone" id="fbkDone" hidden>
 <p class="fbkdoneh">Done, and taken off the page for you</p>
 <div id="fbkDoneList"></div>
@@ -2670,7 +2738,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 <div class="fbkrow" id="fbkActions"></div>
 <p class="fbkmsg" id="fbkMsg" hidden></p>
 <textarea class="fbkfall" id="fbkFall" hidden readonly></textarea>
-<p class="fbkhint" id="fbkHint">Write notes next to the sections they are about. When you are done, press Copy and send the whole lot to Armin however you normally message him. Nothing leaves this page on its own.</p>
+<p class="fbkhint" id="fbkHint" hidden>Write notes next to the sections they are about. When you are done, press Copy and send the whole lot to Armin however you normally message him. Nothing leaves this page on its own.</p>
 </div>
 <div class="fbkbar" id="fbkBar" hidden>
 <span class="t" id="fbkBarTxt"></span>
@@ -2788,7 +2856,30 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     }
     return "rgb(255,255,255)";
   }
-  d.documentElement.setAttribute("data-fbk", lum(paintedBg(d.body)) < 0.5 ? "dark" : "light");
+  // SAME RACE AS THE TAB STRIP, AND IT WAS HERE TOO. Read once at load, this picks light/dark
+  // BEFORE the frame runtime has stamped the theme onto <html>, so on an unlucky load the box
+  // renders its light palette on a dark page - the same intermittent fault Armin reported on the
+  // tab strip on 2026-08-09, in a second place, which is why it is fixed in both rather than only
+  // where he happened to see it. Observe the value; never guess when it settles.
+  function fbkTheme(){
+    d.documentElement.setAttribute("data-fbk", lum(paintedBg(d.body)) < 0.5 ? "dark" : "light");
+  }
+  fbkTheme();
+  try{
+    new W.MutationObserver(fbkTheme).observe(d.documentElement,
+      { attributes:true, attributeFilter:["data-theme","style","class"] });
+    new W.MutationObserver(fbkTheme).observe(d.body,
+      { attributes:true, attributeFilter:["data-theme","style","class"] });
+  }catch(e){}
+  try{
+    var fbkMq = W.matchMedia("(prefers-color-scheme: dark)");
+    if(fbkMq.addEventListener){ fbkMq.addEventListener("change", fbkTheme); }
+    else if(fbkMq.addListener){ fbkMq.addListener(fbkTheme); }
+  }catch(e){}
+  try{
+    var fbkT=0;
+    (function fbkTick(){ fbkTheme(); if(++fbkT<120){ W.requestAnimationFrame(fbkTick); } })();
+  }catch(e){}
 
   // ---- 1. THE SECTIONS, READ OFF THE PAGE ITSELF -------------------------------------------
   // The top card if there is one, then every heading outside this box. Nothing is configured per
@@ -2995,18 +3086,27 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
       for(var k=0;k<m.length;k++){ ns.appendChild(noteRow(m[k], false)); }
     }
 
-    // WHICH DASHBOARD THIS IS. Printed on the page and repeated in the copied text, so a note can
-    // never arrive detached from the board it was written on.
+    // WHICH DASHBOARD THIS IS. Repeated in the copied text always; shown on the page only once he
+    // has actually written something, because until then it explains a thing that does not exist.
     whoEl.innerHTML="";
     whoEl.appendChild(d.createTextNode("These notes are about "));
     var b=d.createElement("b"); b.textContent=PAGE; whoEl.appendChild(b);
-    whoEl.appendChild(d.createTextNode(" and nothing else. They stay on this dashboard until you copy them."));
+    whoEl.appendChild(d.createTextNode(" and nothing else. They stay here until you copy them."));
 
     var u=unsent(), sn=sentOnes();
+    // Everything explanatory hides until there is something to explain. This whole block used to
+    // render unconditionally and it was the bulk of what he called garbage at the bottom.
+    var has=notes.length>0;
+    var hEl=d.getElementById("fbkH"), hintEl=d.getElementById("fbkHint");
+    if(hEl){ hEl.hidden=!has; }
+    if(hintEl){ hintEl.hidden=!has; }
+    whoEl.hidden=!has;
+
     listEl.innerHTML="";
     if(!notes.length){
+      // ONE line, and it names the control rather than describing a workflow.
       var e=d.createElement("p"); e.className="fbkempty";
-      e.textContent="No notes yet. Tap Feedback next to any section above and write it there, while you are looking at it.";
+      e.textContent="Feedback? Tap the button next to whichever section it is about, above.";
       listEl.appendChild(e);
     } else {
       if(u.length){ listEl.appendChild(head("Not sent yet ("+u.length+")"));
