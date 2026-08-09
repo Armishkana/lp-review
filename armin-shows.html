@@ -186,9 +186,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-09T19:45:15Z">
+<div id="freshbar" class="fresh" data-built="2026-08-09T20:26:37Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Mon Aug 10, 03:45</b>
+    <b id="freshtitle">This page was updated Mon Aug 10, 04:26</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday" id="newtoday" data-new="7"
@@ -3769,18 +3769,35 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
 .fbkta{width:100%;min-height:104px;padding:10px 12px;border-radius:10px;
   border:2px solid var(--fb-accent);background:var(--fb-card);color:var(--fb-ink);
   font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;resize:vertical}
-.fbkrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.fbkact,.fbkghost{flex:1 1 auto;min-height:44px;padding:11px 14px;border-radius:9px;cursor:pointer;
+/* THE BUTTON ROW STOPS STRETCHING ON A BIG SCREEN. On a phone full-width buttons are right; on a
+   1900px monitor "flex:1 1 auto" spread three of them edge to edge, each one a vast slab with a
+   few words marooned in the middle, which is a good part of what read as ugly. Full width up to
+   phone size, then sized to their own content. */
+.fbkrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;max-width:660px}
+.fbkact,.fbkghost{flex:1 1 auto;min-height:44px;padding:11px 16px;border-radius:9px;cursor:pointer;
   font:650 14px/1.1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center}
+@media (min-width:700px){ .fbkact,.fbkghost{flex:0 1 auto;min-width:160px} }
 .fbkact{background:var(--fb-accent);color:var(--fb-card);border:1px solid var(--fb-accent)}
 .fbkact.done{background:var(--fb-good);border-color:var(--fb-good);color:var(--fb-card)}
 .fbkghost{background:transparent;color:var(--fb-accent);border:1px solid var(--fb-line)}
+/* Deleting his own words is not a peer of copying them. It reads as a quiet last resort. */
+.fbkghost.fbkquiet{color:var(--fb-dim);border-color:var(--fb-line)}
 .fbkns{margin:8px 0 0}
-.fbkn{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--fb-line)}
+/* A NOTE OF HIS IS A CARD, NOT A LINE OF LOOSE TEXT. 2026-08-09: "look at the area of the bottom
+   of the screen. it looks ugly." It was: full-bleed sentences running the whole width with a bare
+   Delete button floating off to the right, separated only by a hairline, so a long note and the
+   controls beside it read as one undifferentiated block. Each note now sits in its own bordered
+   card with a coloured edge saying which state it is in, and the sentence is width-limited so it
+   does not stretch across a desktop monitor. */
+.fbkn{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;margin-top:8px;
+  border:1px solid var(--fb-line);border-left:3px solid var(--fb-warm);border-radius:8px;
+  background:var(--fb-card)}
 .fbknl{flex:1 1 auto;min-width:0}
-.fbkntx{font-size:14px;line-height:1.45;color:var(--fb-ink);word-wrap:break-word;overflow-wrap:break-word}
-.fbkntag{font-size:12px;margin-top:2px;color:var(--fb-warm);font-weight:700}
+.fbkntx{font-size:14px;line-height:1.5;color:var(--fb-ink);word-wrap:break-word;overflow-wrap:break-word;
+  max-width:62ch}
+.fbkntag{font-size:12px;margin-top:4px;color:var(--fb-warm);font-weight:700}
+.fbkn.sent{border-left-color:var(--fb-good);background:transparent}
 .fbkn.sent .fbkntag{color:var(--fb-good)}
 .fbkn.sent .fbkntx{color:var(--fb-dim)}
 .fbkdel{flex:0 0 auto;min-height:40px;padding:0 12px;border-radius:8px;cursor:pointer;
@@ -4239,8 +4256,14 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
                     : (secs[i].btn || "+ Feedback on this section"));
       btn.textContent=(openAt===i ? "Close" : base+(pend ? "  ("+pend+")" : ""));
       btn.className="fbkbtn"+(pend ? " has" : "");
+      // ONLY WHAT IS STILL WAITING SITS IN THE WRITING AREA. 2026-08-09, his screenshot: two
+      // notes carrying a green "copied ... UTC" stamp were sitting directly under the section
+      // button, in the space he writes the next one in, AND again in the page list below - so
+      // every note he had ever written appeared twice and the finished ones never left.
+      // Handed-over notes still exist and he can still read them: they live in the one folded
+      // "Already handed over" line at the bottom, which is their single home.
       var ns=hh.querySelector(".fbkns"); ns.innerHTML="";
-      for(var k=0;k<m.length;k++){ ns.appendChild(noteRow(m[k], false)); }
+      for(var k=0;k<m.length;k++){ if(!m[k].sent) ns.appendChild(noteRow(m[k], false)); }
     }
 
     // WHICH DASHBOARD THIS IS. Repeated in the copied text always; shown on the page only once he
@@ -4266,8 +4289,11 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
       e.textContent="Feedback? Tap the button next to whichever section it is about, above.";
       listEl.appendChild(e);
     } else {
-      if(u.length){ listEl.appendChild(head("Not sent yet ("+u.length+")"));
-        for(var a1=0;a1<u.length;a1++){ listEl.appendChild(noteRow(u[a1], true)); } }
+      // NO SECOND COPY OF THE SAME NOTE. Every unsent note is already displayed directly under
+      // the section it is about, which is where it means something. Listing them again here put
+      // his own words on the page twice and was most of what made this area look like a mess.
+      // What this list is FOR is the one thing the sections cannot show: the handed-over history,
+      // folded to a single line.
       // Handed over already: kept, so he can see what he told me, but folded to a single line so
       // it never occupies the space he writes the next one in.
       if(sn.length){
@@ -4280,26 +4306,43 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
       }
     }
 
+    // EVERY BUTTON HERE ACTS ON WHAT IS STILL WAITING, NEVER ON EVERYTHING HE HAS EVER WRITTEN.
+    // 2026-08-09, his words: "why does it count 5 notes at the bottom left, even though I already
+    // submitted the feedback." The count was 5 because it was notes.length - two unsent plus three
+    // he had already handed over. Two separate harms, and the second is the worse one: the number
+    // told him work was outstanding when it was not, AND pressing it would have re-sent me three
+    // notes I had already acted on, so I would have "fixed" them a second time.
+    // A COUNT ON A CONTROL IS READ AS WORK OUTSTANDING. It must therefore only ever count the
+    // outstanding thing - the same correction already made to the per-section badges, which is
+    // exactly why this one is worth flagging: the fix was applied to the badge and not to the
+    // buttons twelve lines below it, because each was looked at on its own.
     actEl.innerHTML="";
-    if(notes.length){
+    if(u.length){
+      var lbl=function(){ return "Copy "+(u.length===1?"the note":"all "+u.length+" notes"); };
       var all=d.createElement("button"); all.type="button"; all.className="fbkact";
-      all.textContent="Copy "+(notes.length===1?"the note":"all "+notes.length+" notes");
-      all.addEventListener("click", function(){ doCopy(notes, all, "Copy "+(notes.length===1?"the note":"all "+notes.length+" notes")); });
+      all.textContent=lbl();
+      all.addEventListener("click", function(){ doCopy(u, all, lbl()); });
       actEl.appendChild(all);
       if(EMAIL){
         var em=d.createElement("button"); em.type="button"; em.className="fbkghost"; em.textContent="Email them";
         em.addEventListener("click", function(){
-          var sub="Page feedback: "+PAGE+" ("+notes.length+(notes.length===1?" note":" notes")+")";
-          W.location.href="mailto:"+EMAIL+"?subject="+encodeURIComponent(sub)+"&body="+encodeURIComponent(payload(notes));
-          markSent(notes); flash("Your mail app should be open with all of it in the body.");
+          var sub="Page feedback: "+PAGE+" ("+u.length+(u.length===1?" note":" notes")+")";
+          W.location.href="mailto:"+EMAIL+"?subject="+encodeURIComponent(sub)+"&body="+encodeURIComponent(payload(u));
+          markSent(u); flash("Your mail app should be open with all of it in the body.");
         });
         actEl.appendChild(em);
       }
-      var cl=d.createElement("button"); cl.type="button"; cl.className="fbkghost"; cl.textContent="Clear all";
+    }
+    // Clear all is about STORAGE, not about sending, so it stays available whenever anything is
+    // stored - including when everything has been handed over and he simply wants the list gone.
+    if(notes.length){
+      var cl=d.createElement("button"); cl.type="button"; cl.className="fbkghost fbkquiet";
+      cl.textContent=u.length?"Clear all":"Clear the "+notes.length+" I already have";
       cl.addEventListener("click", function(){
         if(cl.getAttribute("data-armed")==="1"){ notes=[]; save(); paint(); return; }
+        var was=cl.textContent;
         cl.setAttribute("data-armed","1"); cl.textContent="Tap again to delete all";
-        setTimeout(function(){ cl.removeAttribute("data-armed"); cl.textContent="Clear all"; },3500);
+        setTimeout(function(){ cl.removeAttribute("data-armed"); cl.textContent=was; },3500);
       });
       actEl.appendChild(cl);
     }
