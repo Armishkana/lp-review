@@ -2633,7 +2633,18 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 .fbkhint{font:400 13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   color:var(--fb-ink);opacity:.85;margin:10px 0 0}
 .fbkmsg{font-size:14px;font-weight:700;margin:10px 0 0;color:var(--fb-good)}
-.fbkfall{width:100%;min-height:120px;margin-top:10px;padding:10px;border-radius:10px;
+/* Confirms in place, as he types, that the words are already kept. The clip pages say this at the
+   top of the page and it is the single most reassuring sentence on them; the box now says it too,
+   right where the typing happens, because that is where the doubt is. */
+.fbksaved{font:600 13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  color:var(--fb-good);margin:6px 0 0}
+/* The one thing louder than everything else in the box, because it is the only state where his
+   words are genuinely at risk and he must act before reloading. */
+.fbkstore{border:2px solid var(--fb-warm);border-radius:10px;padding:10px 12px;margin:0 0 10px;
+  font:700 14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  color:var(--fb-warm)}
+.fbkstore[hidden]{display:none}
+.fbkfall{width:100%;min-height:180px;margin-top:10px;padding:10px;border-radius:10px;
   border:2px solid var(--fb-warm);background:var(--fb-card);color:var(--fb-ink);
   font:13px/1.45 ui-monospace,Consolas,monospace}
 .fbkbar{position:fixed;left:8px;right:8px;bottom:8px;z-index:9000;
@@ -2647,6 +2658,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 <script id="fbkHandled" type="application/json">{"pages":{"Messages":[],"To-Do List":[],"Questions for you":[],"Money":[],"Arm Us: ready to post":[]}}</script>
 <div class="fbk" id="fbk">
 <h2 class="fbkh">Feedback on this page</h2>
+<p class="fbkstore" id="fbkStore" hidden></p>
 <p class="who" id="fbkWho"></p>
 <div class="fbkdone" id="fbkDone" hidden>
 <p class="fbkdoneh">Done, and taken off the page for you</p>
@@ -2702,7 +2714,38 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   var KEY="fbkNotes3::"+PAGE;
   var notes=[];
   try{ var raw=W.localStorage.getItem(KEY); if(raw){ notes=JSON.parse(raw)||[]; } }catch(e){ notes=[]; }
-  function save(){ try{ W.localStorage.setItem(KEY, JSON.stringify(notes)); }catch(e){} }
+
+  // ---- A SILENT catch{} ON SAVE IS HOW WORK DISAPPEARS --------------------------------------
+  // The old save() swallowed every error. If the browser refused the write - storage full, storage
+  // blocked in a frame, private mode - the note still appeared on screen, so everything looked
+  // saved right up until the reload that proved it was not. That is the worst possible shape for a
+  // failure: invisible while it matters, total when it is discovered.
+  // Now a failed write is remembered and SHOWN, in his words, at the top of the box.
+  var storageOk=true, storageWhy="";
+  function save(){
+    try{
+      W.localStorage.setItem(KEY, JSON.stringify(notes));
+      // Prove it landed. A setItem that reports success and stores nothing is exactly the case a
+      // try/catch cannot see, and the only way to know is to read it back.
+      var back=W.localStorage.getItem(KEY);
+      if(back===null || back===undefined){ throw new Error("write did not stick"); }
+      if(!storageOk){ storageOk=true; storageWhy=""; paintStorage(); }
+    }catch(e){
+      storageOk=false;
+      storageWhy=(e && e.name==="QuotaExceededError") ? "this browser's storage for the page is full"
+                                                      : "this browser is not letting the page save";
+      paintStorage();
+    }
+  }
+  function paintStorage(){
+    var el=d.getElementById("fbkStore");
+    if(!el) return;
+    if(storageOk){ el.hidden=true; el.textContent=""; return; }
+    el.hidden=false;
+    el.textContent="WARNING - your notes are NOT being kept, because "+storageWhy+
+      ". They are safe on this screen but a reload will lose them. Press Copy now, before you "+
+      "reload or close this page.";
+  }
   function stamp(){ return new Date().toISOString().slice(0,16).replace("T"," "); }
   function newId(){ return (new Date().getTime()).toString(36).slice(-5)+Math.random().toString(36).slice(2,5); }
 
@@ -2783,34 +2826,95 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 
   // ---- 3. THE COMPOSER, OPENED IN PLACE ----------------------------------------------------
   var openAt=null;
+  // ===================== TYPING IS SAVING. THERE IS NO SAVE BUTTON. ==========================
+  // 2026-08-09, and it cost him a long session of real feedback on the Messages page:
+  //   "I had a lot of feedback. The copy button didn't work, and when I refreshed, all my feedback
+  //    was gone... I spent a lot of time adding a lot of feedback, and now it's all gone."
+  //
+  // THE CAUSE, exactly: openEditor() called closeEditor() first, and closeEditor() did
+  // `.fbkin.innerHTML = ""` - it DESTROYED the textarea without ever reading its value. So every
+  // section he moved on from took its unsaved text with it, silently, and a reload took the rest.
+  // The only notes that survived were two old ones adopted from the page's previous store, which
+  // is why the bottom said "Copy 2 notes" and gave him feedback he wrote days earlier.
+  //
+  // THE GENERAL FORM, worth more than this fix: A SAVE BUTTON IS A STEP THAT CAN BE SKIPPED, AND
+  // DESTROYING A CONTROL IS NOT THE SAME AS READING IT. Any UI that (a) requires an explicit save
+  // and (b) tears down its own input on navigation will lose someone's work eventually - not as a
+  // bug but as its design. The clip dashboards already say the right thing at the top of the page,
+  // in these words: "Everything you type here saves by itself... you cannot lose your work." This
+  // box did not do that. Now it does, and the rule is: never remove an input from the DOM until its
+  // value has been committed, and never require a click to make typing count.
+  var editing=null;                 // id of the note the open composer owns
+  var commitTimer=null;
+
+  // Reads the open composer and writes it into notes. Called on every keystroke (debounced), on
+  // close, on page hide, and before any copy. It is idempotent, so calling it too often is free -
+  // which is the point: the expensive mistake is calling it too rarely.
+  function commit(){
+    if(openAt===null) return;
+    var hh=holder(openAt); if(!hh) return;
+    var ta=hh.querySelector(".fbkta"); if(!ta) return;
+    var v=(ta.value||"").trim();
+    var idx=-1;
+    for(var k=0;k<notes.length;k++){ if(notes[k].id===editing){ idx=k; break; } }
+    if(!v){
+      // Emptied on purpose - drop it, but never invent an empty note.
+      if(idx>=0){ notes.splice(idx,1); editing=null; save(); }
+      return;
+    }
+    if(idx>=0){ notes[idx].text=v; notes[idx].at=stamp(); notes[idx].sent=false; }
+    else {
+      var n={id:newId(), i:openAt, label:labelFor(openAt), text:v, at:stamp(), sent:false};
+      notes.push(n); editing=n.id;
+    }
+    save();
+  }
+
   function closeEditor(){
     if(openAt===null) return;
+    commit();                       // READ IT BEFORE DESTROYING IT. This ordering is the whole fix.
     var hh=holder(openAt); if(hh){ hh.querySelector(".fbkin").innerHTML=""; }
-    openAt=null; paint();
+    openAt=null; editing=null; paint();
   }
+
   function openEditor(i){
     if(openAt===i){ closeEditor(); return; }
     closeEditor();
     openAt=i;
+    // Reopening a section returns him to what he already wrote there, rather than a blank box that
+    // makes it look like the words are gone.
+    var existing=null;
+    for(var k=0;k<notes.length;k++){ if(notes[k].i===i && !notes[k].sent){ existing=notes[k]; break; } }
+    editing = existing ? existing.id : null;
     var box=holder(i).querySelector(".fbkin");
     box.innerHTML='<p class="fbkabout">About: <b></b></p>'+
       '<textarea class="fbkta" placeholder="What is wrong, confusing, missing, or what would make it better? How it looks, how it works, anything."></textarea>'+
-      '<div class="fbkrow"><button type="button" class="fbkact fbkadd">Save this note</button>'+
-      '<button type="button" class="fbkghost fbkcancel">Cancel</button></div>';
+      '<p class="fbksaved" aria-live="polite">Saves as you type. There is no save button and you cannot lose this.</p>'+
+      '<div class="fbkrow"><button type="button" class="fbkghost fbkcancel">Done with this section</button></div>';
     box.querySelector("b").textContent=labelFor(i);
     var ta=box.querySelector(".fbkta");
-    var add=box.querySelector(".fbkadd");
-    add.addEventListener("click", function(){
-      var v=(ta.value||"").trim();
-      if(!v){ ta.focus(); add.textContent="Write something first";
-        setTimeout(function(){ add.textContent="Save this note"; },1600); return; }
-      notes.push({id:newId(), i:i, label:labelFor(i), text:v, at:stamp(), sent:false});
-      save(); closeEditor(); flash("Saved. It is not sent yet - the button at the bottom copies them all.");
+    if(existing){ ta.value=existing.text; }
+    var savedEl=box.querySelector(".fbksaved");
+    ta.addEventListener("input", function(){
+      if(commitTimer){ clearTimeout(commitTimer); }
+      commitTimer=setTimeout(function(){
+        commit(); paintCountsOnly();
+        if(savedEl){ savedEl.textContent="Saved. Not sent yet - the button at the bottom copies them all."; }
+      }, 300);
     });
+    // Belt and braces: a blur, a tab switch or a phone locking the screen all commit immediately,
+    // without waiting for the debounce.
+    ta.addEventListener("blur", function(){ commit(); paintCountsOnly(); });
     box.querySelector(".fbkcancel").addEventListener("click", closeEditor);
     paint();
     try{ ta.focus(); }catch(e){}
   }
+
+  // The page going away is the last chance to keep his words. All three fire in different
+  // situations across browsers, so all three are wired.
+  W.addEventListener("pagehide", commit);
+  W.addEventListener("beforeunload", commit);
+  d.addEventListener("visibilitychange", function(){ if(d.visibilityState==="hidden"){ commit(); } });
 
   // ---- 4. RENDERING ------------------------------------------------------------------------
   var listEl=d.getElementById("fbkList"), actEl=d.getElementById("fbkActions"),
@@ -2850,7 +2954,14 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   }
   W.addEventListener("resize", function(){ _lift=null; paint(); });
 
-  function mine(i){ var o=[]; for(var k=0;k<notes.length;k++){ if(notes[k].i===i) o.push(notes[k]); } return o; }
+  // paint() never touches .fbkin, so it is safe to call on every keystroke - the textarea and its
+  // caret survive. Kept as a named alias so that stays a deliberate guarantee rather than a
+  // coincidence someone breaks later by moving the composer inside a repainted container.
+  function paintCountsOnly(){ paint(); }
+
+  // The note currently under the cursor is shown in the composer, so it is left out of the little
+  // list directly beneath it - otherwise he sees his own sentence twice while typing it.
+  function mine(i){ var o=[]; for(var k=0;k<notes.length;k++){ if(notes[k].i===i && notes[k].id!==editing) o.push(notes[k]); } return o; }
   function unsent(){ var o=[]; for(var k=0;k<notes.length;k++){ if(!notes[k].sent) o.push(notes[k]); } return o; }
   function sentOnes(){ var o=[]; for(var k=0;k<notes.length;k++){ if(notes[k].sent) o.push(notes[k]); } return o; }
 
@@ -2986,7 +3097,12 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     setTimeout(function(){ msgEl.hidden=true; },6000); }
 
   function doCopy(list, btn, restore){
-    if(!list.length) return;
+    // ALWAYS commit first. He can type a sentence and press Copy without leaving the box, and the
+    // debounce may not have fired yet - copying without this would hand him a report missing the
+    // very thing he just wrote.
+    commit();
+    list=(list===notes) ? notes : list;
+    if(!list.length){ flash("There is nothing written yet."); return; }
     var text=payload(list);
     function ok(){
       btn.classList.add("done"); btn.textContent="Copied - now paste it into the chat";
@@ -2998,10 +3114,22 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     function manual(){
       // NOT marked copied: he has not got it yet. A buffer that lies about delivery is the one
       // failure this whole box exists to avoid.
+      //
+      // 2026-08-09: "The copy button at the bottom right corner does not work." The clipboard API
+      // is refused inside some embedded frames, and when it was, this path ran - but the box it
+      // reveals was BELOW the fold, behind a fixed bar, with only a four-second button label to
+      // announce it. So from where he stood the button simply did nothing. The text is now
+      // scrolled into view, selected, and left on screen until he dismisses it.
       fallEl.hidden=false; fallEl.value=text;
-      try{ fallEl.removeAttribute("readonly"); fallEl.select(); fallEl.setSelectionRange(0,999999); }catch(e){}
-      btn.textContent="Select the text below and copy it";
-      setTimeout(function(){ btn.textContent=restore; },4000);
+      try{ fallEl.removeAttribute("readonly"); }catch(e){}
+      try{ fallEl.scrollIntoView({behavior:"smooth", block:"center"}); }catch(e){ fallEl.scrollIntoView(); }
+      setTimeout(function(){
+        try{ fallEl.focus(); fallEl.select(); fallEl.setSelectionRange(0,999999); }catch(e){}
+      }, 220);
+      btn.textContent="Copy it from the box below";
+      flash("This browser will not let the page copy for you. Your feedback is in the box below, "+
+            "already selected - press Ctrl+C, or hold and choose Copy on a phone. Nothing is lost.");
+      setTimeout(function(){ btn.textContent=restore; },6000);
     }
     function legacy(){
       try{
@@ -3049,8 +3177,27 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     });
   })();
 
+  // ---- PROVE STORAGE WORKS BEFORE HE TRUSTS IT, not after ----------------------------------
+  // Runs once at load with a throwaway key. If the browser will not keep anything, he is told at
+  // the top of the box straight away - rather than finding out from a reload that ate an hour of
+  // his writing, which is exactly what happened on 2026-08-09.
+  (function probe(){
+    try{
+      var t="fbkProbe::"+PAGE;
+      W.localStorage.setItem(t,"1");
+      if(W.localStorage.getItem(t)!=="1"){ throw new Error("read-back mismatch"); }
+      W.localStorage.removeItem(t);
+    }catch(e){
+      storageOk=false;
+      storageWhy=(e && e.name==="QuotaExceededError") ? "this browser's storage for the page is full"
+                                                      : "this browser is not letting the page save";
+    }
+  })();
+  paintStorage();
+
   paint();
   W.__FBK={ get notes(){ return notes; }, payload:payload, paint:paint,
+            commit:function(){ commit(); paint(); }, storageOk:function(){ return storageOk; },
             // ADOPT: a host page hands its OWN older note store over to this one, once, so his
             // words are never destroyed by a rewrite. They arrive already-handed-over, which is
             // what they are, so they fold away instead of sitting in his writing area.
