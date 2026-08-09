@@ -2655,6 +2655,11 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
    from the message blocks he copies OUT. Colour alone is not enough on a page where he is scanning
    fast: the shape has to differ too. */
 .fbkin{margin:8px 0 0;border-left:5px solid var(--fb-accent);padding-left:10px}
+/* The whole-page control, hoisted to the top of the page so it sits alongside the per-section
+   buttons instead of below everything. Given room of its own so it does not look like part of
+   the page header text. */
+.fbktop{margin:1rem 0 .25rem;max-width:44rem}
+.fbktop .fbkin{margin-top:.5rem}
 .fbkwhole > .fbkbtn{border-style:solid;border-width:2px;border-color:var(--fb-accent);
   color:var(--fb-accent);font-weight:700}
 .fbkabout{margin:0 0 6px;font-size:13px;color:var(--fb-dim)}
@@ -2959,6 +2964,30 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   wholeA.className="fbka fbkwhole";
   wholeA.innerHTML='<button type="button" class="fbkbtn"></button><div class="fbkin"></div><div class="fbkns"></div>';
   wholeA.querySelector(".fbkbtn").addEventListener("click", function(){ openEditor(-1); });
+
+  // THE WHOLE-PAGE CONTROL MOVES TO THE TOP OF THE PAGE, NEXT TO WHERE HE READS.
+  // Armin, 2026-08-09, twice: "for the questions page why don't we have a general feedback page
+  // for all the pages???" and then, after the first fix, "I still see feedback for each segment,
+  // but I don't see the feedback for the entirety of the page."
+  // It was never absent - it sat at the BOTTOM of the page, below every question - so the only
+  // controls in view were the per-section ones and the obvious conclusion was that no whole-page
+  // one existed. My first attempt made it reachable through the floating pill, which is a control
+  // he has to already know about; he does not, and a discoverability fix you have to be told about
+  // has not fixed discoverability. THE FIX IS TO PUT IT WHERE THE SECTION BUTTONS ARE, so the two
+  // read as a pair.
+  // The node is MOVED, never copied: one button, one editor, one store. A second copy would be two
+  // controls doing one job, which is the exact complaint that started all of this.
+  (function placeWholeAtTop(){
+    var a = d.querySelector("header.page")
+         || d.querySelector(".wrap > header")
+         || d.querySelector("main > header")
+         || d.querySelector("h1");
+    if(!a || !a.parentNode) return;                 // no obvious top: it stays where it was
+    var host = d.createElement("div");
+    host.className = "fbktop";
+    a.parentNode.insertBefore(host, a.nextSibling);
+    host.appendChild(wholeA);
+  })();
 
   function holder(i){ return i<0 ? wholeA : anchors[i]; }
   // THE LABEL NAMES THE PAGE, NOT JUST THE HEADING. Armin, 2026-08-09: "Why is it not clear that
@@ -3355,11 +3384,12 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   // page is what made him think no general option existed at all.
   barGo.addEventListener("click", function(){
     openEditor(-1);
-    try{ root.scrollIntoView({behavior:"smooth", block:"start"}); }
+    // Scroll to the whole-page control itself, which now lives at the TOP of the page, not to the
+    // notes list at the bottom. Sending him to the bottom was the original complaint.
+    try{ wholeA.scrollIntoView({behavior:"smooth", block:"center"}); }
     catch(e){ W.location.hash="#fbk"; }
-    // Put the caret in the box once the scroll has settled, so he can just type.
     W.setTimeout(function(){
-      var ta=root.querySelector(".fbkin textarea");
+      var ta=wholeA.querySelector(".fbkin textarea");
       if(ta){ try{ ta.focus({preventScroll:true}); }catch(e){ ta.focus(); } }
     }, 420);
   });
@@ -3371,11 +3401,14 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 
   // HIDE IT WHEN THE BOX IS ON SCREEN. That is the whole answer to "annoying": a floating shortcut
   // to something you are already looking at is pure clutter.
+  // Hide the pill when EITHER the whole-page control at the top or the notes list at the bottom is
+  // already on screen. Both are places he can act from, so floating a shortcut over either is the
+  // clutter he objected to.
   function barVisible(){
     if(barOff){ bar.hidden=true; return; }
-    var r=root.getBoundingClientRect();
-    var onScreen = r.top < W.innerHeight-40 && r.bottom > 0;
-    bar.hidden = onScreen;
+    function seen(el){ if(!el) return false; var r=el.getBoundingClientRect();
+      return r.height>0 && r.top < W.innerHeight-40 && r.bottom > 0; }
+    bar.hidden = seen(wholeA) || seen(root);
   }
   W.addEventListener("scroll", barVisible, {passive:true});
   W.addEventListener("resize", barVisible);
