@@ -186,9 +186,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-10T11:58:05Z">
+<div id="freshbar" class="fresh" data-built="2026-08-10T12:29:27Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Mon Aug 10, 19:58</b>
+    <b id="freshtitle">This page was updated Mon Aug 10, 20:29</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday" id="newtoday" data-new="3"
@@ -5339,6 +5339,10 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
 .fbkbarbtn::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--fb-accent);
   flex:0 0 auto;opacity:0}
 .fbkbar.pending .fbkbarbtn::before{opacity:1}
+.fbkbaradd{min-height:44px;width:38px;border:0;border-left:1px solid var(--fb-line);
+  background:transparent;color:var(--fb-accent);cursor:pointer;font-size:20px;line-height:1;
+  font-weight:700}
+.fbkbaradd[hidden]{display:none}
 .fbkbarx{min-height:44px;width:38px;border:0;border-left:1px solid var(--fb-line);
   background:transparent;color:var(--fb-dim);cursor:pointer;font-size:17px;line-height:1}
 </style>
@@ -5370,6 +5374,7 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
 </div>
 <div class="fbkbar" id="fbkBar" hidden>
 <button type="button" class="fbkbarbtn" id="fbkBarGo"><span id="fbkBarTxt">Feedback</span></button>
+<button type="button" class="fbkbaradd" id="fbkBarAdd" aria-label="Write a note about the whole page" hidden>+</button>
 <button type="button" class="fbkbarx" id="fbkBarX" aria-label="Hide this until I reload">&times;</button>
 </div>
 <script>
@@ -5685,7 +5690,19 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
       whoEl=d.getElementById("fbkWho"), msgEl=d.getElementById("fbkMsg"),
       fallEl=d.getElementById("fbkFall"), bar=d.getElementById("fbkBar"),
       barTxt=d.getElementById("fbkBarTxt"), barX=d.getElementById("fbkBarX"),
-      barGo=d.getElementById("fbkBarGo");
+      barGo=d.getElementById("fbkBarGo"), barAdd=d.getElementById("fbkBarAdd");
+
+  // The pill's label is owned by paint(), but doCopy() also rewrites the label of whatever button it
+  // is handed and restores it on a timer. Without a lock the repaint that follows a successful copy
+  // would stamp the stale "Copy 5 notes" back over it three seconds later. Declared HERE, above
+  // paint(), because a var declared further down hoists as undefined and every comparison against it
+  // is false - which would have left the pill permanently reading "Feedback" with notes waiting.
+  var barLockUntil=0;
+  function nowMs(){ return (new Date()).getTime(); }
+  function barCopyLabel(){
+    var n=unsent().length;
+    return "Copy "+(n===1 ? "the note" : "all "+n+" notes");
+  }
 
   // ---- DO NOT LAND ON TOP OF THE HOST PAGE'S OWN BOTTOM BAR --------------------------------
   // Found by LOOKING at the finished page on a phone, not by reading the markup: on the three clip
@@ -5856,10 +5873,24 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
       actEl.appendChild(cl);
     }
 
-    // The pill is ALWAYS available, because it is now the general-feedback entry point and not a
-    // notification. It only says a number when something is genuinely waiting to be handed over.
-    // barVisible() below hides it whenever the box itself is on screen.
-    barTxt.textContent = u.length ? (u.length + (u.length===1?" note to send":" notes to send")) : "Feedback";
+    // THE PILL IS THE COPY BUTTON WHENEVER THERE IS ANYTHING TO COPY.
+    // Armin, 2026-08-10: "Where the fuck is the copy notes section that we used to have? ... There
+    // used to be a way that I could copy all the notes. It used to be hovering at the bottom right
+    // corner of the screen. Now it's only at the very, very bottom instead of having a button all
+    // the time that I could just click on and copy all the notes."
+    // He was right and it was a straight regression. The pill had been demoted to an ENTRY POINT -
+    // it opened the editor and nothing else - so the only control that could actually hand his
+    // notes over was the one at the very bottom of the page. The pill still counted his notes,
+    // which is what made it look like it would send them.
+    // A FLOATING CONTROL THAT NAMES A PENDING QUANTITY MUST ACT ON THAT QUANTITY. Counting
+    // something and then doing something unrelated to it is the worst of both: it advertises the
+    // job and then does not do it.
+    // Writing a general note is still one tap, on the "+" next to it, so nothing was traded away.
+    // The words are IDENTICAL to the bottom button's, so the two read as the same control.
+    barAdd.hidden = !u.length;
+    if(nowMs() >= barLockUntil){
+      barTxt.textContent = u.length ? barCopyLabel() : "Feedback";
+    }
     bar.classList.toggle("pending", u.length>0);
     var lift=hostBottomBar();
     bar.style.bottom=(12+lift)+"px";
@@ -5956,7 +5987,7 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
   // THE PILL OPENS THE WHOLE-PAGE EDITOR, it does not merely scroll to it. Scrolling landed him at
   // the bottom of the page still needing to find and press the right button, which on the Questions
   // page is what made him think no general option existed at all.
-  barGo.addEventListener("click", function(){
+  function openWhole(){
     openEditor(-1);
     // Scroll to the whole-page control itself, which now lives at the TOP of the page, not to the
     // notes list at the bottom. Sending him to the bottom was the original complaint.
@@ -5966,23 +5997,43 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
       var ta=wholeA.querySelector(".fbkin textarea");
       if(ta){ try{ ta.focus({preventScroll:true}); }catch(e){ ta.focus(); } }
     }, 420);
+  }
+
+  // The pill COPIES when there is something to copy, and opens the editor when there is not. The
+  // label always says which of the two it will do, so it is never a guess.
+  barGo.addEventListener("click", function(){
+    var list=unsent();
+    if(!list.length){ openWhole(); return; }
+    barLockUntil = nowMs()+3600;
+    // barTxt, not barGo: doCopy() assigns textContent, which on the button would destroy the span
+    // every other line here holds a reference to.
+    doCopy(list, barTxt, "Feedback");
+    // Re-derive the label once every timer inside doCopy has finished. On the happy path the notes
+    // are now sent and "Feedback" is already right; on the refused-clipboard path they are NOT sent,
+    // and this is what puts "Copy all 5 notes" back instead of leaving a control that lies.
+    W.setTimeout(function(){ barLockUntil=0; paint(); }, 6400);
   });
+
+  barAdd.addEventListener("click", openWhole);
 
   // Dismissed for this visit only. Never persisted: a control he can permanently lose is how the
   // one inbound channel disappears without anyone noticing.
   var barOff=false;
   barX.addEventListener("click", function(){ barOff=true; bar.hidden=true; });
 
-  // HIDE IT WHEN THE BOX IS ON SCREEN. That is the whole answer to "annoying": a floating shortcut
-  // to something you are already looking at is pure clutter.
-  // Hide the pill when EITHER the whole-page control at the top or the notes list at the bottom is
-  // already on screen. Both are places he can act from, so floating a shortcut over either is the
-  // clutter he objected to.
+  // HIDE IT ONLY WHERE THE REAL COPY BUTTON IS ALREADY ON SCREEN - that is the notes box at the
+  // bottom, and nowhere else. A floating shortcut to a control you are already looking at is the
+  // clutter he objected to; a floating shortcut that vanishes where no equivalent control exists is
+  // the regression he objected to next.
+  // It used to hide for the whole-page composer at the top too. That composer WRITES notes, it does
+  // not COPY them, so hiding the pill there took the only copy control off the screen for the entire
+  // top half of the page. "Hide near the box" was written when the pill was a shortcut to the same
+  // job; it stopped being true the moment the pill became the copy button, and nothing re-read it.
   function barVisible(){
     if(barOff){ bar.hidden=true; return; }
     function seen(el){ if(!el) return false; var r=el.getBoundingClientRect();
       return r.height>0 && r.top < W.innerHeight-40 && r.bottom > 0; }
-    bar.hidden = seen(wholeA) || seen(root);
+    bar.hidden = seen(root);
   }
   W.addEventListener("scroll", barVisible, {passive:true});
   W.addEventListener("resize", barVisible);
