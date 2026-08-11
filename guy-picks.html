@@ -1017,7 +1017,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">50 topics across 6 streams. Updated 2026-08-10T23:55:28Z.</p>
+  <p class="built">50 topics across 6 streams. Updated 2026-08-11T00:18:03Z.</p>
 </div>
 
 <div class="bar">
@@ -1286,7 +1286,16 @@
 .fbkdel{flex:0 0 auto;min-height:40px;padding:0 12px;border-radius:8px;cursor:pointer;
   background:transparent;border:1px solid var(--fb-line);color:var(--fb-dim);
   font:600 13px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-.fbk{margin:26px 0 0;border-top:2px solid var(--fb-line);padding-top:4px}
+/* THE BOX LINES UP WITH THE PAGE, ON EVERY PAGE. Armin, 2026-08-11: "Look at the bottom of the
+   page with the text at the very, very bottom. It's so ugly and unorganized, and it goes too far
+   left and far right, unlike the other pages that this stays in the middle."
+   Measured before the fix, at 360px: on Messages and Questions this block ran 0 to 360, edge to
+   edge, while the page's own text sat in a column inset from both sides. It is INJECTED just
+   before </body>, which is outside whatever centred wrapper the host page uses, so it inherited
+   nothing and simply filled the viewport. A fragment that lands in twelve differently-built pages
+   cannot borrow their column - it has to carry its own. */
+.fbk{max-width:44rem;margin:26px auto 0;padding:4px 1rem 0;
+  border-top:2px solid var(--fb-line)}
 .fbk .who{font-size:13px;color:var(--fb-dim);margin:0 0 10px;word-wrap:break-word;overflow-wrap:break-word}
 .fbk .who b{color:var(--fb-ink)}
 .fbkhead{font:700 13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
@@ -1530,15 +1539,59 @@
   // ---- 1. THE SECTIONS, READ OFF THE PAGE ITSELF -------------------------------------------
   // The top card if there is one, then every heading outside this box. Nothing is configured per
   // page, so a renamed, added or removed section is handled with no edit anywhere.
+  // ARMIN, 2026-08-11: "Why do some segments not have the feedback section? You fucked up. Some
+  // segments don't have their own feedback segment. Make sure you check all the dashboards and you
+  // have all the segments have their own feedback segment."
+  //
+  // HE WAS RIGHT AND THE CAUSE WAS ONE WORD: this looked for "h2" and nothing else. Measured across
+  // his five pages before the fix - To-Do List had 39 headed blocks and 5 controls. Everything the
+  // page happens to head with something other than an h2 was invisible: the situation report and
+  // the calendar block (styled divs), every collapsible task row and the whole "Where we are right
+  // now" panel (a summary), and every clip on Arm Us (h3).
+  //
+  // THE GENERAL FORM, which is why this is a detector and not a list of fixes: a rule keyed to ONE
+  // TAG can only ever see the markup the page happened to use on the day the rule was written. So
+  // it now asks what a SEGMENT is - a block with its own heading at the top level of the page -
+  // and reads that off the structure instead.
+  //
+  // Deliberately NOT included, because more controls is not the goal and clutter is its own defect:
+  // the h1 (the whole-page control already sits directly under it), and any summary nested inside a
+  // card - "More background" appears ten times on the Questions page inside question cards that
+  // each already carry one.
   var secs=[];
   var hero=d.querySelector(".hero");
   if(hero){ secs.push({label:"The top card", btn:"+ Feedback on the top card", after:hero}); }
-  var hs=d.querySelectorAll("h2");
+
+  // The page's main column, so "top level" can be decided rather than guessed.
+  var col=d.querySelector(".wrap")||d.querySelector("main")||d.body;
+  function topLevel(el){
+    var n=el;
+    while(n && n!==col && n.parentNode){ n=n.parentNode; }
+    if(n!==col) return false;
+    // its own block must be a direct child of the column, or one level in (a section wrapper)
+    var b=el.closest("details,section,article,div");
+    if(!b) return true;
+    return b.parentNode===col || b===col || (b.parentNode && b.parentNode.parentNode===col && b.parentNode.tagName!=="ARTICLE");
+  }
+
+  var hs=d.querySelectorAll("h2,h3,summary,.sith,.calh");
   for(var i=0;i<hs.length;i++){
     var h=hs[i];
-    if(h.closest && (h.closest(".fbk") || h.closest(".hero"))) continue;
+    if(h.closest && (h.closest(".fbk") || h.closest(".hero") || h.closest(".fbka"))) continue;
     var t=(h.textContent||"").replace(/\s+/g," ").trim();
     if(!t) continue;
+    // A summary only counts when its details IS a section of the page, not a fold inside a card.
+    if(h.tagName==="SUMMARY"){
+      var det=h.parentNode;
+      if(!det || det.tagName!=="DETAILS") continue;
+      if(!topLevel(det)) continue;
+    }
+    // An h3 inside a card that already has an h2 above it is part of that card, not a segment.
+    if(h.tagName==="H3" && h.closest("article")) {
+      var art=h.closest("article");
+      if(art && art.querySelector("h2")) continue;
+    }
+    if(t.length>90) { t=t.slice(0,90); }
     secs.push({label:t, btn:"+ Feedback on this section", after:h});
   }
 
