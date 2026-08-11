@@ -1017,7 +1017,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">50 topics across 6 streams. Updated 2026-08-11T19:05:48Z.</p>
+  <p class="built">50 topics across 6 streams. Updated 2026-08-11T19:32:02Z.</p>
 </div>
 
 <div class="bar">
@@ -2595,7 +2595,11 @@
 @media (prefers-color-scheme: dark){ :root{ --ds-blue-fill:#2f57c4; } }
 :root[data-theme="dark"]{ --ds-blue-fill:#2f57c4; }
 :root[data-theme="light"]{ --ds-blue-fill:var(--ds-blue); }
-.tag.act, .btn.primary, button.copy, .pill.num, .num{ background-color:var(--ds-blue-fill)!important; }
+/* .hero .n joined this list on 2026-08-12. It is the "1" badge on the first task, and the numbered
+   badges below it are .num - so this rule was tinting the list and leaving the 1 on the page's own
+   --accent. Two blues that are nearly the same is worse than two that obviously differ: it reads as
+   a rendering fault rather than a choice. One rule, both badges, identical colour by construction. */
+.tag.act, .btn.primary, button.copy, .pill.num, .num, .hero .n{ background-color:var(--ds-blue-fill)!important; }
 
 /* STAYS RED - genuinely urgent, and it would have turned blue with --accent. */
 .age.stale{ background:var(--ds-red)!important; color:var(--ds-on-red)!important; }

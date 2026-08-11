@@ -186,9 +186,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-11T19:18:33Z">
+<div id="freshbar" class="fresh" data-built="2026-08-11T19:31:51Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Wed Aug 12, 03:18</b>
+    <b id="freshtitle">This page was updated Wed Aug 12, 03:31</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday" id="newtoday" data-new="4"
@@ -4600,7 +4600,11 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 @media (prefers-color-scheme: dark){ :root{ --ds-blue-fill:#2f57c4; } }
 :root[data-theme="dark"]{ --ds-blue-fill:#2f57c4; }
 :root[data-theme="light"]{ --ds-blue-fill:var(--ds-blue); }
-.tag.act, .btn.primary, button.copy, .pill.num, .num{ background-color:var(--ds-blue-fill)!important; }
+/* .hero .n joined this list on 2026-08-12. It is the "1" badge on the first task, and the numbered
+   badges below it are .num - so this rule was tinting the list and leaving the 1 on the page's own
+   --accent. Two blues that are nearly the same is worse than two that obviously differ: it reads as
+   a rendering fault rather than a choice. One rule, both badges, identical colour by construction. */
+.tag.act, .btn.primary, button.copy, .pill.num, .num, .hero .n{ background-color:var(--ds-blue-fill)!important; }
 
 /* STAYS RED - genuinely urgent, and it would have turned blue with --accent. */
 .age.stale{ background:var(--ds-red)!important; color:var(--ds-on-red)!important; }
