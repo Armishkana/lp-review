@@ -186,9 +186,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-11T18:26:10Z">
+<div id="freshbar" class="fresh" data-built="2026-08-11T18:50:15Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Wed Aug 12, 02:26</b>
+    <b id="freshtitle">This page was updated Wed Aug 12, 02:50</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday" id="newtoday" data-new="4"
@@ -4625,6 +4625,31 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
    the hex in the file and the checker rightly failing forever on a page that looked correct.
    Fixed tint, not themed: both sit on a dark photo whichever theme the reader is in. */
 :root{ --ds-hero-hi:#cfe0ff; }
+
+/* NO PAGE EVER SCROLLS SIDEWAYS. Armin, 2026-08-12, on Messages: "The page does not automatically
+   fit my screen area, so there is a bar at the bottom that I have to drag left and right... you
+   check all dashboards and make sure that this doesn't happen anywhere."
+   The cause of that one is fixed at its source (the tab strip no longer sizes itself with 100vw,
+   which counts the vertical scrollbar the page cannot use). THIS IS THE BACKSTOP, so the next
+   full-bleed element somebody adds cannot bring the bar back.
+   clip, NOT hidden, and the difference is load-bearing: `hidden` makes this element a scroll
+   container and can break the sticky tab strip; `clip` forbids scrolling without becoming one, so
+   sticky keeps working. Vertical scrolling is untouched - visible+clip is a legal pair.
+   It is deliberately on the root only. A page that genuinely needs to scroll something sideways -
+   a wide table, a code block - still can, because those carry their own overflow-x:auto box, and
+   this rule cannot reach inside them. */
+html{ overflow-x:clip; }
+
+/* A LINK IN A SENTENCE IS STILL SOMETHING HE TAPS WITH A THUMB. Text is about 20px tall; the floor
+   for a tap target is 40. Fixed page by page today on the trip pages and Arm Us, then found again
+   on Messages - seven of them - which is the signal that it belongs here rather than in each page.
+   PADDING, NOT display:inline-flex, and the difference matters: an inline-flex link cannot wrap
+   across two lines, so one long link in a paragraph would push the page sideways, which is the very
+   thing being fixed two rules up. Vertical padding grows the hit area and leaves wrapping alone.
+   Invisible: these links carry no background, so nothing moves on screen.
+   Scoped to links inside prose. Anything that is already a button, pill, tab or card has its own
+   size and is deliberately untouched. */
+p a:not([class]), li a:not([class]){ padding-block:11px; }
 </style>
 
 <!-- THEME-END -->
