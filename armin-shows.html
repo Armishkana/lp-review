@@ -186,9 +186,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-12T22:39:59Z">
+<div id="freshbar" class="fresh" data-built="2026-08-12T23:04:59Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Thu Aug 13, 06:39</b>
+    <b id="freshtitle">This page was updated Thu Aug 13, 07:04</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday" id="newtoday" data-new="11"
@@ -4940,10 +4940,31 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
    per-section ones and reasonably concluded there was no general one. This pill is the general
    entry point, reachable from anywhere on any page, and it opens that editor for him.
    It hides itself whenever the feedback box is actually on screen, because then it is noise. */
-.fbkbar{position:fixed;right:12px;bottom:12px;z-index:9000;display:flex;gap:0;align-items:stretch;
-  background:var(--fb-card);border:1px solid var(--fb-line);border-radius:999px;
+/* TWO ROWS, NOT ONE PILL, SINCE 2026-08-12. Armin, note ooeqt07f, looking at "Send my 1 mark |
+   Copy the note": "the button make no sense. they both should say copy and their function should be
+   copying. the notes. they should also have the number of notes I am copying and making it clear
+   which one is the feedback and which one is the notes on my tasks. also, right now there should be
+   a way to clear the notes on both."
+   Four faults in one sentence and all four were real. One said Send and one said Copy for the same
+   act; neither named WHAT it was copying; only one carried a count; and clearing lived in a
+   collapsed fold halfway up the page on one side and nowhere at all on the other.
+   A row per kind, each naming its own kind and its own count, each with its own clear. The rounded
+   pill shape cannot survive two rows, so it is a rounded card - the position and the shadow are
+   unchanged, which is what he recognises it by. */
+.fbkbar{position:fixed;right:12px;bottom:12px;z-index:9000;display:flex;flex-direction:column;
+  gap:0;align-items:stretch;
+  background:var(--fb-card);border:1px solid var(--fb-line);border-radius:14px;
   box-shadow:0 4px 14px rgba(0,0,0,.18);overflow:hidden;max-width:calc(100vw - 24px)}
 .fbkbar[hidden]{display:none}
+.fbkbrow{display:flex;align-items:stretch;gap:0}
+.fbkbrow[hidden]{display:none}
+.fbkbrow + .fbkbrow{border-top:1px solid var(--fb-line)}
+/* The clear controls. Deliberately quiet and deliberately narrow: they are the rarest thing in the
+   card and must never compete with the copy button beside them. */
+.fbkbarclr{min-height:44px;padding:0 12px;border:0;border-left:1px solid var(--fb-line);
+  background:transparent;color:var(--fb-dim);cursor:pointer;white-space:nowrap;
+  font:600 12.5px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.fbkbarclr[hidden]{display:none}
 .fbkbarbtn{min-height:44px;padding:0 16px;border:0;background:transparent;cursor:pointer;
   color:var(--fb-accent);font:700 13px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   display:flex;align-items:center;gap:7px}
@@ -5008,10 +5029,16 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
 <p class="fbkhint" id="fbkHint" hidden>Write notes next to the sections they are about. When you are done, press Copy and send the whole lot to Armin however you normally message him. Nothing leaves this page on its own.</p>
 </div>
 <div class="fbkbar" id="fbkBar" hidden>
+<div class="fbkbrow" id="fbkRowAct" hidden>
 <button type="button" class="fbkbaract" id="fbkBarAct" hidden></button>
+<button type="button" class="fbkbarclr" id="fbkBarActClr" hidden>Clear</button>
+</div>
+<div class="fbkbrow" id="fbkRowFb">
 <button type="button" class="fbkbarbtn" id="fbkBarGo"><span id="fbkBarTxt">Feedback</span></button>
 <button type="button" class="fbkbaradd" id="fbkBarAdd" aria-label="Write a note about the whole page" hidden>+</button>
+<button type="button" class="fbkbarclr" id="fbkBarClr" hidden>Clear</button>
 <button type="button" class="fbkbarx" id="fbkBarX" aria-label="Hide this until I reload">&times;</button>
+</div>
 </div>
 <script>
 (function(){
@@ -5689,7 +5716,9 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
       fallEl=d.getElementById("fbkFall"), bar=d.getElementById("fbkBar"),
       barTxt=d.getElementById("fbkBarTxt"), barX=d.getElementById("fbkBarX"),
       barGo=d.getElementById("fbkBarGo"), barAdd=d.getElementById("fbkBarAdd"),
-      barAct=d.getElementById("fbkBarAct");
+      barAct=d.getElementById("fbkBarAct"),
+      barActClr=d.getElementById("fbkBarActClr"), barClr=d.getElementById("fbkBarClr"),
+      rowAct=d.getElementById("fbkRowAct"), rowFb=d.getElementById("fbkRowFb");
 
   // ---- THE HOST PAGE'S OWN MAIN BUTTON, RIDING IN THIS PILL ---------------------------------
   // A page opts in by setting window.__PAGEBTN before this fragment runs:
@@ -5701,11 +5730,21 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
   var PAGEBTN = (W.__PAGEBTN && typeof W.__PAGEBTN.onClick === "function") ? W.__PAGEBTN : null;
   var actLockUntil = 0;
   function val(x){ return (typeof x === "function") ? x() : x; }
+  // THE ROW IS ONLY THERE WHEN THERE IS SOMETHING IN IT. A greyed-out "Copy 0 task notes" is two
+  // rows of furniture at the bottom of every screen, which is the clutter complaint that shaped
+  // this whole component. Marking happens on the cards themselves, so an empty row offers nothing.
   function paintAction(){
     if(!barAct) return;
-    if(!PAGEBTN){ barAct.hidden = true; return; }
+    if(!PAGEBTN){ barAct.hidden = true; if(rowAct){ rowAct.hidden = true; } return; }
+    var empty = !!val(PAGEBTN.disabled);
     barAct.hidden = false;
-    barAct.disabled = !!val(PAGEBTN.disabled);
+    barAct.disabled = empty;
+    if(rowAct){ rowAct.hidden = empty; }
+    // Hidden on BOTH counts, not just the row's. An element left marked visible inside a hidden
+    // row is invisible to him and visible to everything else that reads the page - a screen
+    // reader, a harness, the next person to move this markup. Found by the harness on its first
+    // run, which is the whole argument for a component this shared having one.
+    if(barActClr){ barActClr.hidden = empty || !(typeof PAGEBTN.clear === "function"); }
     // The same lock the feedback label uses: a repaint must not stamp the old words back over
     // the "Copied" confirmation three seconds after he pressed it.
     if((new Date()).getTime() >= actLockUntil){
@@ -5732,6 +5771,16 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
       });
     });
   }
+  // CLEARING THE HOST PAGE'S OWN NOTES, from the same place he copies them. Until now the only way
+  // to undo a batch of task marks was a control folded away near the top of the page, which is the
+  // same "why is it in a different position" fault he reported about the marks themselves.
+  if(barActClr && PAGEBTN && typeof PAGEBTN.clear === "function"){
+    barActClr.addEventListener("click", function(){
+      if(!W.confirm("Clear everything you marked on your tasks? Anything you typed goes too.")) return;
+      PAGEBTN.clear();
+      paintAction();
+    });
+  }
 
   // The pill's label is owned by paint(), but doCopy() also rewrites the label of whatever button it
   // is handed and restores it on a timer. Without a lock the repaint that follows a successful copy
@@ -5740,9 +5789,12 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
   // is false - which would have left the pill permanently reading "Feedback" with notes waiting.
   var barLockUntil=0;
   function nowMs(){ return (new Date()).getTime(); }
+  // NAME THE KIND, NOT JUST THE COUNT. Armin, note ooeqt07f: "making it clear which one is the
+  // feedback and which one is the notes on my tasks". Two buttons that both said a bare "Copy the
+  // note" would have answered half his complaint and left the half that actually confuses him.
   function barCopyLabel(){
     var n=notes.length;
-    return "Copy "+(n===1 ? "the note" : "all "+n+" notes");
+    return "Copy "+n+" feedback note"+(n===1 ? "" : "s");
   }
 
   // ---- DO NOT LAND ON TOP OF THE HOST PAGE'S OWN BOTTOM BAR --------------------------------
@@ -5945,8 +5997,11 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
     // The words are IDENTICAL to the bottom button's, so the two read as the same control.
     paintAction();
     barAdd.hidden = !notes.length;
+    // Clearing is offered only when there is something to clear, and it never appears on a page
+    // where the button is still an entry point rather than a copier.
+    if(barClr){ barClr.hidden = !notes.length; }
     if(nowMs() >= barLockUntil){
-      barTxt.textContent = notes.length ? barCopyLabel() : "Feedback";
+      barTxt.textContent = notes.length ? barCopyLabel() : "Write feedback";
     }
     // The dot means "something here is not with me yet", which is the only thing that is genuinely
     // outstanding. The LABEL still counts every note, because that is what the button will copy.
@@ -6127,6 +6182,21 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
 
   barAdd.addEventListener("click", openWhole);
 
+  // CLEAR, IN THE PLACE HE COPIES FROM. It already existed inside the notes box at the very bottom
+  // of the page - which is exactly where he could not find the copy button either, and for the same
+  // reason. His words: "there should be a way to clear the notes on both."
+  // A CONFIRM, not the box's two-tap arming: the two-tap trick works on a button he is looking at
+  // and reading, and this one sits in a corner card where a stray tap is far likelier. His written
+  // words are never destroyed on a single tap.
+  if(barClr){
+    barClr.addEventListener("click", function(){
+      if(!notes.length) return;
+      var n=notes.length;
+      if(!W.confirm("Delete "+n+" feedback note"+(n===1?"":"s")+" you wrote on this page? This cannot be undone.")) return;
+      notes=[]; save(); paint();
+    });
+  }
+
   // Dismissed for this visit only. Never persisted: a control he can permanently lose is how the
   // one inbound channel disappears without anyone noticing.
   var barOff=false;
@@ -6154,9 +6224,13 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
     barGo.hidden = fbOff;
     barX.hidden  = fbOff;
     barAdd.hidden = fbOff || !notes.length;
+    if(barClr){ barClr.hidden = fbOff || !notes.length; }
+    // The whole feedback ROW goes, not just its buttons. Leaving an empty row behind draws a border
+    // across the card with nothing in it - the kind of leftover furniture he has objected to twice.
+    if(rowFb){ rowFb.hidden = fbOff; }
     bar.classList.toggle("actonly", fbOff);
     // Nothing left in it means nothing to show. With a host button it is never empty.
-    bar.hidden = fbOff && !(barAct && !barAct.hidden);
+    bar.hidden = fbOff && !(rowAct && !rowAct.hidden);
   }
   W.addEventListener("scroll", barVisible, {passive:true});
   W.addEventListener("resize", barVisible);
