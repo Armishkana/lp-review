@@ -186,9 +186,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-12T23:44:44Z">
+<div id="freshbar" class="fresh" data-built="2026-08-13T00:09:54Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Thu Aug 13, 07:44</b>
+    <b id="freshtitle">This page was updated Thu Aug 13, 08:09</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday none" id="newtoday" data-new="0"
@@ -3375,12 +3375,21 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
    A row per kind, each naming its own kind and its own count, each with its own clear. The rounded
    pill shape cannot survive two rows, so it is a rounded card - the position and the shadow are
    unchanged, which is what he recognises it by. */
+/* A FIXED WIDTH, AND THAT IS THE WHOLE ANSWER TO "why does the button keep wiggling around?"
+   (Armin, note rcrisbsd, 2026-08-12.) The card is anchored to the RIGHT edge and its width was
+   content-driven, so every single label change moved its LEFT edge: "Copy 1 task note" to "Copy 2
+   task notes" is wider, the 1.6s "Copied" flash is narrower, a row appearing or disappearing
+   changes which label is longest, and the widest row sets the width for both. Four different things
+   resizing a control anchored on the far side from where it grows.
+   THE GENERAL FORM: a fixed-position element anchored on one edge must have a fixed size, or it
+   moves every time its contents change - and the movement reads as a fault even when every
+   individual state is correct. Nothing here animates; it was pure reflow. */
 .fbkbar{position:fixed;right:12px;bottom:12px;z-index:9000;display:flex;flex-direction:column;
-  gap:0;align-items:stretch;
+  gap:0;align-items:stretch;width:min(20rem, calc(100vw - 24px));
   background:var(--fb-card);border:1px solid var(--fb-line);border-radius:14px;
-  box-shadow:0 4px 14px rgba(0,0,0,.18);overflow:hidden;max-width:calc(100vw - 24px)}
+  box-shadow:0 4px 14px rgba(0,0,0,.18);overflow:hidden}
 .fbkbar[hidden]{display:none}
-.fbkbrow{display:flex;align-items:stretch;gap:0}
+.fbkbrow{display:flex;align-items:stretch;gap:0;min-width:0}
 .fbkbrow[hidden]{display:none}
 .fbkbrow + .fbkbrow{border-top:1px solid var(--fb-line)}
 /* The clear controls. Deliberately quiet and deliberately narrow: they are the rarest thing in the
@@ -3389,18 +3398,28 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   background:transparent;color:var(--fb-dim);cursor:pointer;white-space:nowrap;
   font:600 12.5px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 .fbkbarclr[hidden]{display:none}
-.fbkbarbtn{min-height:44px;padding:0 16px;border:0;background:transparent;cursor:pointer;
+/* The copy buttons take whatever room is left and truncate rather than resize the card. */
+.fbkbarbtn{flex:1 1 auto;min-width:0;min-height:44px;padding:0 14px;border:0;background:transparent;
+  cursor:pointer;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   color:var(--fb-accent);font:700 13px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   display:flex;align-items:center;gap:7px}
 .fbkbarbtn::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--fb-accent);
   flex:0 0 auto;opacity:0}
 .fbkbar.pending .fbkbarbtn::before{opacity:1}
-.fbkbaradd{min-height:44px;width:38px;border:0;border-left:1px solid var(--fb-line);
-  background:transparent;color:var(--fb-accent);cursor:pointer;font-size:20px;line-height:1;
-  font-weight:700}
+/* EVERY CONTROL HERE CARRIES A WORD NOW. Armin, note rcrisbsd: "What is this plus button?"
+   It was a bare "+" with its meaning in an aria-label - which is to say, nowhere he could see it.
+   A glyph whose explanation lives only in the markup is the same defect as the middot on the on-air
+   rows that reached him as "a random dot". It writes a new note about the page, so it says so. */
+.fbkbaradd{flex:1 1 auto;min-width:0;min-height:44px;padding:0 14px;border:0;
+  background:transparent;color:var(--fb-accent);cursor:pointer;text-align:left;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;
+  font:700 13px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 .fbkbaradd[hidden]{display:none}
-.fbkbarx{min-height:44px;width:38px;border:0;border-left:1px solid var(--fb-line);
-  background:transparent;color:var(--fb-dim);cursor:pointer;font-size:17px;line-height:1}
+/* Also a word, for the same reason. "x" on a control he cannot name is one more thing to wonder
+   about, and what it does - put the card away until the page is reloaded - is not obvious. */
+.fbkbarx{flex:0 0 auto;min-height:44px;padding:0 12px;border:0;border-left:1px solid var(--fb-line);
+  background:transparent;color:var(--fb-dim);cursor:pointer;white-space:nowrap;
+  font:600 12.5px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 /* THE HOST PAGE'S OWN MAIN ACTION, IN THIS SAME PILL. Armin, 2026-08-11, on the questions page:
    "The section that is Copy Answers is taking too much space at the bottom of the screen. I like
     the bottom-right feedback-collecting copy button... maybe the Copy My Answers button should
@@ -3457,11 +3476,13 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 <button type="button" class="fbkbaract" id="fbkBarAct" hidden></button>
 <button type="button" class="fbkbarclr" id="fbkBarActClr" hidden>Clear</button>
 </div>
-<div class="fbkbrow" id="fbkRowFb">
-<button type="button" class="fbkbarbtn" id="fbkBarGo"><span id="fbkBarTxt">Feedback</span></button>
-<button type="button" class="fbkbaradd" id="fbkBarAdd" aria-label="Write a note about the whole page" hidden>+</button>
+<div class="fbkbrow" id="fbkRowFb" hidden>
+<button type="button" class="fbkbarbtn" id="fbkBarGo"><span id="fbkBarTxt">Copy my feedback</span></button>
 <button type="button" class="fbkbarclr" id="fbkBarClr" hidden>Clear</button>
-<button type="button" class="fbkbarx" id="fbkBarX" aria-label="Hide this until I reload">&times;</button>
+</div>
+<div class="fbkbrow" id="fbkRowWrite">
+<button type="button" class="fbkbaradd" id="fbkBarAdd">&#43; Write a note about this page</button>
+<button type="button" class="fbkbarx" id="fbkBarX" aria-label="Put this away until the page is reloaded">Hide</button>
 </div>
 </div>
 <script>
@@ -4142,7 +4163,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
       barGo=d.getElementById("fbkBarGo"), barAdd=d.getElementById("fbkBarAdd"),
       barAct=d.getElementById("fbkBarAct"),
       barActClr=d.getElementById("fbkBarActClr"), barClr=d.getElementById("fbkBarClr"),
-      rowAct=d.getElementById("fbkRowAct"), rowFb=d.getElementById("fbkRowFb");
+      rowAct=d.getElementById("fbkRowAct"), rowFb=d.getElementById("fbkRowFb"),
+      rowWrite=d.getElementById("fbkRowWrite");
 
   // ---- THE HOST PAGE'S OWN MAIN BUTTON, RIDING IN THIS PILL ---------------------------------
   // A page opts in by setting window.__PAGEBTN before this fragment runs:
@@ -4420,12 +4442,17 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     // Writing a general note is still one tap, on the "+" next to it, so nothing was traded away.
     // The words are IDENTICAL to the bottom button's, so the two read as the same control.
     paintAction();
-    barAdd.hidden = !notes.length;
-    // Clearing is offered only when there is something to clear, and it never appears on a page
-    // where the button is still an entry point rather than a copier.
+    // THE WRITE ACTION IS ITS OWN ROW AND IS ALWAYS THERE. It used to be a "+" that appeared only
+    // AFTER a note existed - so the one control for STARTING a note was invisible until you had
+    // already written one - and when it did appear it was a glyph with its meaning in an aria-label.
+    // Now the copy row exists when there is something to copy, the write row is a constant, and
+    // neither has to double as the other. That also retires the label that changed identity
+    // ("Write feedback" becoming "Copy 2 feedback notes"), which is part of what made this corner
+    // feel like it was moving around on him.
+    if(rowFb){ rowFb.hidden = !notes.length; }
     if(barClr){ barClr.hidden = !notes.length; }
     if(nowMs() >= barLockUntil){
-      barTxt.textContent = notes.length ? barCopyLabel() : "Write feedback";
+      barTxt.textContent = barCopyLabel();
     }
     // The dot means "something here is not with me yet", which is the only thing that is genuinely
     // outstanding. The LABEL still counts every note, because that is what the button will copy.
@@ -4591,6 +4618,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 
   // The pill COPIES when there is something to copy, and opens the editor when there is not. The
   // label always says which of the two it will do, so it is never a guess.
+  // The copy row only exists when there is something to copy, so this button no longer has to
+  // double as the way to start a note - that is its own row now, always present.
   barGo.addEventListener("click", function(){
     var list=notes;
     if(!list.length){ openWhole(); return; }
@@ -4645,13 +4674,12 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     function seen(el){ if(!el) return false; var r=el.getBoundingClientRect();
       return r.height>0 && r.top < W.innerHeight-40 && r.bottom > 0; }
     var fbOff = barOff || seen(root);
-    barGo.hidden = fbOff;
-    barX.hidden  = fbOff;
-    barAdd.hidden = fbOff || !notes.length;
-    if(barClr){ barClr.hidden = fbOff || !notes.length; }
-    // The whole feedback ROW goes, not just its buttons. Leaving an empty row behind draws a border
-    // across the card with nothing in it - the kind of leftover furniture he has objected to twice.
-    if(rowFb){ rowFb.hidden = fbOff; }
+    // WHOLE ROWS, NEVER LOOSE BUTTONS. Hiding the buttons but leaving their row behind draws an
+    // empty bordered strip across the card, and hiding some buttons in a row and not others is what
+    // made this thing change shape as he scrolled. One decision, applied to a row.
+    if(rowFb){ rowFb.hidden = fbOff || !notes.length; }
+    if(rowWrite){ rowWrite.hidden = fbOff; }
+    if(barClr){ barClr.hidden = !notes.length; }
     bar.classList.toggle("actonly", fbOff);
     // Nothing left in it means nothing to show. With a host button it is never empty.
     bar.hidden = fbOff && !(rowAct && !rowAct.hidden);
