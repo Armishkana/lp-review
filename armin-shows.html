@@ -186,9 +186,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-13T03:17:32Z">
+<div id="freshbar" class="fresh" data-built="2026-08-13T03:22:11Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Thu Aug 13, 11:17</b>
+    <b id="freshtitle">This page was updated Thu Aug 13, 11:22</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday none" id="newtoday" data-new="0"
@@ -5327,6 +5327,31 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
       if(tag==="SCRIPT"||tag==="STYLE"||tag==="NAV"||tag==="H1"||tag==="LINK"||tag==="META") continue;
       if(SKIP_CLS.test(cls)) continue;
       if(el.id==="fbk"||el.id==="fbkBar"||el.id==="fbkWhole") continue;
+      // (f) A BLOCK MAY DECLARE ITS OWN NAME, AND THEN IT IS ALWAYS A SEGMENT.
+      // Added 2026-08-13. Armin had a task row open on his To-Do List, filling the screen, and
+      // there was no writing box anywhere on it: "This area is missing its own feedback section,
+      // you goddamn idiot. Fix this. Why are you keeping on making these mistakes?"
+      //
+      // Rule (d) below was doing it, and rule (d) is RIGHT: widening the detector to every
+      // heading-ish tag once produced a control per task row labelled with that row's entire text
+      // run together - "2Answer these 12 (reply with numbers, like: 1 1 1)5mLeaking while it
+      // sits..." - which is worse than no control. So the rows were cut.
+      //
+      // BUT THE REASON THEY WERE CUT WAS THE NAME, NOT THE ROW. A row he is looking at is exactly
+      // a thing he has an opinion about. The fix is therefore to let the page that BUILDS a row
+      // state its short name, rather than making this script infer one from concatenated markup.
+      // A declared name cannot be a wall of text, so the reason for the exclusion disappears with
+      // it - and rule (d) still protects every block that has NOT declared one.
+      //
+      // THE GENERAL FORM: when a heuristic is dropping something real, look at what the heuristic
+      // is actually defending against. Do not widen it and do not special-case the victim - give
+      // the caller a way to supply the fact the heuristic was guessing at.
+      var declared = el.getAttribute ? norm(el.getAttribute("data-fbk-title")) : "";
+      if(declared){
+        found.push({ block:el, tag:tag, cls:cls, titleTag:"DECLARED", label:declared,
+                     parent:container, declared:true });
+        continue;
+      }
       var t=titleOf(el);
       if(t){
         var label=norm(t.textContent);
@@ -5345,6 +5370,13 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
   var groups={};
   for(var g=0;g<found.length;g++){
     var f=found[g];
+    // A DECLARED block JOINS NO GROUP AT ALL, so neither rule (d) nor the ceiling can reach it.
+    // Both of those rules exist to stop INFERRED segments exploding: (d) because a name guessed
+    // from a row's markup is a wall of concatenated fragments, (e) because eighteen near-identical
+    // answered-question cards is a wall of buttons. Declaring a name is the page author stating
+    // that this block is a thing he has an opinion about, and giving it a short name that is
+    // demonstrably not a wall. Neither defect can occur, so neither defence applies.
+    if(f.declared) continue;
     var sig=f.tag+"|"+f.cls;
     if(!groups[sig]) groups[sig]={ n:0, row:false };
     groups[sig].n++;
@@ -5435,10 +5467,20 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
   // the set as it would actually ship - headings included, once they have taken over from the rows
   // this loop just cut. Counting without re-settling is how the ceiling used to cut a group and then
   // fail to notice it had handed a control back.
+  // DECLARED BLOCKS DO NOT COUNT TOWARD THE CEILING EITHER, and that is the same argument as
+  // above rather than a second exception. The ceiling caps what the DETECTOR invents; a declared
+  // block was put there on purpose, by the script that builds the page, with a short unique name.
+  // Counting them in would have exactly the effect it had on 2026-08-13 before this line existed:
+  // the page went to 27, the loop cut the largest inferred group to get back under 20, and the
+  // nine dashboard cards silently lost their controls to make room for the seven task rows. That
+  // is a page quietly trading away one thing he uses for another, with nothing said.
   function settle(){
     headingsOnlyWhenUncovered();
     var n=0;
-    for(var q=0;q<found.length;q++){ if(!found[q].drop && !dropped[found[q].tag+"|"+found[q].cls]) n++; }
+    for(var q=0;q<found.length;q++){
+      if(found[q].declared) continue;
+      if(!found[q].drop && !dropped[found[q].tag+"|"+found[q].cls]) n++;
+    }
     return n;
   }
   while(settle()>CEIL){
