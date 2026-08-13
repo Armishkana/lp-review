@@ -186,9 +186,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-13T01:19:37Z">
+<div id="freshbar" class="fresh" data-built="2026-08-13T01:36:13Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Thu Aug 13, 09:19</b>
+    <b id="freshtitle">This page was updated Thu Aug 13, 09:36</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday" id="newtoday" data-new="1"
@@ -4974,6 +4974,10 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
   background:transparent;color:var(--fb-dim);cursor:pointer;white-space:nowrap;
   font:600 12.5px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 .fbkbarclr[hidden]{display:none}
+/* AN ARMED CLEAR MUST LOOK ARMED. The second tap deletes, so the state between the two taps has to
+   be unmistakable at a glance - the word changes to say what the next tap does, and the colour
+   stops it reading as the same quiet control it was a moment ago. */
+.fbkbarclr[data-armed="1"]{background:#8a2b2b;color:#fff;font-weight:700}
 /* The copy buttons take whatever room is left and truncate rather than resize the card. */
 .fbkbarbtn{flex:1 1 auto;min-width:0;min-height:44px;padding:0 14px;border:0;background:transparent;
   cursor:pointer;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
@@ -5793,12 +5797,47 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
       });
     });
   }
+  // ============================ ARM IT, NEVER ASK IT =============================================
+  // Armin, 2026-08-12, with a screenshot of this very card: "the clear button is not working."
+  //
+  // IT WAS CALLING window.confirm, AND CHROME IGNORES confirm/alert/prompt INSIDE A CROSS-ORIGIN
+  // IFRAME - which is exactly what his published page is. The call returns false without ever
+  // drawing a dialog, so `if(!confirm(...)) return;` returned every single time and the button did
+  // nothing at all. Not intermittently: never.
+  //
+  // WHY MY OWN TEST SAID IT WORKED, because that is the more useful half: the harness stubbed
+  // `confirm` to return TRUE and drove the page over http://localhost, which is same-origin. Both
+  // choices removed the one condition under which the bug exists. A STUB THAT RETURNS THE HAPPY
+  // ANSWER TESTS THE HAPPY PATH AND CALLS IT COVERAGE. Stubs now default to the hostile answer.
+  //
+  // The replacement is the two-tap arm this component already uses on its own Clear-all button at
+  // the bottom of the page - so this is not a new pattern, it is the existing one finally applied
+  // where it was needed. It cannot be suppressed by a frame policy, it works on a phone, and the
+  // second tap is a deliberate act rather than a dialog he dismisses without reading.
+  var ARM_MS = 4000;
+  function armThen(btn, armedLabel, run){
+    if(!btn) return;
+    var idle = btn.textContent, t = null;
+    function disarm(){ btn.removeAttribute("data-armed"); btn.textContent = idle;
+                       if(t){ W.clearTimeout(t); t = null; } }
+    btn.addEventListener("click", function(){
+      if(btn.getAttribute("data-armed") === "1"){ disarm(); run(); return; }
+      btn.setAttribute("data-armed", "1");
+      btn.textContent = armedLabel;
+      if(t){ W.clearTimeout(t); }
+      t = W.setTimeout(disarm, ARM_MS);
+    });
+    // Tapping anywhere else puts the safety back on, so an armed button is never left waiting.
+    d.addEventListener("click", function(ev){
+      if(ev.target !== btn && btn.getAttribute("data-armed") === "1"){ disarm(); }
+    }, true);
+  }
+
   // CLEARING THE HOST PAGE'S OWN NOTES, from the same place he copies them. Until now the only way
   // to undo a batch of task marks was a control folded away near the top of the page, which is the
   // same "why is it in a different position" fault he reported about the marks themselves.
   if(barActClr && PAGEBTN && typeof PAGEBTN.clear === "function"){
-    barActClr.addEventListener("click", function(){
-      if(!W.confirm("Clear everything you marked on your tasks? Anything you typed goes too.")) return;
+    armThen(barActClr, "Yes, clear", function(){
       PAGEBTN.clear();
       paintAction();
     });
@@ -6214,15 +6253,14 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
   // CLEAR, IN THE PLACE HE COPIES FROM. It already existed inside the notes box at the very bottom
   // of the page - which is exactly where he could not find the copy button either, and for the same
   // reason. His words: "there should be a way to clear the notes on both."
-  // A CONFIRM, not the box's two-tap arming: the two-tap trick works on a button he is looking at
-  // and reading, and this one sits in a corner card where a stray tap is far likelier. His written
-  // words are never destroyed on a single tap.
+  // THE SAME TWO-TAP ARM, for the same reason - see armThen above. This used a confirm dialog that
+  // a cross-origin frame silently refuses, so it was as dead as the other one. His written words
+  // are still never destroyed on a single tap; the second tap is the guard.
   if(barClr){
-    barClr.addEventListener("click", function(){
+    armThen(barClr, "Yes, delete", function(){
       if(!notes.length) return;
-      var n=notes.length;
-      if(!W.confirm("Delete "+n+" feedback note"+(n===1?"":"s")+" you wrote on this page? This cannot be undone.")) return;
       notes=[]; save(); paint();
+      flash("Cleared. Nothing is waiting to be sent.");
     });
   }
 
