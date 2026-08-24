@@ -270,9 +270,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-24T12:15:04Z">
+<div id="freshbar" class="fresh" data-built="2026-08-24T12:42:20Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Mon Aug 24, 20:14</b>
+    <b id="freshtitle">This page was updated Mon Aug 24, 20:37</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday" id="newtoday" data-new="1"
@@ -9452,7 +9452,7 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
      of his, so none of the scrubbing that guards the handled register above can be forgotten here.
      A row lands here the moment read-feedback.ps1 parses a paste of his, which is the only evidence
      that exists of him actually handing a note over. -->
-<script id="fbkReceived" type="application/json">["koh889tu","d911ph74","b6ca1j2p","bapgh91o","7d5tcmvb"]</script>
+<script id="fbkReceived" type="application/json">["7rv15w5c","d911ph74","b6ca1j2p","bapgh91o","7d5tcmvb"]</script>
 <div class="fbk" id="fbk">
 <!-- DELIBERATELY ALMOST EMPTY WHEN THERE ARE NO NOTES. Armin, 2026-08-09, on the Messages page:
      "There's so much text and unnecessary stuff at the bottom of the screen that I don't know what
@@ -10186,7 +10186,23 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
         try{ ref.parentNode.insertBefore(a, ref.nextSibling); }catch(e){}
       }
     }
-    function tidy(){ reanchor(); sync(); }
+    // ---- PUBLISH THE SECTION LIST, SO THE JUMP MENU CANNOT DRIFT FROM THE FEEDBACK BUTTONS -----
+    // Armin, note 7rv15w5c, 2026-08-24: "the link needs to jump me to the place... like a menu or
+    // something like that, on the left of the page... All my dashboards need to have that."
+    //
+    // The jump menu needs exactly the list this script has already worked out: what counts as a
+    // section on THIS page, after every cut, with the emoji title he sees. Writing a second
+    // detector for it would be the frozen-copy failure the vault names by name - two definitions of
+    // "a section", one of which stops receiving corrections the day it is written. So there is one
+    // detector and two consumers: the buttons here, and the menu in toc.html, which reads this.
+    // Republished on every tidy() because these pages re-sort and filter themselves at runtime, and
+    // a menu naming a card that is no longer on screen is worse than no menu.
+    function publish(){
+        W.__FBKSECTIONS = secs;
+        W.__FBKCOL = col;
+        try { W.dispatchEvent(new CustomEvent("fbk:sections")); } catch (e) { }
+    }
+    function tidy(){ reanchor(); sync(); publish(); }
     tidy();
     try{
       new MutationObserver(tidy).observe(col, {
@@ -11251,4 +11267,313 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
 </style>
 
 <!-- THEME-END -->
+<!-- TOC-START -->
+<!-- ===============================================================================================
+     THE JUMP MENU. ONE FILE. EVERY DASHBOARD, HIS AND SHARED ALIKE.
+
+     Armin, note 7rv15w5c, 2026-08-24, verbatim:
+       "If the place I need to go is on the page, the link needs to jump me to the place where this
+        thing is a menu or something like that, on the left of the page. It helps me be able to jump
+        up and down wherever on the page I need to, easily going up and down the page by clicking on
+        the menu on the left. All my dashboards need to have that, so fix this on all the dashboards
+        ... but also make sure that we have this for all the dashboards that we make in the future."
+
+     He asked for this once before, on 2026-08-13, on the Arshia call: "I want to add a left side
+     navigation for the page so I could go... like a table of content." Arshia had proposed replacing
+     the top tab strip with a sidebar; Armin declined that and countered with this. Arshia's addition
+     is the half that carries information: COLOUR-CODE THE ENTRIES BY STATE. Both are here.
+
+     WHY IT WAS NOT BUILT THE FIRST TIME, because that is the part worth keeping. It was written into
+     projects/hub/FEEDBACK.md as "Queued: do this at the next wholesale rebuild", with no owner and
+     no date, deliberately without a Todoist row because the pricing gate valued it at zero dollars.
+     A parked item with no owner and no date is not queued, it is dropped - it depends on somebody
+     later choosing to read the file it was parked in. Eleven days later he asked again. The gate is
+     not wrong that this earns no dollars directly; the mistake was letting "earns nothing" mean
+     "nobody owns it". Anything HE asked for gets an owner and a date whatever it prices at.
+
+     ========================== WHERE THE ENTRIES COME FROM =========================================
+     NOT from a scan of its own. It reads window.__FBKSECTIONS, which the feedback fragment publishes
+     after it has worked out what counts as a section on this page - the same list, after the same
+     cuts, wearing the same emoji titles he already sees on the feedback buttons. Two detectors would
+     be two definitions of "a section", and the copy would stop receiving corrections the day it was
+     written. That is the frozen-copy failure this vault names by name, so there is one detector and
+     two consumers. A page whose feedback box did not run gets no menu, on purpose and visibly,
+     rather than a second-best menu built from a worse guess.
+
+     ============================== THE FOUR RULES IT OBEYS =========================================
+     1. THE PHONE IS THE DEVICE. Below a measured gutter there is no rail: the list becomes a panel
+        behind one 44px button at the bottom LEFT (the feedback pill owns the bottom right).
+     2. NOTHING HIDES AND ANIMATES BACK. Opening the panel toggles the `hidden` attribute. No opacity
+        transition anywhere, because a page that can render blank is never worth an effect.
+     3. NO DIALOGS. confirm/alert/prompt are silently refused inside a published artifact.
+     4. THE FOUR COLOUR MEANINGS FROM theme.html, and no fifth. RED urgent, AMBER needs attention,
+        GREEN done or good, grey for a section with nothing to flag - and grey is the common case,
+        because painting every ordinary section green is how a page ends up meaning nothing.
+        The state is READ OFF THE SECTION'S OWN PAINT rather than declared, so a page added next year
+        is colour-coded correctly without anybody annotating it.
+     ================================================================================================ -->
+<style id="ds-toc">
+#dstoc,#dstoc *{box-sizing:border-box}
+#dstoc{font:500 13px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+
+/* THE RAIL. Vertically centred rather than pinned under the header, so it can never collide with
+   the sticky tab strip whose height differs per page and changes when it wraps. */
+#dstocrail{position:fixed;z-index:8800;top:50%;transform:translateY(-50%);
+  max-height:74vh;overflow-y:auto;overscroll-behavior:contain;
+  background:var(--ds-card,#fff);border:1px solid var(--ds-line,#dfe3e9);border-radius:12px;
+  box-shadow:var(--ds-shadow,0 8px 24px rgba(20,22,28,.08));padding:8px 6px}
+#dstocrail[hidden],#dstocpanel[hidden],#dstocopen[hidden]{display:none!important}
+
+/* THE PANEL, for every width where the rail does not fit. Same list, same markup, same handlers. */
+#dstocpanel{position:fixed;z-index:8900;left:10px;bottom:64px;width:min(300px,calc(100% - 20px));
+  max-height:min(62vh,460px);overflow-y:auto;overscroll-behavior:contain;
+  background:var(--ds-card,#fff);border:1px solid var(--ds-line,#dfe3e9);border-radius:14px;
+  box-shadow:var(--ds-shadow,0 8px 24px rgba(20,22,28,.18));padding:8px 6px}
+#dstocopen{position:fixed;z-index:8900;left:10px;bottom:12px;min-height:44px;padding:0 14px;
+  display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  background:var(--ds-card,#fff);color:var(--ds-ink,#171a1f);
+  border:1px solid var(--ds-line,#dfe3e9);border-radius:22px;
+  box-shadow:var(--ds-shadow,0 8px 24px rgba(20,22,28,.18));
+  font:600 13px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+
+#dstoc .dstoch{font:600 11px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  letter-spacing:.02em;color:var(--ds-faint,#848b95);padding:6px 10px 8px;text-transform:none}
+/* 40px floor on every row: it is a thumb target, not a line of text. */
+#dstoc .dstocrow{display:flex;align-items:center;gap:8px;width:100%;min-height:40px;
+  padding:6px 10px;border:0;border-radius:9px;background:transparent;cursor:pointer;text-align:left;
+  color:var(--ds-dim,#555c66);font:500 13px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#dstoc .dstocrow:hover{background:var(--ds-sunk,#eef1f5);color:var(--ds-ink,#171a1f)}
+#dstoc .dstocrow.on{background:var(--ds-blue-soft,#e9eefc);color:var(--ds-ink,#171a1f);font-weight:700}
+#dstoc .dstocrow .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* The state dot. 8px, so thirty of them still read as a column rather than a rash of colour. */
+#dstoc .dstocrow .d{flex:0 0 auto;width:8px;height:8px;border-radius:50%;
+  background:var(--ds-line,#dfe3e9)}
+#dstoc .dstocrow .d.red{background:var(--ds-red,#b3261e)}
+#dstoc .dstocrow .d.amber{background:var(--ds-amber,#8a5a12)}
+#dstoc .dstocrow .d.green{background:var(--ds-green,#1b6b3a)}
+#dstoc .dstocx{display:block;width:100%;min-height:40px;border:0;background:transparent;cursor:pointer;
+  color:var(--ds-dim,#555c66);font:600 12px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  border-top:1px solid var(--ds-line,#dfe3e9);margin-top:4px}
+@media print{#dstoc{display:none}}
+</style>
+<nav id="dstoc" aria-label="Jump to a section on this page">
+  <div id="dstocrail" hidden></div>
+  <button type="button" id="dstocopen" hidden><span aria-hidden="true">&#9776;</span><span>Jump to</span></button>
+  <div id="dstocpanel" hidden></div>
+</nav>
+<script>
+(function(){
+  var d=document, W=window;
+  var nav=d.getElementById("dstoc");
+  if(!nav) return;
+  var rail=d.getElementById("dstocrail"), panel=d.getElementById("dstocpanel"),
+      open=d.getElementById("dstocopen");
+
+  // A MENU OF TWO IS NOISE. Below this the page is short enough to scroll and the rail is a cost
+  // with no benefit - it eats the gutter and adds a control he has to learn.
+  var MIN_ENTRIES = 3;
+  var RAIL_NEEDS  = 232;   // px of clear gutter to the left of the page's own column
+
+  var secs=[], sig="", built=[], mode="";
+
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function vis(el){ return !!(el && (el.offsetParent!==null || el.getClientRects().length)); }
+
+  // ---- THE STATE COLOUR, READ OFF THE SECTION'S OWN PAINT ---------------------------------------
+  // Not declared by the page, because then every page and every future page has to remember to
+  // declare it, and the one that forgets shows green over a broken section. The four meanings are
+  // already painted into these pages by theme.html; this just reports what is there. Reading the
+  // live token means it follows dark mode and any future palette change with no second edit.
+  function rgbOf(hex){
+    var h=String(hex||"").trim().replace("#","");
+    if(h.length===3){ h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2]; }
+    if(!/^[0-9a-fA-F]{6}$/.test(h)) return null;
+    return "rgb("+parseInt(h.slice(0,2),16)+", "+parseInt(h.slice(2,4),16)+", "+parseInt(h.slice(4,6),16)+")";
+  }
+  var TOK={};
+  function tokens(){
+    var cs=W.getComputedStyle(d.documentElement);
+    TOK={ red:rgbOf(cs.getPropertyValue("--ds-red")),
+          amber:rgbOf(cs.getPropertyValue("--ds-amber")),
+          green:rgbOf(cs.getPropertyValue("--ds-green")) };
+  }
+  // Capped walk. Thirty sections times an uncapped subtree is a measurable stall on the To-Do List,
+  // and the answer never changes after the first few dozen painted nodes anyway.
+  var WALK_CAP=260;
+  function stateOf(el){
+    if(!el || !el.querySelectorAll) return "";
+    var hitAmber=false, hitGreen=false;
+    var nodes=el.querySelectorAll("*"), n=Math.min(nodes.length, WALK_CAP);
+    for(var i=-1;i<n;i++){
+      var node = (i<0) ? el : nodes[i];
+      var cs;
+      try{ cs=W.getComputedStyle(node); }catch(e){ continue; }
+      var vals=[cs.color, cs.backgroundColor, cs.borderLeftColor];
+      for(var j=0;j<vals.length;j++){
+        var v=vals[j];
+        if(!v || v==="rgba(0, 0, 0, 0)") continue;
+        if(TOK.red   && v===TOK.red)   return "red";      // red wins outright and stops the walk
+        if(TOK.amber && v===TOK.amber) hitAmber=true;
+        if(TOK.green && v===TOK.green) hitGreen=true;
+      }
+    }
+    if(hitAmber) return "amber";
+    if(hitGreen) return "green";
+    return "";
+  }
+
+  // ---- HOW FAR THE TOP OF A SECTION MUST CLEAR --------------------------------------------------
+  // The tab strip is sticky and its height differs per page and changes when it wraps, so it is
+  // measured rather than assumed. Landing a section UNDER the strip is the commonest way a jump
+  // menu feels broken: it moves, and the thing he wanted is still not on screen.
+  function topGap(){
+    var g=8;
+    var t=d.querySelector(".navtabs");
+    if(t){
+      var cs=W.getComputedStyle(t);
+      if(cs.position==="sticky"||cs.position==="fixed"){ g+=Math.ceil(t.getBoundingClientRect().height); }
+    }
+    return g;
+  }
+
+  function shorten(s){
+    var x=String(s||"").replace(/\s+/g," ").trim();
+    if(x.length>34){ x=x.slice(0,34).replace(/[\s,.;:-]+$/,"")+"..."; }
+    return x;
+  }
+
+  function rowsHtml(){
+    var h='<div class="dstoch">On this page</div>';
+    for(var i=0;i<built.length;i++){
+      h+='<button type="button" class="dstocrow" data-i="'+i+'">'+
+           '<span class="d '+built[i].state+'" aria-hidden="true"></span>'+
+           '<span class="t">'+esc(built[i].short)+'</span></button>';
+    }
+    return h;
+  }
+
+  function jump(i){
+    var el=built[i] && built[i].el;
+    if(!el) return;
+    try{ el.style.scrollMarginTop = topGap()+"px"; }catch(e){}
+    try{ el.scrollIntoView({behavior:"smooth", block:"start"}); }
+    catch(e){ try{ el.scrollIntoView(true); }catch(e2){} }
+    if(mode==="panel"){ panel.hidden=true; }
+    mark(i);
+  }
+
+  function wire(host){
+    host.addEventListener("click", function(ev){
+      var b=ev.target; while(b && b!==host && !b.classList.contains("dstocrow")){ b=b.parentNode; }
+      if(!b || b===host) return;
+      jump(parseInt(b.getAttribute("data-i"),10)||0);
+    });
+  }
+  wire(rail); wire(panel);
+
+  open.addEventListener("click", function(){ panel.hidden = !panel.hidden; });
+  // Tapping anywhere else puts the panel away. No dialog, no overlay that can trap him.
+  d.addEventListener("click", function(ev){
+    if(panel.hidden || mode!=="panel") return;
+    if(panel.contains(ev.target) || open.contains(ev.target)) return;
+    panel.hidden=true;
+  }, true);
+
+  function mark(active){
+    var hosts=[rail,panel];
+    for(var h=0;h<hosts.length;h++){
+      var rows=hosts[h].querySelectorAll(".dstocrow");
+      for(var i=0;i<rows.length;i++){
+        var on = (i===active);
+        if(rows[i].classList.contains("on")!==on){ rows[i].classList.toggle("on", on); }
+      }
+    }
+  }
+
+  // ---- RAIL OR PANEL, MEASURED, NEVER GUESSED FROM A BREAKPOINT ---------------------------------
+  // A width breakpoint is wrong on both sides here: a wide window with a wide page column has no
+  // gutter, and a narrow window with a narrow column sometimes does. So it measures the actual
+  // space to the left of the page's own column - the same element the feedback fragment treats as
+  // the page - and it re-measures on resize, because a value taken once is wrong after a rotate.
+  function place(){
+    var col = W.__FBKCOL || d.querySelector(".wrap") || d.querySelector("main");
+    var left = 0;
+    if(col && col!==d.body){
+      var r=col.getBoundingClientRect();
+      if(r.width){ left = r.left; }
+    }
+    var want = (left >= RAIL_NEEDS && built.length) ? "rail" : (built.length ? "panel" : "none");
+    if(want!=="rail"){ rail.hidden=true; }
+    if(want!=="panel"){ open.hidden=true; panel.hidden=true; }
+    if(want==="rail"){
+      rail.hidden=false;
+      rail.style.left = Math.max(10, Math.round(left - RAIL_NEEDS + 22)) + "px";
+      rail.style.width = (RAIL_NEEDS - 32) + "px";
+    }
+    if(want==="panel"){ open.hidden=false; }
+    mode=want;
+  }
+
+  // ---- BUILD, AND ONLY WHEN SOMETHING ACTUALLY CHANGED ------------------------------------------
+  // Idempotent by signature, and that is load-bearing rather than tidy: this is driven by the same
+  // MutationObserver that keeps the feedback buttons beside their cards, so a build that always
+  // wrote to the DOM would wake the observer that called it and never stop.
+  function build(){
+    secs = W.__FBKSECTIONS || [];
+    tokens();
+    var next=[], parts=[];
+    for(var i=0;i<secs.length;i++){
+      var s=secs[i];
+      if(!s || !s.after || !s.after.parentNode) continue;
+      if(!vis(s.after)) continue;                       // filtered off the page: not somewhere to jump
+      var st=stateOf(s.after);
+      next.push({ el:s.after, short:shorten(s.label), state:st });
+      parts.push(s.label+"|"+st);
+    }
+    var nsig = parts.join(" >< ");
+    if(next.length < MIN_ENTRIES){ nsig = "<none>"; next = []; }
+    if(nsig===sig){ place(); return; }
+    sig=nsig; built=next;
+    if(!built.length){ rail.hidden=true; open.hidden=true; panel.hidden=true; mode="none"; return; }
+    var html=rowsHtml();
+    rail.innerHTML=html;
+    panel.innerHTML=html+'<button type="button" class="dstocx" id="dstocclose">Close</button>';
+    var x=d.getElementById("dstocclose");
+    if(x){ x.addEventListener("click", function(){ panel.hidden=true; }); }
+    place();
+    onScroll();
+  }
+
+  var raf=0;
+  function onScroll(){
+    if(raf) return;
+    raf = W.requestAnimationFrame ? W.requestAnimationFrame(doMark) : setTimeout(doMark,80);
+  }
+  function doMark(){
+    raf=0;
+    var gap=topGap()+12, best=-1;
+    for(var i=0;i<built.length;i++){
+      var t=built[i].el.getBoundingClientRect().top;
+      if(t<=gap){ best=i; } else { break; }
+    }
+    if(best<0 && built.length) best=0;
+    mark(best);
+  }
+
+  try{ W.addEventListener("fbk:sections", build); }catch(e){}
+  try{ W.addEventListener("scroll", onScroll, {passive:true}); }catch(e){ W.addEventListener("scroll", onScroll); }
+  try{ W.addEventListener("resize", function(){ place(); onScroll(); }); }catch(e){}
+
+  // The feedback fragment may have finished before this script parsed, in which case no event is
+  // coming. Build once now, and once more after a frame for a page that paints its cards late.
+  build();
+  setTimeout(build, 60);
+  setTimeout(build, 400);
+
+  W.__dstocBuild = build;   // the host page can call this directly after its own filtering
+})();
+</script>
+
+<!-- TOC-END -->
 </body></html>
