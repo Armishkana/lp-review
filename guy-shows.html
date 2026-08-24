@@ -270,9 +270,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-24T13:01:10Z">
+<div id="freshbar" class="fresh" data-built="2026-08-24T13:27:13Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Mon Aug 24, 21:01</b>
+    <b id="freshtitle">This page was updated Mon Aug 24, 21:24</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday" id="newtoday" data-new="1"
@@ -4388,7 +4388,14 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
     var y = el.getBoundingClientRect().top + before - gap;
     var max = Math.max(0, (root.scrollHeight||0) - (W.innerHeight||0));
     y = Math.max(0, Math.min(y, max));
-    try{ W.scrollTo({top:y, behavior:"smooth"}); }
+    // SMOOTH ONLY FOR A SHORT HOP. Measured on his To-Do List, which is 40,000px tall: a smooth
+    // scroll of 39,600px stops roughly half way and stays there - the animation is interrupted
+    // while the page it is travelling through renders, and Chrome does not resume it. The menu then
+    // looks like it half works, which is worse than not working. Over about three screens the
+    // animation is a blur nobody can read anyway, so the long hops land instantly and only the
+    // short ones animate, where the movement genuinely helps him keep his place.
+    var far = Math.abs(y - before) > 3000;
+    try{ W.scrollTo({top:y, behavior: far ? "auto" : "smooth"}); }
     catch(e){ try{ W.scrollTo(0,y); }catch(e2){} }
     setTimeout(function(){
       if(Math.abs(scrollY()-before) < 2 && Math.abs(y-before) > 4){
