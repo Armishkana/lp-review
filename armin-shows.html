@@ -270,9 +270,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-25T00:40:26Z">
+<div id="freshbar" class="fresh" data-built="2026-08-25T01:04:14Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Tue Aug 25, 08:40</b>
+    <b id="freshtitle">This page was updated Tue Aug 25, 09:04</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday none" id="newtoday" data-new="0"
@@ -9158,14 +9158,71 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
     return g;
   }
 
+  // ---- THE LABEL IS CUT AT A MEANING BOUNDARY, NEVER AT A CHARACTER COUNT ----------------------
+  // Armin, note xmvhozqm, 2026-08-25: "the titles of every segment are too long and not obvious
+  // about what this segment is about... If you look at the menu on the left, the titles are so long
+  // that they don't fit. The titles need to be short and more descriptive of each segment."
+  //
+  // The old rule was slice(0,34)+"..." and it was the worst possible cut, because a heading in this
+  // vault front-loads the WHO and back-loads the point - "Igor the tax lawyer answered, and his
+  // time is your show time" truncated to "Igor the tax lawyer answered, and h..." which is longer
+  // to read AND tells him less than "Igor the tax lawyer". A blind truncation keeps the least
+  // informative half and adds three characters of noise.
+  //
+  // So it cuts at the first natural break instead - a colon, a dash, a comma, or a leading " and " -
+  // which is exactly where these headings stop naming the subject and start explaining it. The
+  // emoji is preserved because he asked for it by name ("The emojis are helpful, though"), and it
+  // is never counted against the budget, since one glyph carries more than the words that follow.
+  // A page can override the whole thing by putting data-short on its own heading; nothing has to.
+  var LABEL_MAX = 26;   // characters of TEXT, after the emoji
   function shorten(s){
     var x=String(s||"").replace(/\s+/g," ").trim();
-    if(x.length>34){ x=x.slice(0,34).replace(/[\s,.;:-]+$/,"")+"..."; }
-    return x;
+    // Split the leading emoji (and any variation selector / zero-width joiner run) off the front.
+    var lead="", m=x.match(/^([^\w\s(]+[️⃣]*\s*)/);
+    if(m){ lead=m[1].trim()+" "; x=x.slice(m[1].length).trim(); }
+    if(x.length>LABEL_MAX){
+      // First real break: ": " / " - " / " — " / ", " / " and ". Take the first one that
+      // leaves something worth reading, so a heading starting "A, B and C" is not cut to "A".
+      var cuts=[], re=/(:\s|\s[-–—]\s|,\s|\sand\s|\swhen\s|\sthen\s|\sso\s)/g, mm;
+      while((mm=re.exec(x))!==null){ cuts.push(mm.index); }
+      for(var c=0;c<cuts.length;c++){
+        if(cuts[c]>=8){ x=x.slice(0,cuts[c]); break; }
+      }
+    }
+    // Still long: fall back to a WORD boundary, and no ellipsis - three dots inside a 26-character
+    // rail is a tenth of the width spent saying "there is more", which he can already see.
+    if(x.length>LABEL_MAX){
+      var sp=x.lastIndexOf(" ",LABEL_MAX);
+      x=(sp>8?x.slice(0,sp):x.slice(0,LABEL_MAX)).replace(/[\s,.;:–—-]+$/,"");
+    }
+    return (lead+x).trim();
+  }
+  // A heading may state its own menu label. Checked on the section element AND its first heading,
+  // because the element the feedback layer hands back is sometimes the heading and sometimes its
+  // wrapper, and a page author should not have to know which.
+  function declared(el){
+    if(!el || !el.getAttribute) return "";
+    var v=el.getAttribute("data-short");
+    if(!v && el.querySelector){ var h=el.querySelector("h1,h2,h3,h4"); if(h){ v=h.getAttribute("data-short"); } }
+    return v?String(v).trim():"";
   }
 
+  // ---- THE FIRST ROW IS ALWAYS "TOP", AND IT IS NOT A SECTION ----------------------------------
+  // Armin, same note: "The menu on the left is missing the first item, which should be the top
+  // horizontal menu. There should be a way for me to click on something to bring me all the way to
+  // the top, just in case I need to click on the menu at the very top."
+  //
+  // The tab strip that moves him BETWEEN dashboards lives at the very top of the page, and once he
+  // is 30,000px down there was no way back to it except dragging the scrollbar. It carries index
+  // -1 rather than being pushed into `built`, so it can never be counted toward the minimum entry
+  // rule (a two-section page must not earn a menu just because this row exists) and it can never be
+  // colour-coded, because it is not a section and has no state to report.
+  var TOP_LABEL = "Top of the page";
   function rowsHtml(){
     var h='<div class="dstoch">On this page</div>';
+    h+='<button type="button" class="dstocrow" data-i="-1">'+
+         '<span class="d" aria-hidden="true"></span>'+
+         '<span class="t">'+esc(TOP_LABEL)+'</span></button>';
     for(var i=0;i<built.length;i++){
       h+='<button type="button" class="dstocrow" data-i="'+i+'">'+
            '<span class="d '+built[i].state+'" aria-hidden="true"></span>'+
@@ -9184,6 +9241,16 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
   // whose content scrolls inside an element rather than the document.
   function scrollY(){ return W.pageYOffset || d.documentElement.scrollTop || d.body.scrollTop || 0; }
   function jump(i){
+    // Index -1 is the "Top of the page" row. Straight to zero rather than to any element: the tab
+    // strip he is trying to reach is sticky, so scrolling an element into view could land him just
+    // below the thing he asked for. Instant, never smooth - these pages are tens of thousands of
+    // pixels tall and a long smooth scroll stops half way (measured, see the note in the jump below).
+    if(i<0){
+      try{ W.scrollTo({top:0, behavior:"auto"}); }catch(e){ try{ W.scrollTo(0,0); }catch(e2){} }
+      if(mode==="panel" || !panel.hidden){ panel.hidden=true; }
+      mark(-1);
+      return;
+    }
     var el=built[i] && built[i].el;
     if(!el) return;
     var gap=topGap(), root=d.documentElement;
@@ -9230,7 +9297,10 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
     host.addEventListener("click", function(ev){
       var b=ev.target; while(b && b!==host && !b.classList.contains("dstocrow")){ b=b.parentNode; }
       if(!b || b===host) return;
-      jump(parseInt(b.getAttribute("data-i"),10)||0);
+      // parseInt, then an explicit NaN guard - "||0" would turn the Top row's -1 into 0 and send
+      // him to the first section instead of the top of the page.
+      var idx=parseInt(b.getAttribute("data-i"),10);
+      jump(isNaN(idx)?0:idx);
     });
   }
   wire(rail); wire(panel);
@@ -9243,12 +9313,16 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
     panel.hidden=true;
   }, true);
 
+  // Keyed on the row's OWN data-i, never on its position in the list, because the Top row occupies
+  // DOM position 0 while carrying index -1. Reading position here is how the highlight would end up
+  // one row out on every page the moment that row was added.
   function mark(active){
     var hosts=[rail,panel];
     for(var h=0;h<hosts.length;h++){
       var rows=hosts[h].querySelectorAll(".dstocrow");
       for(var i=0;i<rows.length;i++){
-        var on = (i===active);
+        var idx=parseInt(rows[i].getAttribute("data-i"),10);
+        var on = (idx===active);
         if(rows[i].classList.contains("on")!==on){ rows[i].classList.toggle("on", on); }
       }
     }
@@ -9303,8 +9377,9 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
       if(!s || !s.after || !s.after.parentNode) continue;
       if(!vis(s.after)) continue;                       // filtered off the page: not somewhere to jump
       var st=stateOf(s.after);
-      next.push({ el:s.after, short:shorten(s.label), state:st });
-      parts.push(s.label+"|"+st);
+      var dec=declared(s.after);
+      next.push({ el:s.after, short:(dec||shorten(s.label)), state:st });
+      parts.push(s.label+"|"+dec+"|"+st);
     }
     var nsig = parts.join(" >< ");
     if(next.length < minEntries()){ nsig = "<none>"; next = []; }
@@ -9332,7 +9407,8 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
       var t=built[i].el.getBoundingClientRect().top;
       if(t<=gap){ best=i; } else { break; }
     }
-    if(best<0 && built.length) best=0;
+    // best stays -1 when nothing has scrolled past the header yet, which is exactly the state the
+    // "Top of the page" row describes - so it lights up on its own, with no special case.
     mark(best);
   }
 
