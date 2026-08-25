@@ -1017,7 +1017,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">50 topics across 6 streams. Updated 2026-08-25T01:16:47Z.</p>
+  <p class="built">50 topics across 6 streams. Updated 2026-08-25T01:40:29Z.</p>
 </div>
 
 <div class="bar">
@@ -1198,744 +1198,6 @@
   count();
 })();
 </script>
-<!-- THEME-START -->
-<!-- ===============================================================================================
-     THE DESIGN SYSTEM. ONE FILE. EVERY DASHBOARD.
-
-     Armin, 2026-08-11, two instructions in one breath:
-       "Some of the pages have too much red in it. I prefer mostly blue and green and use red and
-        orange only for urgent or very important things. This has to be the case for all the pages."
-       "The dashboards need to have a consistent design so i can flow through them, seamlessly; for
-        example, tabs at the top is not consistent between the dashboards."
-
-     WHY A SHARED FILE AND NOT THIRTEEN EDITS. Every page here was written at a different time with
-     its own private colour vocabulary - --accent, --momiji, --chip, --neg, --crit, --no - and each
-     one was individually defensible. Nobody ever chose "the Messages page should be half red"; it
-     arrived one reasonable decision at a time, which is exactly the failure this vault names: a
-     standard copied into many places becomes many standards. So the palette is DECLARED ONCE, here,
-     and every page's own names are ALIASED onto it. Change a colour here and thirteen pages change.
-
-     HOW IT WINS. Injected last in the document by inject-theme.ps1, and every alias carries
-     !important - which IS honoured for custom properties. Without it a page's own
-     `:root[data-theme="dark"]{--accent:#e06a5f}` outranks a plain `:root` here on specificity and
-     the page keeps its old colour in dark mode only, which is the kind of half-fix nobody sees.
-     Setting a variable on a DESCENDANT still works normally, so per-component variants are intact.
-
-     THE BUDGET, measured rather than felt, by projects/hub/palette-check.html at 360px:
-        To-Do List  blue 69.3  red 19.1   <- he called this one good
-        Questions   green 75.7 red 16.6   <- he called this one good
-        Messages    green 35.1 red 63.0   <- "the messages page has too much red"
-     So the ceiling is derived from the pages he approved, not invented: RED <= 20% of painted
-     colour, RED+AMBER <= 30%, BLUE+GREEN >= 65%. Never raise a ceiling to silence the checker.
-
-     THE FOUR MEANINGS. Nothing else gets a colour.
-        BLUE   the ordinary primary. Links, the thing to press, the current tab, anything outgoing.
-        GREEN  good, done, kept, yours, money coming in.
-        AMBER  waiting on someone, needs attention, not yet a problem.
-        RED    urgent or very important ONLY. Overdue, broken, rejected, money going out.
-     ================================================================================================ -->
-<style id="ds-theme">
-/* ---- 1. THE TOKENS ---------------------------------------------------------------------------
-   Declared in all four contexts the pages between them use, because they do not agree on how dark
-   mode arrives: some listen to the OS (@media), some to the data-theme attribute the artifact
-   runtime stamps on <html>, some to both. Covering all four is also what finally makes the theme
-   TOGGLE work on the pages that only ever listened to the OS. */
-:root{
-  --ds-bg:#f7f8fa; --ds-card:#ffffff; --ds-sunk:#eef1f5;
-  --ds-ink:#171a1f; --ds-dim:#555c66; --ds-faint:#848b95; --ds-line:#dfe3e9;
-  --ds-blue:#1f4fd8;  --ds-blue-soft:#e9eefc;  --ds-on-blue:#ffffff;
-  --ds-green:#1b6b3a; --ds-green-soft:#e4f2ea; --ds-on-green:#ffffff;
-  --ds-amber:#8a5a12; --ds-amber-soft:#f8eddb; --ds-on-amber:#ffffff;
-  --ds-red:#b3261e;   --ds-red-soft:#fbe6e4;   --ds-on-red:#ffffff;
-  --ds-bar:rgba(247,248,250,.92);
-  --ds-shadow:0 1px 2px rgba(20,22,28,.05),0 8px 24px rgba(20,22,28,.06);
-}
-@media (prefers-color-scheme: dark){
-  :root{
-    --ds-bg:#12141a; --ds-card:#1b1e25; --ds-sunk:#161920;
-    --ds-ink:#eceef2; --ds-dim:#a4abb6; --ds-faint:#7e858f; --ds-line:#2d323b;
-    /* These four are chosen so WHITE still reads on top of them, because the pages hardcode
-       color:#fff on filled buttons and chips. A prettier pastel would have quietly made every
-       primary button unreadable in dark mode - the kind of regression a colour audit never
-       catches because it is looking at hue, not contrast. */
-    --ds-blue:#5b86f0;  --ds-blue-soft:#18213c;  --ds-on-blue:#ffffff;
-    --ds-green:#2f9e63; --ds-green-soft:#152a1f; --ds-on-green:#ffffff;
-    --ds-amber:#d9a441; --ds-amber-soft:#2b2216; --ds-on-amber:#1a1409;
-    --ds-red:#e0574c;   --ds-red-soft:#2e1a18;   --ds-on-red:#ffffff;
-    --ds-bar:rgba(18,20,26,.92);
-    --ds-shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
-  }
-}
-:root[data-theme="dark"]{
-  --ds-bg:#12141a; --ds-card:#1b1e25; --ds-sunk:#161920;
-  --ds-ink:#eceef2; --ds-dim:#a4abb6; --ds-faint:#7e858f; --ds-line:#2d323b;
-  --ds-blue:#5b86f0;  --ds-blue-soft:#18213c;  --ds-on-blue:#ffffff;
-  --ds-green:#2f9e63; --ds-green-soft:#152a1f; --ds-on-green:#ffffff;
-  --ds-amber:#d9a441; --ds-amber-soft:#2b2216; --ds-on-amber:#1a1409;
-  --ds-red:#e0574c;   --ds-red-soft:#2e1a18;   --ds-on-red:#ffffff;
-  --ds-bar:rgba(18,20,26,.92);
-  --ds-shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
-}
-:root[data-theme="light"]{
-  --ds-bg:#f7f8fa; --ds-card:#ffffff; --ds-sunk:#eef1f5;
-  --ds-ink:#171a1f; --ds-dim:#555c66; --ds-faint:#848b95; --ds-line:#dfe3e9;
-  --ds-blue:#1f4fd8;  --ds-blue-soft:#e9eefc;  --ds-on-blue:#ffffff;
-  --ds-green:#1b6b3a; --ds-green-soft:#e4f2ea; --ds-on-green:#ffffff;
-  --ds-amber:#8a5a12; --ds-amber-soft:#f8eddb; --ds-on-amber:#ffffff;
-  --ds-red:#b3261e;   --ds-red-soft:#fbe6e4;   --ds-on-red:#ffffff;
-  --ds-bar:rgba(247,248,250,.92);
-  --ds-shadow:0 1px 2px rgba(20,22,28,.05),0 8px 24px rgba(20,22,28,.06);
-}
-
-/* ---- 2. THE ALIASES ---------------------------------------------------------------------------
-   Every colour name any of the thirteen pages invented, pointed at the four meanings above. A name
-   that appears on only one page is harmless everywhere else, so they all live in one list.
-   ONE DELIBERATE RE-MEANING, on the Messages page: outgoing text used to be RED and his own private
-   notes BLUE, so the two could never be confused (his ask, 2026-08-06). Outgoing is now BLUE and his
-   notes GREEN. Two distinct colours, same guarantee, and neither of them is red. */
-:root{
-  /* surfaces and text */
-  --bg:var(--ds-bg)!important;          --ground:var(--ds-bg)!important;     --paper:var(--ds-bg)!important;
-  --card:var(--ds-card)!important;      --panel:var(--ds-card)!important;    --surface:var(--ds-card)!important;
-  --sunk:var(--ds-sunk)!important;      --ground-2:var(--ds-sunk)!important; --panel-2:var(--ds-sunk)!important;
-  --ink:var(--ds-ink)!important;        --fg:var(--ds-ink)!important;
-  --dim:var(--ds-dim)!important;        --soft:var(--ds-dim)!important;      --mid:var(--ds-dim)!important;
-  --ink-soft:var(--ds-dim)!important;   --ink-2:var(--ds-dim)!important;
-  --faint:var(--ds-faint)!important;    --ink-faint:var(--ds-faint)!important;
-  --muted:var(--ds-faint)!important;    --ink-3:var(--ds-faint)!important;
-  --line:var(--ds-line)!important;      --rule:var(--ds-line)!important;     --hair:var(--ds-line)!important;
-  --bar:var(--ds-bar)!important;        --shadow:var(--ds-shadow)!important;
-
-  /* BLUE - the primary */
-  --accent:var(--ds-blue)!important;       --accent-soft:var(--ds-blue-soft)!important;
-  --accent-ink:var(--ds-on-blue)!important;
-  --chip:var(--ds-blue)!important;         --chip-ink:var(--ds-on-blue)!important;
-  --momiji:var(--ds-blue)!important;       /* Japan pages: was the red maple, was their accent */
-  --now-fg:var(--ds-blue)!important;       --now-bg:var(--ds-blue-soft)!important;
-
-  /* GREEN - good, done, yours */
-  --ok:var(--ds-green)!important;          --ok-soft:var(--ds-green-soft)!important;
-  --ok-bg:var(--ds-green-soft)!important;  --good:var(--ds-green)!important;
-  --pos:var(--ds-green)!important;         --yes:var(--ds-green)!important;
-  --yesbg:var(--ds-green-soft)!important;  --cedar:var(--ds-green)!important;
-  --note:var(--ds-green)!important;        --note-soft:var(--ds-green-soft)!important;
-  --done-fg:var(--ds-green)!important;     --done-bg:var(--ds-green-soft)!important;
-
-  /* AMBER - waiting, needs attention */
-  --warn:var(--ds-amber)!important;        --warn-soft:var(--ds-amber-soft)!important;
-  --warn-bg:var(--ds-amber-soft)!important;--warnbg:var(--ds-amber-soft)!important;
-  --warm:var(--ds-amber)!important;        --amber:var(--ds-amber)!important;
-  --amberbg:var(--ds-amber-soft)!important;--ginkgo:var(--ds-amber)!important;
-  /* "waiting" is NOT amber. On the trip pages it is the default state of nearly every row - "Needs
-     a yes", "To do", "September" - and painting the default state a warning colour is how a page
-     ends up 51% amber while every individual badge looks reasonable. Amber has to mean something
-     is off; a thing that has simply not happened yet is grey. */
-  --wait-fg:var(--ds-dim)!important;       --wait-bg:var(--ds-sunk)!important;
-
-  /* RED - urgent or very important only */
-  --hot:var(--ds-red)!important;           --bad:var(--ds-red)!important;
-  --neg:var(--ds-red)!important;           --crit:var(--ds-red)!important;
-  --crit-bg:var(--ds-red-soft)!important;  --no:var(--ds-red)!important;
-  --nobg:var(--ds-red-soft)!important;
-
-  /* the feedback box ships its own vocabulary; point it at the same four meanings */
-  --fb-card:var(--ds-card)!important;      --fb-ink:var(--ds-ink)!important;
-  --fb-line:var(--ds-line)!important;      --fb-dim:var(--ds-dim)!important;
-  --fb-good:var(--ds-green)!important;     --fb-warm:var(--ds-amber)!important;
-  --fb-accent:var(--ds-blue)!important;
-}
-
-/* ---- 3. THE EXCEPTIONS ------------------------------------------------------------------------
-   Aliasing a NAME cannot fix a case where one name carried two meanings. These are the handful of
-   places where the page-level remap would land on the wrong side of his rule, in both directions.
-   They live here, with the palette, so the whole colour decision can be read in one sitting. */
-
-/* ONE COLOUR CANNOT DO BOTH JOBS IN DARK MODE, so there are two blues.
-   --ds-blue has to be light enough to read AS TEXT on a dark page; a solid button filled with that
-   same light blue and the white label the pages hardcode comes out at 3.4:1, which is under the bar
-   for small bold type. Measured, not assumed: white on the dark --ds-blue is 3.44, white on
-   --ds-blue-fill is 6.4. Light mode needs no split, so there the two are the same colour. */
-:root{ --ds-blue-fill:var(--ds-blue); }
-@media (prefers-color-scheme: dark){ :root{ --ds-blue-fill:#2f57c4; } }
-:root[data-theme="dark"]{ --ds-blue-fill:#2f57c4; }
-:root[data-theme="light"]{ --ds-blue-fill:var(--ds-blue); }
-/* .hero .n joined this list on 2026-08-12. It is the "1" badge on the first task, and the numbered
-   badges below it are .num - so this rule was tinting the list and leaving the 1 on the page's own
-   --accent. Two blues that are nearly the same is worse than two that obviously differ: it reads as
-   a rendering fault rather than a choice. One rule, both badges, identical colour by construction. */
-.tag.act, .btn.primary, button.copy, .pill.num, .num, .hero .n{ background-color:var(--ds-blue-fill)!important; }
-
-/* STAYS RED - genuinely urgent, and it would have turned blue with --accent. */
-.age.stale{ background:var(--ds-red)!important; color:var(--ds-on-red)!important; }
-.flag--red{ border-left-color:var(--ds-red)!important; }
-.flag--red strong, .flag--red b{ color:var(--ds-red)!important; }
-
-/* STOPS BEING RED/AMBER - these paint most of a page, so they were the actual complaint.
-   "no mid-roll" is a revenue note on nearly every clip, not an emergency: amber, not red.
-   The hook explainer sits on every card on the Arm Us page and was a solid amber slab. */
-.nomid{ color:var(--ds-amber)!important; }
-.hookwhy{ background:var(--ds-blue-soft)!important; border-left-color:var(--ds-blue)!important; }
-.hookwhy b{ color:var(--ds-blue)!important; }
-/* The trip pages: the ordinary aside on a day, and the big "here is the decision" box on the money
-   page. Both were warm - amber and red-tinted - and both are the NORMAL state of that page, not an
-   alarm. The red aside (.flag--red) keeps its red above, which is the whole point of having two. */
-.flag{ border-left-color:var(--ds-blue)!important; }
-.call{ background:var(--ds-blue-soft)!important; border-color:var(--ds-blue)!important; }
-/* The highlighted word in the trip pages' hero and banner titles. It was a salmon hex written
-   straight into the page, so no token could reach it - the only two of its kind in thirteen pages,
-   and found by counting, not by looking. Fixed at the SOURCE (projects/japan/prep.html and
-   trip-plan.html now read this token) rather than overridden from here: an override would have left
-   the hex in the file and the checker rightly failing forever on a page that looked correct.
-   Fixed tint, not themed: both sit on a dark photo whichever theme the reader is in. */
-:root{ --ds-hero-hi:#cfe0ff; }
-
-/* NO PAGE EVER SCROLLS SIDEWAYS. Armin, 2026-08-12, on Messages: "The page does not automatically
-   fit my screen area, so there is a bar at the bottom that I have to drag left and right... you
-   check all dashboards and make sure that this doesn't happen anywhere."
-   The cause of that one is fixed at its source (the tab strip no longer sizes itself with 100vw,
-   which counts the vertical scrollbar the page cannot use). THIS IS THE BACKSTOP, so the next
-   full-bleed element somebody adds cannot bring the bar back.
-   clip, NOT hidden, and the difference is load-bearing: `hidden` makes this element a scroll
-   container and can break the sticky tab strip; `clip` forbids scrolling without becoming one, so
-   sticky keeps working. Vertical scrolling is untouched - visible+clip is a legal pair.
-   It is deliberately on the root only. A page that genuinely needs to scroll something sideways -
-   a wide table, a code block - still can, because those carry their own overflow-x:auto box, and
-   this rule cannot reach inside them. */
-html{ overflow-x:clip; }
-
-/* A LINK IN A SENTENCE IS STILL SOMETHING HE TAPS WITH A THUMB. Text is about 20px tall; the floor
-   for a tap target is 40. Fixed page by page today on the trip pages and Arm Us, then found again
-   on Messages - seven of them - which is the signal that it belongs here rather than in each page.
-   PADDING, NOT display:inline-flex, and the difference matters: an inline-flex link cannot wrap
-   across two lines, so one long link in a paragraph would push the page sideways, which is the very
-   thing being fixed two rules up. Vertical padding grows the hit area and leaves wrapping alone.
-   Invisible: these links carry no background, so nothing moves on screen.
-   Scoped to links inside prose. Anything that is already a button, pill, tab or card has its own
-   size and is deliberately untouched. */
-p a:not([class]), li a:not([class]){ padding-block:11px; }
-</style>
-
-<!-- THEME-END -->
-<!-- TOC-START -->
-<!-- ===============================================================================================
-     THE JUMP MENU. ONE FILE. EVERY DASHBOARD, HIS AND SHARED ALIKE.
-
-     Armin, note 7rv15w5c, 2026-08-24, verbatim:
-       "If the place I need to go is on the page, the link needs to jump me to the place where this
-        thing is a menu or something like that, on the left of the page. It helps me be able to jump
-        up and down wherever on the page I need to, easily going up and down the page by clicking on
-        the menu on the left. All my dashboards need to have that, so fix this on all the dashboards
-        ... but also make sure that we have this for all the dashboards that we make in the future."
-
-     He asked for this once before, on 2026-08-13, on the Arshia call: "I want to add a left side
-     navigation for the page so I could go... like a table of content." Arshia had proposed replacing
-     the top tab strip with a sidebar; Armin declined that and countered with this. Arshia's addition
-     is the half that carries information: COLOUR-CODE THE ENTRIES BY STATE. Both are here.
-
-     WHY IT WAS NOT BUILT THE FIRST TIME, because that is the part worth keeping. It was written into
-     projects/hub/FEEDBACK.md as "Queued: do this at the next wholesale rebuild", with no owner and
-     no date, deliberately without a Todoist row because the pricing gate valued it at zero dollars.
-     A parked item with no owner and no date is not queued, it is dropped - it depends on somebody
-     later choosing to read the file it was parked in. Eleven days later he asked again. The gate is
-     not wrong that this earns no dollars directly; the mistake was letting "earns nothing" mean
-     "nobody owns it". Anything HE asked for gets an owner and a date whatever it prices at.
-
-     ========================== WHERE THE ENTRIES COME FROM =========================================
-     NOT from a scan of its own. It reads window.__FBKSECTIONS, which the feedback fragment publishes
-     after it has worked out what counts as a section on this page - the same list, after the same
-     cuts, wearing the same emoji titles he already sees on the feedback buttons. Two detectors would
-     be two definitions of "a section", and the copy would stop receiving corrections the day it was
-     written. That is the frozen-copy failure this vault names by name, so there is one detector and
-     two consumers. A page whose feedback box did not run gets no menu, on purpose and visibly,
-     rather than a second-best menu built from a worse guess.
-
-     ============================== THE FOUR RULES IT OBEYS =========================================
-     1. THE PHONE IS THE DEVICE. Below a measured gutter there is no rail: the list becomes a panel
-        behind one 44px button at the bottom LEFT (the feedback pill owns the bottom right).
-     2. NOTHING HIDES AND ANIMATES BACK. Opening the panel toggles the `hidden` attribute. No opacity
-        transition anywhere, because a page that can render blank is never worth an effect.
-     3. NO DIALOGS. confirm/alert/prompt are silently refused inside a published artifact.
-     4. THE FOUR COLOUR MEANINGS FROM theme.html, and no fifth. RED urgent, AMBER needs attention,
-        GREEN done or good, grey for a section with nothing to flag - and grey is the common case,
-        because painting every ordinary section green is how a page ends up meaning nothing.
-        The state is READ OFF THE SECTION'S OWN PAINT rather than declared, so a page added next year
-        is colour-coded correctly without anybody annotating it.
-     ================================================================================================ -->
-<style id="ds-toc">
-#dstoc,#dstoc *{box-sizing:border-box}
-#dstoc{font:500 13px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-
-/* THE RAIL. Vertically centred rather than pinned under the header, so it can never collide with
-   the sticky tab strip whose height differs per page and changes when it wraps. */
-#dstocrail{position:fixed;z-index:8800;top:50%;transform:translateY(-50%);
-  max-height:74vh;overflow-y:auto;overscroll-behavior:contain;
-  background:var(--ds-card,#fff);border:1px solid var(--ds-line,#dfe3e9);border-radius:12px;
-  box-shadow:var(--ds-shadow,0 8px 24px rgba(20,22,28,.08));padding:8px 6px}
-#dstocrail[hidden],#dstocpanel[hidden],#dstocopen[hidden]{display:none!important}
-
-/* THE PANEL, for every width where the rail does not fit. Same list, same markup, same handlers. */
-#dstocpanel{position:fixed;z-index:8900;left:10px;bottom:64px;width:min(300px,calc(100% - 20px));
-  max-height:min(62vh,460px);overflow-y:auto;overscroll-behavior:contain;
-  background:var(--ds-card,#fff);border:1px solid var(--ds-line,#dfe3e9);border-radius:14px;
-  box-shadow:var(--ds-shadow,0 8px 24px rgba(20,22,28,.18));padding:8px 6px}
-#dstocopen{position:fixed;z-index:8900;left:10px;bottom:12px;min-height:44px;padding:0 14px;
-  display:inline-flex;align-items:center;gap:8px;cursor:pointer;
-  background:var(--ds-card,#fff);color:var(--ds-ink,#171a1f);
-  border:1px solid var(--ds-line,#dfe3e9);border-radius:22px;
-  box-shadow:var(--ds-shadow,0 8px 24px rgba(20,22,28,.18));
-  font:600 13px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-
-#dstoc .dstoch{font:600 12px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  letter-spacing:.02em;color:var(--ds-faint,#848b95);padding:6px 10px 8px;text-transform:none}
-/* 40px floor on every row: it is a thumb target, not a line of text. */
-#dstoc .dstocrow{display:flex;align-items:center;gap:8px;width:100%;min-height:40px;
-  padding:6px 10px;border:0;border-radius:9px;background:transparent;cursor:pointer;text-align:left;
-  color:var(--ds-dim,#555c66);font:500 13px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-#dstoc .dstocrow:hover{background:var(--ds-sunk,#eef1f5);color:var(--ds-ink,#171a1f)}
-#dstoc .dstocrow.on{background:var(--ds-blue-soft,#e9eefc);color:var(--ds-ink,#171a1f);font-weight:700}
-/* TWO LINES, NOT ONE CLIPPED LINE, AND THE NUMBER CAME FROM A MEASUREMENT.
-   The rail is 200px and its text column is 135px - room for about 19 characters including the
-   emoji - so a single nowrap line was clipping 15 of 21 labels on the Questions page at desktop
-   width. That IS his complaint ("the titles are so long that they don't fit"), and the obvious
-   fix - cut the words down to 19 characters - trades a clipped label for a meaningless one.
-   Wrapping to two lines costs about 17px on the rows that need it and nothing on the rows that
-   do not, and the rail already scrolls. Clamped at two so a long heading cannot turn one row
-   into a paragraph. */
-#dstoc .dstocrow{align-items:flex-start}
-#dstoc .dstocrow .d{margin-top:5px}
-#dstoc .dstocrow .t{flex:1;min-width:0;overflow:hidden;white-space:normal;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-clamp:2}
-/* The state dot. 8px, so thirty of them still read as a column rather than a rash of colour. */
-#dstoc .dstocrow .d{flex:0 0 auto;width:8px;height:8px;border-radius:50%;
-  background:var(--ds-line,#dfe3e9)}
-#dstoc .dstocrow .d.red{background:var(--ds-red,#b3261e)}
-#dstoc .dstocrow .d.amber{background:var(--ds-amber,#8a5a12)}
-#dstoc .dstocrow .d.green{background:var(--ds-green,#1b6b3a)}
-#dstoc .dstocx{display:block;width:100%;min-height:40px;border:0;background:transparent;cursor:pointer;
-  color:var(--ds-dim,#555c66);font:600 12px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  border-top:1px solid var(--ds-line,#dfe3e9);margin-top:4px}
-@media print{#dstoc{display:none}}
-</style>
-<nav id="dstoc" aria-label="Jump to a section on this page">
-  <div id="dstocrail" hidden></div>
-  <button type="button" id="dstocopen" hidden><span aria-hidden="true">&#9776;</span><span>Jump to</span></button>
-  <div id="dstocpanel" hidden></div>
-</nav>
-<script>
-(function(){
-  var d=document, W=window;
-  var nav=d.getElementById("dstoc");
-  if(!nav) return;
-  var rail=d.getElementById("dstocrail"), panel=d.getElementById("dstocpanel"),
-      open=d.getElementById("dstocopen");
-
-  // A MENU OF TWO IS NOISE ON A SHORT PAGE, AND THE ONE THING THAT SAVES HIM ON A LONG ONE.
-  // A flat count of 3 was the first rule and it was wrong in the expensive direction: Guy's review
-  // page has exactly two sections and runs to tens of thousands of pixels, so the page most in need
-  // of a way to move around was the page the rule switched the menu off on. The floor is therefore
-  // about the SCROLL, which is the thing he is actually struggling with - two entries earn their
-  // place once the page is more than about four screens tall.
-  var MIN_ENTRIES = 3;
-  var MIN_ENTRIES_LONG = 2;
-  var LONG_PAGE_SCREENS = 4;
-  function minEntries(){
-    var h = d.documentElement.scrollHeight || 0, v = W.innerHeight || 1;
-    return (h > v * LONG_PAGE_SCREENS) ? MIN_ENTRIES_LONG : MIN_ENTRIES;
-  }
-  var RAIL_NEEDS  = 232;   // px of clear gutter to the left of the page's own column
-
-  var secs=[], sig="", built=[], mode="";
-
-  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){
-    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
-  function vis(el){ return !!(el && (el.offsetParent!==null || el.getClientRects().length)); }
-
-  // ---- THE STATE COLOUR, READ OFF THE SECTION'S OWN PAINT ---------------------------------------
-  // Not declared by the page, because then every page and every future page has to remember to
-  // declare it, and the one that forgets shows green over a broken section. The four meanings are
-  // already painted into these pages by theme.html; this just reports what is there. Reading the
-  // live token means it follows dark mode and any future palette change with no second edit.
-  function rgbOf(hex){
-    var h=String(hex||"").trim().replace("#","");
-    if(h.length===3){ h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2]; }
-    if(!/^[0-9a-fA-F]{6}$/.test(h)) return null;
-    return "rgb("+parseInt(h.slice(0,2),16)+", "+parseInt(h.slice(2,4),16)+", "+parseInt(h.slice(4,6),16)+")";
-  }
-  var TOK={};
-  function tokens(){
-    var cs=W.getComputedStyle(d.documentElement);
-    TOK={ red:rgbOf(cs.getPropertyValue("--ds-red")),
-          amber:rgbOf(cs.getPropertyValue("--ds-amber")),
-          green:rgbOf(cs.getPropertyValue("--ds-green")) };
-  }
-  // Capped walk. Thirty sections times an uncapped subtree is a measurable stall on the To-Do List,
-  // and the answer never changes after the first few dozen painted nodes anyway.
-  var WALK_CAP=260;
-  function stateOf(el){
-    if(!el || !el.querySelectorAll) return "";
-    var hitAmber=false, hitGreen=false;
-    var nodes=el.querySelectorAll("*"), n=Math.min(nodes.length, WALK_CAP);
-    for(var i=-1;i<n;i++){
-      var node = (i<0) ? el : nodes[i];
-      var cs;
-      try{ cs=W.getComputedStyle(node); }catch(e){ continue; }
-      var vals=[cs.color, cs.backgroundColor, cs.borderLeftColor];
-      for(var j=0;j<vals.length;j++){
-        var v=vals[j];
-        if(!v || v==="rgba(0, 0, 0, 0)") continue;
-        if(TOK.red   && v===TOK.red)   return "red";      // red wins outright and stops the walk
-        if(TOK.amber && v===TOK.amber) hitAmber=true;
-        if(TOK.green && v===TOK.green) hitGreen=true;
-      }
-    }
-    if(hitAmber) return "amber";
-    if(hitGreen) return "green";
-    return "";
-  }
-
-  // ---- HOW FAR THE TOP OF A SECTION MUST CLEAR --------------------------------------------------
-  // The tab strip is sticky and its height differs per page and changes when it wraps, so it is
-  // measured rather than assumed. Landing a section UNDER the strip is the commonest way a jump
-  // menu feels broken: it moves, and the thing he wanted is still not on screen.
-  function topGap(){
-    var g=8;
-    var t=d.querySelector(".navtabs");
-    if(t){
-      var cs=W.getComputedStyle(t);
-      if(cs.position==="sticky"||cs.position==="fixed"){ g+=Math.ceil(t.getBoundingClientRect().height); }
-    }
-    return g;
-  }
-
-  // ---- THE LABEL IS CUT AT A MEANING BOUNDARY, NEVER AT A CHARACTER COUNT ----------------------
-  // Armin, note xmvhozqm, 2026-08-25: "the titles of every segment are too long and not obvious
-  // about what this segment is about... If you look at the menu on the left, the titles are so long
-  // that they don't fit. The titles need to be short and more descriptive of each segment."
-  //
-  // The old rule was slice(0,34)+"..." and it was the worst possible cut, because a heading in this
-  // vault front-loads the WHO and back-loads the point - "Igor the tax lawyer answered, and his
-  // time is your show time" truncated to "Igor the tax lawyer answered, and h..." which is longer
-  // to read AND tells him less than "Igor the tax lawyer". A blind truncation keeps the least
-  // informative half and adds three characters of noise.
-  //
-  // So it cuts at the first natural break instead - a colon, a dash, a comma, or a leading " and " -
-  // which is exactly where these headings stop naming the subject and start explaining it. The
-  // emoji is preserved because he asked for it by name ("The emojis are helpful, though"), and it
-  // is never counted against the budget, since one glyph carries more than the words that follow.
-  // A page can override the whole thing by putting data-short on its own heading; nothing has to.
-  // 22 characters of TEXT after the emoji. Measured against the rail: its text column is 135px,
-  // which holds about 19 characters on one line and about 38 across the two the label may now
-  // wrap to. 22 keeps almost every label on one line, and the few that wrap still fit.
-  var LABEL_MAX = 22;
-  function shorten(s){
-    var x=String(s||"").replace(/\s+/g," ").trim();
-    // Split the leading emoji (and any variation selector / zero-width joiner run) off the front.
-    var lead="", m=x.match(/^([^\w\s(]+[️⃣]*\s*)/);
-    if(m){ lead=m[1].trim()+" "; x=x.slice(m[1].length).trim(); }
-    if(x.length>LABEL_MAX){
-      // First real break: ": " / " - " / " — " / ", " / " and ". Take the first one that
-      // leaves something worth reading, so a heading starting "A, B and C" is not cut to "A".
-      var cuts=[], re=/(:\s|\s[-–—·|]\s|,\s|\sand\s|\swhen\s|\sthen\s|\sso\s)/g, mm;
-      while((mm=re.exec(x))!==null){ cuts.push(mm.index); }
-      // THE FLOOR IS 3, NOT 8, AND THE THREE CHARACTERS ARE LOAD-BEARING. Most headings in this
-      // vault are "<Person>, <what about them>", and a floor of 8 refused to cut at that comma
-      // whenever the name was short - so "Sol, how many of Guy's videos she has posted" became
-      // "Sol, how many of" instead of "Sol". A rule tuned to avoid a meaningless stub was throwing
-      // away the most meaningful label available. What actually has to hold is that the label says
-      // a WORD, so the guard is on the content rather than on the length.
-      for(var c=0;c<cuts.length;c++){
-        if(cuts[c]<3) continue;
-        var head=x.slice(0,cuts[c]);
-        if(!/[A-Za-z0-9]{3}/.test(head)) continue;
-        x=head; break;
-      }
-    }
-    // Still long: fall back to a WORD boundary, and no ellipsis - three dots inside a 26-character
-    // rail is a tenth of the width spent saying "there is more", which he can already see.
-    if(x.length>LABEL_MAX){
-      var sp=x.lastIndexOf(" ",LABEL_MAX);
-      x=(sp>8?x.slice(0,sp):x.slice(0,LABEL_MAX)).replace(/[\s,.;:–—·|-]+$/,"");
-    }
-    return (lead+x).trim();
-  }
-  // ---- TWO ROWS THAT READ THE SAME ARE WORSE THAN ONE LONG ROW --------------------------------
-  // Cutting at the first boundary keeps the FRONT of a heading, and sometimes the front is the part
-  // every sibling shares: "English livestream, August 12" / "... August 13" / "... August 14" all
-  // become "English livestream", and a menu of three identical rows is a menu he cannot use. It is
-  // the same shape as his own complaint about the feedback buttons - "why did you make all the
-  // emojis the same?? does that not defeat the purpose."
-  //
-  // No per-heading rule can see this, because each heading is genuinely distinct; only the SET
-  // shows it. So after every label is cut, colliding ones are re-cut to keep the TAIL instead - the
-  // half that differs. Declared labels are never touched: a page that named its own row has already
-  // made this decision, and overriding it would make data-short unreliable.
-  function tailOf(s){
-    var x=String(s||"").replace(/\s+/g," ").trim();
-    var lead="", m=x.match(/^([^\w\s(]+[️⃣]*\s*)/);
-    if(m){ lead=m[1].trim()+" "; x=x.slice(m[1].length).trim(); }
-    var re=/(:\s|\s[-–—]\s|,\s|\sand\s)/g, mm, last=-1, len=0;
-    while((mm=re.exec(x))!==null){ if(mm.index>=8){ last=mm.index; len=mm[0].length; break; } }
-    if(last<0) return "";
-    var t=x.slice(last+len).trim();
-    if(!t) return "";
-    if(t.length>LABEL_MAX){
-      var sp=t.lastIndexOf(" ",LABEL_MAX);
-      t=(sp>8?t.slice(0,sp):t.slice(0,LABEL_MAX)).replace(/[\s,.;:–—·|-]+$/,"");
-    }
-    return (lead+t).trim();
-  }
-  function dedupe(list){
-    var count={}, i;
-    for(i=0;i<list.length;i++){ var k=list[i].short; count[k]=(count[k]||0)+1; }
-    for(i=0;i<list.length;i++){
-      if(list[i].dec) continue;
-      if(count[list[i].short]<2) continue;
-      var t=tailOf(list[i].full);
-      // Only take the tail if it is actually different from what the collision already showed.
-      if(t && t!==list[i].short){ list[i].short=t; }
-    }
-  }
-
-  // A heading may state its own menu label. Checked on the section element AND its first heading,
-  // because the element the feedback layer hands back is sometimes the heading and sometimes its
-  // wrapper, and a page author should not have to know which.
-  function declared(el){
-    if(!el || !el.getAttribute) return "";
-    var v=el.getAttribute("data-short");
-    if(!v && el.querySelector){ var h=el.querySelector("h1,h2,h3,h4"); if(h){ v=h.getAttribute("data-short"); } }
-    return v?String(v).trim():"";
-  }
-
-  // ---- THE FIRST ROW IS ALWAYS "TOP", AND IT IS NOT A SECTION ----------------------------------
-  // Armin, same note: "The menu on the left is missing the first item, which should be the top
-  // horizontal menu. There should be a way for me to click on something to bring me all the way to
-  // the top, just in case I need to click on the menu at the very top."
-  //
-  // The tab strip that moves him BETWEEN dashboards lives at the very top of the page, and once he
-  // is 30,000px down there was no way back to it except dragging the scrollbar. It carries index
-  // -1 rather than being pushed into `built`, so it can never be counted toward the minimum entry
-  // rule (a two-section page must not earn a menu just because this row exists) and it can never be
-  // colour-coded, because it is not a section and has no state to report.
-  var TOP_LABEL = "Top of the page";
-  function rowsHtml(){
-    var h='<div class="dstoch">On this page</div>';
-    h+='<button type="button" class="dstocrow" data-i="-1">'+
-         '<span class="d" aria-hidden="true"></span>'+
-         '<span class="t">'+esc(TOP_LABEL)+'</span></button>';
-    for(var i=0;i<built.length;i++){
-      h+='<button type="button" class="dstocrow" data-i="'+i+'">'+
-           '<span class="d '+built[i].state+'" aria-hidden="true"></span>'+
-           '<span class="t">'+esc(built[i].short)+'</span></button>';
-    }
-    return h;
-  }
-
-  // ---- THE JUMP ITSELF --------------------------------------------------------------------------
-  // scrollTo on the window, NOT scrollIntoView, and that is measured rather than stylistic.
-  // scrollIntoView asks the browser to reveal the element in whatever it decides the nearest
-  // scroller is, and on a page inside a frame it can reasonably decide that is the frame rather
-  // than the document - so it does nothing, silently, and the menu looks broken while every other
-  // assertion about it passes. Computing the target and scrolling the window says exactly what is
-  // meant. scrollIntoView stays as the fallback for the one case scrollTo cannot serve: a page
-  // whose content scrolls inside an element rather than the document.
-  function scrollY(){ return W.pageYOffset || d.documentElement.scrollTop || d.body.scrollTop || 0; }
-  function jump(i){
-    // Index -1 is the "Top of the page" row. Straight to zero rather than to any element: the tab
-    // strip he is trying to reach is sticky, so scrolling an element into view could land him just
-    // below the thing he asked for. Instant, never smooth - these pages are tens of thousands of
-    // pixels tall and a long smooth scroll stops half way (measured, see the note in the jump below).
-    if(i<0){
-      try{ W.scrollTo({top:0, behavior:"auto"}); }catch(e){ try{ W.scrollTo(0,0); }catch(e2){} }
-      if(mode==="panel" || !panel.hidden){ panel.hidden=true; }
-      mark(-1);
-      return;
-    }
-    var el=built[i] && built[i].el;
-    if(!el) return;
-    var gap=topGap(), root=d.documentElement;
-    var before=scrollY();
-    var y = el.getBoundingClientRect().top + before - gap;
-    var max = Math.max(0, (root.scrollHeight||0) - (W.innerHeight||0));
-    y = Math.max(0, Math.min(y, max));
-    // SMOOTH ONLY FOR A SHORT HOP. Measured on his To-Do List, which is 40,000px tall: a smooth
-    // scroll of 39,600px stops roughly half way and stays there - the animation is interrupted
-    // while the page it is travelling through renders, and Chrome does not resume it. The menu then
-    // looks like it half works, which is worse than not working. Over about three screens the
-    // animation is a blur nobody can read anyway, so the long hops land instantly and only the
-    // short ones animate, where the movement genuinely helps him keep his place.
-    var far = Math.abs(y - before) > 3000;
-    try{ W.scrollTo({top:y, behavior: far ? "auto" : "smooth"}); }
-    catch(e){ try{ W.scrollTo(0,y); }catch(e2){} }
-    setTimeout(function(){
-      if(Math.abs(scrollY()-before) < 2 && Math.abs(y-before) > 4){
-        try{ el.style.scrollMarginTop = gap+"px"; el.scrollIntoView({block:"start"}); }
-        catch(e3){ try{ el.scrollIntoView(true); }catch(e4){} }
-      }
-    }, 450);
-
-    // ONE CORRECTION PASS, BECAUSE THE PAGE MOVES WHILE YOU TRAVEL THROUGH IT. The clip review
-    // pages carry hundreds of images that only load as they come near the viewport, so the target's
-    // position when the jump was computed is not its position when the jump lands - measured on
-    // Guy's page as an undershoot of 942px, which puts the thing he asked for just off the bottom
-    // of the screen. Re-measure once it has settled and close the gap. Instant, and only when the
-    // error is big enough to matter, so it can never turn into a fight with his own scrolling.
-    setTimeout(function(){
-      var off = el.getBoundingClientRect().top - gap;
-      if(Math.abs(off) > 24){
-        var root2 = d.documentElement;
-        var y2 = Math.max(0, Math.min(scrollY() + off,
-                 Math.max(0, (root2.scrollHeight||0) - (W.innerHeight||0))));
-        try{ W.scrollTo(0, y2); }catch(e5){}
-      }
-    }, 700);
-    if(mode==="panel" || !panel.hidden){ panel.hidden=true; }
-    mark(i);
-  }
-
-  function wire(host){
-    host.addEventListener("click", function(ev){
-      var b=ev.target; while(b && b!==host && !b.classList.contains("dstocrow")){ b=b.parentNode; }
-      if(!b || b===host) return;
-      // parseInt, then an explicit NaN guard - "||0" would turn the Top row's -1 into 0 and send
-      // him to the first section instead of the top of the page.
-      var idx=parseInt(b.getAttribute("data-i"),10);
-      jump(isNaN(idx)?0:idx);
-    });
-  }
-  wire(rail); wire(panel);
-
-  open.addEventListener("click", function(){ panel.hidden = !panel.hidden; });
-  // Tapping anywhere else puts the panel away. No dialog, no overlay that can trap him.
-  d.addEventListener("click", function(ev){
-    if(panel.hidden || mode!=="panel") return;
-    if(panel.contains(ev.target) || open.contains(ev.target)) return;
-    panel.hidden=true;
-  }, true);
-
-  // Keyed on the row's OWN data-i, never on its position in the list, because the Top row occupies
-  // DOM position 0 while carrying index -1. Reading position here is how the highlight would end up
-  // one row out on every page the moment that row was added.
-  function mark(active){
-    var hosts=[rail,panel];
-    for(var h=0;h<hosts.length;h++){
-      var rows=hosts[h].querySelectorAll(".dstocrow");
-      for(var i=0;i<rows.length;i++){
-        var idx=parseInt(rows[i].getAttribute("data-i"),10);
-        var on = (idx===active);
-        if(rows[i].classList.contains("on")!==on){ rows[i].classList.toggle("on", on); }
-      }
-    }
-  }
-
-  // ---- RAIL OR PANEL, MEASURED, NEVER GUESSED FROM A BREAKPOINT ---------------------------------
-  // A width breakpoint is wrong on both sides here: a wide window with a wide page column has no
-  // gutter, and a narrow window with a narrow column sometimes does. So it measures the actual
-  // space to the left of the page's own column - the same element the feedback fragment treats as
-  // the page - and it re-measures on resize, because a value taken once is wrong after a rotate.
-  function place(){
-    var col = W.__FBKCOL || d.querySelector(".wrap") || d.querySelector("main");
-    var left = 0;
-    if(col && col!==d.body){
-      var r=col.getBoundingClientRect();
-      if(r.width){ left = r.left; }
-    }
-    var want = (left >= RAIL_NEEDS && built.length) ? "rail" : (built.length ? "panel" : "none");
-
-    // EVERY WRITE HERE IS CONDITIONAL, AND THAT IS LOAD-BEARING RATHER THAN TIDY.
-    // This runs from the host page's own MutationObserver - the one that keeps the feedback buttons
-    // beside their cards - and that observer watches `hidden`, `class` and `style` on the whole
-    // subtree. Setting an attribute to the value it ALREADY HAS still counts as a mutation, so an
-    // unconditional `rail.style.left = ...` wakes the observer that just called it, forever. On the
-    // Money page that pinned a core and made the whole browser stop answering, twice, and it looked
-    // exactly like a hang rather than like a bug in this file. Write only on a real change and the
-    // second pass finds everything correct, mutates nothing, and the loop stops.
-    function setHidden(el, v){ if(el.hidden !== v){ el.hidden = v; } }
-    function setStyle(el, prop, v){ if(el.style[prop] !== v){ el.style[prop] = v; } }
-
-    if(want!=="rail"){ setHidden(rail, true); }
-    if(want!=="panel"){ setHidden(open, true); setHidden(panel, true); }
-    if(want==="rail"){
-      setHidden(rail, false);
-      setStyle(rail, "left", Math.max(10, Math.round(left - RAIL_NEEDS + 22)) + "px");
-      setStyle(rail, "width", (RAIL_NEEDS - 32) + "px");
-    }
-    if(want==="panel"){ setHidden(open, false); }
-    mode=want;
-  }
-
-  // ---- BUILD, AND ONLY WHEN SOMETHING ACTUALLY CHANGED ------------------------------------------
-  // Idempotent by signature, and that is load-bearing rather than tidy: this is driven by the same
-  // MutationObserver that keeps the feedback buttons beside their cards, so a build that always
-  // wrote to the DOM would wake the observer that called it and never stop.
-  function build(){
-    secs = W.__FBKSECTIONS || [];
-    tokens();
-    var next=[], parts=[];
-    for(var i=0;i<secs.length;i++){
-      var s=secs[i];
-      if(!s || !s.after || !s.after.parentNode) continue;
-      if(!vis(s.after)) continue;                       // filtered off the page: not somewhere to jump
-      var st=stateOf(s.after);
-      var dec=declared(s.after);
-      next.push({ el:s.after, short:(dec||shorten(s.label)), state:st, full:String(s.label||""), dec:!!dec });
-      parts.push(s.label+"|"+dec+"|"+st);
-    }
-    dedupe(next);
-    var nsig = parts.join(" >< ");
-    if(next.length < minEntries()){ nsig = "<none>"; next = []; }
-    if(nsig===sig){ place(); return; }
-    sig=nsig; built=next;
-    if(!built.length){ rail.hidden=true; open.hidden=true; panel.hidden=true; mode="none"; return; }
-    var html=rowsHtml();
-    rail.innerHTML=html;
-    panel.innerHTML=html+'<button type="button" class="dstocx" id="dstocclose">Close</button>';
-    var x=d.getElementById("dstocclose");
-    if(x){ x.addEventListener("click", function(){ panel.hidden=true; }); }
-    place();
-    onScroll();
-  }
-
-  var raf=0;
-  function onScroll(){
-    if(raf) return;
-    raf = W.requestAnimationFrame ? W.requestAnimationFrame(doMark) : setTimeout(doMark,80);
-  }
-  function doMark(){
-    raf=0;
-    var gap=topGap()+12, best=-1;
-    for(var i=0;i<built.length;i++){
-      var t=built[i].el.getBoundingClientRect().top;
-      if(t<=gap){ best=i; } else { break; }
-    }
-    // best stays -1 when nothing has scrolled past the header yet, which is exactly the state the
-    // "Top of the page" row describes - so it lights up on its own, with no special case.
-    mark(best);
-  }
-
-  // THROTTLED, because build() reads computed styles for every section to work out its colour and
-  // the event that drives it is a DOM mutation. On a page that repaints a list, that is thousands
-  // of style reads a second for an answer that changes perhaps twice a minute. Idempotent writes
-  // stop the loop; this stops the cost.
-  var pend=0;
-  function buildSoon(){
-    if(pend) return;
-    pend = setTimeout(function(){ pend=0; build(); }, 300);
-  }
-  try{ W.addEventListener("fbk:sections", buildSoon); }catch(e){}
-  try{ W.addEventListener("scroll", onScroll, {passive:true}); }catch(e){ W.addEventListener("scroll", onScroll); }
-  try{ W.addEventListener("resize", function(){ place(); onScroll(); }); }catch(e){}
-
-  // The feedback fragment may have finished before this script parsed, in which case no event is
-  // coming. Build once now, and once more after a frame for a page that paints its cards late.
-  build();
-  setTimeout(build, 60);
-  setTimeout(build, 400);
-
-  W.__dstocBuild = build;   // the host page can call this directly after its own filtering
-})();
-</script>
-
-<!-- TOC-END -->
 <!-- FEEDBACK-START -->
 <!-- FEEDBACK v3 (per-section, collected) - generated by projects/hub/build-feedback.ps1. DO NOT EDIT BY HAND. -->
 <style>
@@ -3790,5 +3052,743 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
 })();
 </script>
 <!-- FEEDBACK-END -->
+<!-- THEME-START -->
+<!-- ===============================================================================================
+     THE DESIGN SYSTEM. ONE FILE. EVERY DASHBOARD.
+
+     Armin, 2026-08-11, two instructions in one breath:
+       "Some of the pages have too much red in it. I prefer mostly blue and green and use red and
+        orange only for urgent or very important things. This has to be the case for all the pages."
+       "The dashboards need to have a consistent design so i can flow through them, seamlessly; for
+        example, tabs at the top is not consistent between the dashboards."
+
+     WHY A SHARED FILE AND NOT THIRTEEN EDITS. Every page here was written at a different time with
+     its own private colour vocabulary - --accent, --momiji, --chip, --neg, --crit, --no - and each
+     one was individually defensible. Nobody ever chose "the Messages page should be half red"; it
+     arrived one reasonable decision at a time, which is exactly the failure this vault names: a
+     standard copied into many places becomes many standards. So the palette is DECLARED ONCE, here,
+     and every page's own names are ALIASED onto it. Change a colour here and thirteen pages change.
+
+     HOW IT WINS. Injected last in the document by inject-theme.ps1, and every alias carries
+     !important - which IS honoured for custom properties. Without it a page's own
+     `:root[data-theme="dark"]{--accent:#e06a5f}` outranks a plain `:root` here on specificity and
+     the page keeps its old colour in dark mode only, which is the kind of half-fix nobody sees.
+     Setting a variable on a DESCENDANT still works normally, so per-component variants are intact.
+
+     THE BUDGET, measured rather than felt, by projects/hub/palette-check.html at 360px:
+        To-Do List  blue 69.3  red 19.1   <- he called this one good
+        Questions   green 75.7 red 16.6   <- he called this one good
+        Messages    green 35.1 red 63.0   <- "the messages page has too much red"
+     So the ceiling is derived from the pages he approved, not invented: RED <= 20% of painted
+     colour, RED+AMBER <= 30%, BLUE+GREEN >= 65%. Never raise a ceiling to silence the checker.
+
+     THE FOUR MEANINGS. Nothing else gets a colour.
+        BLUE   the ordinary primary. Links, the thing to press, the current tab, anything outgoing.
+        GREEN  good, done, kept, yours, money coming in.
+        AMBER  waiting on someone, needs attention, not yet a problem.
+        RED    urgent or very important ONLY. Overdue, broken, rejected, money going out.
+     ================================================================================================ -->
+<style id="ds-theme">
+/* ---- 1. THE TOKENS ---------------------------------------------------------------------------
+   Declared in all four contexts the pages between them use, because they do not agree on how dark
+   mode arrives: some listen to the OS (@media), some to the data-theme attribute the artifact
+   runtime stamps on <html>, some to both. Covering all four is also what finally makes the theme
+   TOGGLE work on the pages that only ever listened to the OS. */
+:root{
+  --ds-bg:#f7f8fa; --ds-card:#ffffff; --ds-sunk:#eef1f5;
+  --ds-ink:#171a1f; --ds-dim:#555c66; --ds-faint:#848b95; --ds-line:#dfe3e9;
+  --ds-blue:#1f4fd8;  --ds-blue-soft:#e9eefc;  --ds-on-blue:#ffffff;
+  --ds-green:#1b6b3a; --ds-green-soft:#e4f2ea; --ds-on-green:#ffffff;
+  --ds-amber:#8a5a12; --ds-amber-soft:#f8eddb; --ds-on-amber:#ffffff;
+  --ds-red:#b3261e;   --ds-red-soft:#fbe6e4;   --ds-on-red:#ffffff;
+  --ds-bar:rgba(247,248,250,.92);
+  --ds-shadow:0 1px 2px rgba(20,22,28,.05),0 8px 24px rgba(20,22,28,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --ds-bg:#12141a; --ds-card:#1b1e25; --ds-sunk:#161920;
+    --ds-ink:#eceef2; --ds-dim:#a4abb6; --ds-faint:#7e858f; --ds-line:#2d323b;
+    /* These four are chosen so WHITE still reads on top of them, because the pages hardcode
+       color:#fff on filled buttons and chips. A prettier pastel would have quietly made every
+       primary button unreadable in dark mode - the kind of regression a colour audit never
+       catches because it is looking at hue, not contrast. */
+    --ds-blue:#5b86f0;  --ds-blue-soft:#18213c;  --ds-on-blue:#ffffff;
+    --ds-green:#2f9e63; --ds-green-soft:#152a1f; --ds-on-green:#ffffff;
+    --ds-amber:#d9a441; --ds-amber-soft:#2b2216; --ds-on-amber:#1a1409;
+    --ds-red:#e0574c;   --ds-red-soft:#2e1a18;   --ds-on-red:#ffffff;
+    --ds-bar:rgba(18,20,26,.92);
+    --ds-shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --ds-bg:#12141a; --ds-card:#1b1e25; --ds-sunk:#161920;
+  --ds-ink:#eceef2; --ds-dim:#a4abb6; --ds-faint:#7e858f; --ds-line:#2d323b;
+  --ds-blue:#5b86f0;  --ds-blue-soft:#18213c;  --ds-on-blue:#ffffff;
+  --ds-green:#2f9e63; --ds-green-soft:#152a1f; --ds-on-green:#ffffff;
+  --ds-amber:#d9a441; --ds-amber-soft:#2b2216; --ds-on-amber:#1a1409;
+  --ds-red:#e0574c;   --ds-red-soft:#2e1a18;   --ds-on-red:#ffffff;
+  --ds-bar:rgba(18,20,26,.92);
+  --ds-shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+}
+:root[data-theme="light"]{
+  --ds-bg:#f7f8fa; --ds-card:#ffffff; --ds-sunk:#eef1f5;
+  --ds-ink:#171a1f; --ds-dim:#555c66; --ds-faint:#848b95; --ds-line:#dfe3e9;
+  --ds-blue:#1f4fd8;  --ds-blue-soft:#e9eefc;  --ds-on-blue:#ffffff;
+  --ds-green:#1b6b3a; --ds-green-soft:#e4f2ea; --ds-on-green:#ffffff;
+  --ds-amber:#8a5a12; --ds-amber-soft:#f8eddb; --ds-on-amber:#ffffff;
+  --ds-red:#b3261e;   --ds-red-soft:#fbe6e4;   --ds-on-red:#ffffff;
+  --ds-bar:rgba(247,248,250,.92);
+  --ds-shadow:0 1px 2px rgba(20,22,28,.05),0 8px 24px rgba(20,22,28,.06);
+}
+
+/* ---- 2. THE ALIASES ---------------------------------------------------------------------------
+   Every colour name any of the thirteen pages invented, pointed at the four meanings above. A name
+   that appears on only one page is harmless everywhere else, so they all live in one list.
+   ONE DELIBERATE RE-MEANING, on the Messages page: outgoing text used to be RED and his own private
+   notes BLUE, so the two could never be confused (his ask, 2026-08-06). Outgoing is now BLUE and his
+   notes GREEN. Two distinct colours, same guarantee, and neither of them is red. */
+:root{
+  /* surfaces and text */
+  --bg:var(--ds-bg)!important;          --ground:var(--ds-bg)!important;     --paper:var(--ds-bg)!important;
+  --card:var(--ds-card)!important;      --panel:var(--ds-card)!important;    --surface:var(--ds-card)!important;
+  --sunk:var(--ds-sunk)!important;      --ground-2:var(--ds-sunk)!important; --panel-2:var(--ds-sunk)!important;
+  --ink:var(--ds-ink)!important;        --fg:var(--ds-ink)!important;
+  --dim:var(--ds-dim)!important;        --soft:var(--ds-dim)!important;      --mid:var(--ds-dim)!important;
+  --ink-soft:var(--ds-dim)!important;   --ink-2:var(--ds-dim)!important;
+  --faint:var(--ds-faint)!important;    --ink-faint:var(--ds-faint)!important;
+  --muted:var(--ds-faint)!important;    --ink-3:var(--ds-faint)!important;
+  --line:var(--ds-line)!important;      --rule:var(--ds-line)!important;     --hair:var(--ds-line)!important;
+  --bar:var(--ds-bar)!important;        --shadow:var(--ds-shadow)!important;
+
+  /* BLUE - the primary */
+  --accent:var(--ds-blue)!important;       --accent-soft:var(--ds-blue-soft)!important;
+  --accent-ink:var(--ds-on-blue)!important;
+  --chip:var(--ds-blue)!important;         --chip-ink:var(--ds-on-blue)!important;
+  --momiji:var(--ds-blue)!important;       /* Japan pages: was the red maple, was their accent */
+  --now-fg:var(--ds-blue)!important;       --now-bg:var(--ds-blue-soft)!important;
+
+  /* GREEN - good, done, yours */
+  --ok:var(--ds-green)!important;          --ok-soft:var(--ds-green-soft)!important;
+  --ok-bg:var(--ds-green-soft)!important;  --good:var(--ds-green)!important;
+  --pos:var(--ds-green)!important;         --yes:var(--ds-green)!important;
+  --yesbg:var(--ds-green-soft)!important;  --cedar:var(--ds-green)!important;
+  --note:var(--ds-green)!important;        --note-soft:var(--ds-green-soft)!important;
+  --done-fg:var(--ds-green)!important;     --done-bg:var(--ds-green-soft)!important;
+
+  /* AMBER - waiting, needs attention */
+  --warn:var(--ds-amber)!important;        --warn-soft:var(--ds-amber-soft)!important;
+  --warn-bg:var(--ds-amber-soft)!important;--warnbg:var(--ds-amber-soft)!important;
+  --warm:var(--ds-amber)!important;        --amber:var(--ds-amber)!important;
+  --amberbg:var(--ds-amber-soft)!important;--ginkgo:var(--ds-amber)!important;
+  /* "waiting" is NOT amber. On the trip pages it is the default state of nearly every row - "Needs
+     a yes", "To do", "September" - and painting the default state a warning colour is how a page
+     ends up 51% amber while every individual badge looks reasonable. Amber has to mean something
+     is off; a thing that has simply not happened yet is grey. */
+  --wait-fg:var(--ds-dim)!important;       --wait-bg:var(--ds-sunk)!important;
+
+  /* RED - urgent or very important only */
+  --hot:var(--ds-red)!important;           --bad:var(--ds-red)!important;
+  --neg:var(--ds-red)!important;           --crit:var(--ds-red)!important;
+  --crit-bg:var(--ds-red-soft)!important;  --no:var(--ds-red)!important;
+  --nobg:var(--ds-red-soft)!important;
+
+  /* the feedback box ships its own vocabulary; point it at the same four meanings */
+  --fb-card:var(--ds-card)!important;      --fb-ink:var(--ds-ink)!important;
+  --fb-line:var(--ds-line)!important;      --fb-dim:var(--ds-dim)!important;
+  --fb-good:var(--ds-green)!important;     --fb-warm:var(--ds-amber)!important;
+  --fb-accent:var(--ds-blue)!important;
+}
+
+/* ---- 3. THE EXCEPTIONS ------------------------------------------------------------------------
+   Aliasing a NAME cannot fix a case where one name carried two meanings. These are the handful of
+   places where the page-level remap would land on the wrong side of his rule, in both directions.
+   They live here, with the palette, so the whole colour decision can be read in one sitting. */
+
+/* ONE COLOUR CANNOT DO BOTH JOBS IN DARK MODE, so there are two blues.
+   --ds-blue has to be light enough to read AS TEXT on a dark page; a solid button filled with that
+   same light blue and the white label the pages hardcode comes out at 3.4:1, which is under the bar
+   for small bold type. Measured, not assumed: white on the dark --ds-blue is 3.44, white on
+   --ds-blue-fill is 6.4. Light mode needs no split, so there the two are the same colour. */
+:root{ --ds-blue-fill:var(--ds-blue); }
+@media (prefers-color-scheme: dark){ :root{ --ds-blue-fill:#2f57c4; } }
+:root[data-theme="dark"]{ --ds-blue-fill:#2f57c4; }
+:root[data-theme="light"]{ --ds-blue-fill:var(--ds-blue); }
+/* .hero .n joined this list on 2026-08-12. It is the "1" badge on the first task, and the numbered
+   badges below it are .num - so this rule was tinting the list and leaving the 1 on the page's own
+   --accent. Two blues that are nearly the same is worse than two that obviously differ: it reads as
+   a rendering fault rather than a choice. One rule, both badges, identical colour by construction. */
+.tag.act, .btn.primary, button.copy, .pill.num, .num, .hero .n{ background-color:var(--ds-blue-fill)!important; }
+
+/* STAYS RED - genuinely urgent, and it would have turned blue with --accent. */
+.age.stale{ background:var(--ds-red)!important; color:var(--ds-on-red)!important; }
+.flag--red{ border-left-color:var(--ds-red)!important; }
+.flag--red strong, .flag--red b{ color:var(--ds-red)!important; }
+
+/* STOPS BEING RED/AMBER - these paint most of a page, so they were the actual complaint.
+   "no mid-roll" is a revenue note on nearly every clip, not an emergency: amber, not red.
+   The hook explainer sits on every card on the Arm Us page and was a solid amber slab. */
+.nomid{ color:var(--ds-amber)!important; }
+.hookwhy{ background:var(--ds-blue-soft)!important; border-left-color:var(--ds-blue)!important; }
+.hookwhy b{ color:var(--ds-blue)!important; }
+/* The trip pages: the ordinary aside on a day, and the big "here is the decision" box on the money
+   page. Both were warm - amber and red-tinted - and both are the NORMAL state of that page, not an
+   alarm. The red aside (.flag--red) keeps its red above, which is the whole point of having two. */
+.flag{ border-left-color:var(--ds-blue)!important; }
+.call{ background:var(--ds-blue-soft)!important; border-color:var(--ds-blue)!important; }
+/* The highlighted word in the trip pages' hero and banner titles. It was a salmon hex written
+   straight into the page, so no token could reach it - the only two of its kind in thirteen pages,
+   and found by counting, not by looking. Fixed at the SOURCE (projects/japan/prep.html and
+   trip-plan.html now read this token) rather than overridden from here: an override would have left
+   the hex in the file and the checker rightly failing forever on a page that looked correct.
+   Fixed tint, not themed: both sit on a dark photo whichever theme the reader is in. */
+:root{ --ds-hero-hi:#cfe0ff; }
+
+/* NO PAGE EVER SCROLLS SIDEWAYS. Armin, 2026-08-12, on Messages: "The page does not automatically
+   fit my screen area, so there is a bar at the bottom that I have to drag left and right... you
+   check all dashboards and make sure that this doesn't happen anywhere."
+   The cause of that one is fixed at its source (the tab strip no longer sizes itself with 100vw,
+   which counts the vertical scrollbar the page cannot use). THIS IS THE BACKSTOP, so the next
+   full-bleed element somebody adds cannot bring the bar back.
+   clip, NOT hidden, and the difference is load-bearing: `hidden` makes this element a scroll
+   container and can break the sticky tab strip; `clip` forbids scrolling without becoming one, so
+   sticky keeps working. Vertical scrolling is untouched - visible+clip is a legal pair.
+   It is deliberately on the root only. A page that genuinely needs to scroll something sideways -
+   a wide table, a code block - still can, because those carry their own overflow-x:auto box, and
+   this rule cannot reach inside them. */
+html{ overflow-x:clip; }
+
+/* A LINK IN A SENTENCE IS STILL SOMETHING HE TAPS WITH A THUMB. Text is about 20px tall; the floor
+   for a tap target is 40. Fixed page by page today on the trip pages and Arm Us, then found again
+   on Messages - seven of them - which is the signal that it belongs here rather than in each page.
+   PADDING, NOT display:inline-flex, and the difference matters: an inline-flex link cannot wrap
+   across two lines, so one long link in a paragraph would push the page sideways, which is the very
+   thing being fixed two rules up. Vertical padding grows the hit area and leaves wrapping alone.
+   Invisible: these links carry no background, so nothing moves on screen.
+   Scoped to links inside prose. Anything that is already a button, pill, tab or card has its own
+   size and is deliberately untouched. */
+p a:not([class]), li a:not([class]){ padding-block:11px; }
+</style>
+
+<!-- THEME-END -->
+<!-- TOC-START -->
+<!-- ===============================================================================================
+     THE JUMP MENU. ONE FILE. EVERY DASHBOARD, HIS AND SHARED ALIKE.
+
+     Armin, note 7rv15w5c, 2026-08-24, verbatim:
+       "If the place I need to go is on the page, the link needs to jump me to the place where this
+        thing is a menu or something like that, on the left of the page. It helps me be able to jump
+        up and down wherever on the page I need to, easily going up and down the page by clicking on
+        the menu on the left. All my dashboards need to have that, so fix this on all the dashboards
+        ... but also make sure that we have this for all the dashboards that we make in the future."
+
+     He asked for this once before, on 2026-08-13, on the Arshia call: "I want to add a left side
+     navigation for the page so I could go... like a table of content." Arshia had proposed replacing
+     the top tab strip with a sidebar; Armin declined that and countered with this. Arshia's addition
+     is the half that carries information: COLOUR-CODE THE ENTRIES BY STATE. Both are here.
+
+     WHY IT WAS NOT BUILT THE FIRST TIME, because that is the part worth keeping. It was written into
+     projects/hub/FEEDBACK.md as "Queued: do this at the next wholesale rebuild", with no owner and
+     no date, deliberately without a Todoist row because the pricing gate valued it at zero dollars.
+     A parked item with no owner and no date is not queued, it is dropped - it depends on somebody
+     later choosing to read the file it was parked in. Eleven days later he asked again. The gate is
+     not wrong that this earns no dollars directly; the mistake was letting "earns nothing" mean
+     "nobody owns it". Anything HE asked for gets an owner and a date whatever it prices at.
+
+     ========================== WHERE THE ENTRIES COME FROM =========================================
+     NOT from a scan of its own. It reads window.__FBKSECTIONS, which the feedback fragment publishes
+     after it has worked out what counts as a section on this page - the same list, after the same
+     cuts, wearing the same emoji titles he already sees on the feedback buttons. Two detectors would
+     be two definitions of "a section", and the copy would stop receiving corrections the day it was
+     written. That is the frozen-copy failure this vault names by name, so there is one detector and
+     two consumers. A page whose feedback box did not run gets no menu, on purpose and visibly,
+     rather than a second-best menu built from a worse guess.
+
+     ============================== THE FOUR RULES IT OBEYS =========================================
+     1. THE PHONE IS THE DEVICE. Below a measured gutter there is no rail: the list becomes a panel
+        behind one 44px button at the bottom LEFT (the feedback pill owns the bottom right).
+     2. NOTHING HIDES AND ANIMATES BACK. Opening the panel toggles the `hidden` attribute. No opacity
+        transition anywhere, because a page that can render blank is never worth an effect.
+     3. NO DIALOGS. confirm/alert/prompt are silently refused inside a published artifact.
+     4. THE FOUR COLOUR MEANINGS FROM theme.html, and no fifth. RED urgent, AMBER needs attention,
+        GREEN done or good, grey for a section with nothing to flag - and grey is the common case,
+        because painting every ordinary section green is how a page ends up meaning nothing.
+        The state is READ OFF THE SECTION'S OWN PAINT rather than declared, so a page added next year
+        is colour-coded correctly without anybody annotating it.
+     ================================================================================================ -->
+<style id="ds-toc">
+#dstoc,#dstoc *{box-sizing:border-box}
+#dstoc{font:500 13px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+
+/* THE RAIL. Vertically centred rather than pinned under the header, so it can never collide with
+   the sticky tab strip whose height differs per page and changes when it wraps. */
+#dstocrail{position:fixed;z-index:8800;top:50%;transform:translateY(-50%);
+  max-height:74vh;overflow-y:auto;overscroll-behavior:contain;
+  background:var(--ds-card,#fff);border:1px solid var(--ds-line,#dfe3e9);border-radius:12px;
+  box-shadow:var(--ds-shadow,0 8px 24px rgba(20,22,28,.08));padding:8px 6px}
+#dstocrail[hidden],#dstocpanel[hidden],#dstocopen[hidden]{display:none!important}
+
+/* THE PANEL, for every width where the rail does not fit. Same list, same markup, same handlers. */
+#dstocpanel{position:fixed;z-index:8900;left:10px;bottom:64px;width:min(300px,calc(100% - 20px));
+  max-height:min(62vh,460px);overflow-y:auto;overscroll-behavior:contain;
+  background:var(--ds-card,#fff);border:1px solid var(--ds-line,#dfe3e9);border-radius:14px;
+  box-shadow:var(--ds-shadow,0 8px 24px rgba(20,22,28,.18));padding:8px 6px}
+#dstocopen{position:fixed;z-index:8900;left:10px;bottom:12px;min-height:44px;padding:0 14px;
+  display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  background:var(--ds-card,#fff);color:var(--ds-ink,#171a1f);
+  border:1px solid var(--ds-line,#dfe3e9);border-radius:22px;
+  box-shadow:var(--ds-shadow,0 8px 24px rgba(20,22,28,.18));
+  font:600 13px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+
+#dstoc .dstoch{font:600 12px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  letter-spacing:.02em;color:var(--ds-faint,#848b95);padding:6px 10px 8px;text-transform:none}
+/* 40px floor on every row: it is a thumb target, not a line of text. */
+#dstoc .dstocrow{display:flex;align-items:center;gap:8px;width:100%;min-height:40px;
+  padding:6px 10px;border:0;border-radius:9px;background:transparent;cursor:pointer;text-align:left;
+  color:var(--ds-dim,#555c66);font:500 13px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#dstoc .dstocrow:hover{background:var(--ds-sunk,#eef1f5);color:var(--ds-ink,#171a1f)}
+#dstoc .dstocrow.on{background:var(--ds-blue-soft,#e9eefc);color:var(--ds-ink,#171a1f);font-weight:700}
+/* TWO LINES, NOT ONE CLIPPED LINE, AND THE NUMBER CAME FROM A MEASUREMENT.
+   The rail is 200px and its text column is 135px - room for about 19 characters including the
+   emoji - so a single nowrap line was clipping 15 of 21 labels on the Questions page at desktop
+   width. That IS his complaint ("the titles are so long that they don't fit"), and the obvious
+   fix - cut the words down to 19 characters - trades a clipped label for a meaningless one.
+   Wrapping to two lines costs about 17px on the rows that need it and nothing on the rows that
+   do not, and the rail already scrolls. Clamped at two so a long heading cannot turn one row
+   into a paragraph. */
+#dstoc .dstocrow{align-items:flex-start}
+#dstoc .dstocrow .d{margin-top:5px}
+#dstoc .dstocrow .t{flex:1;min-width:0;overflow:hidden;white-space:normal;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-clamp:2}
+/* The state dot. 8px, so thirty of them still read as a column rather than a rash of colour. */
+#dstoc .dstocrow .d{flex:0 0 auto;width:8px;height:8px;border-radius:50%;
+  background:var(--ds-line,#dfe3e9)}
+#dstoc .dstocrow .d.red{background:var(--ds-red,#b3261e)}
+#dstoc .dstocrow .d.amber{background:var(--ds-amber,#8a5a12)}
+#dstoc .dstocrow .d.green{background:var(--ds-green,#1b6b3a)}
+#dstoc .dstocx{display:block;width:100%;min-height:40px;border:0;background:transparent;cursor:pointer;
+  color:var(--ds-dim,#555c66);font:600 12px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  border-top:1px solid var(--ds-line,#dfe3e9);margin-top:4px}
+@media print{#dstoc{display:none}}
+</style>
+<nav id="dstoc" aria-label="Jump to a section on this page">
+  <div id="dstocrail" hidden></div>
+  <button type="button" id="dstocopen" hidden><span aria-hidden="true">&#9776;</span><span>Jump to</span></button>
+  <div id="dstocpanel" hidden></div>
+</nav>
+<script>
+(function(){
+  var d=document, W=window;
+  var nav=d.getElementById("dstoc");
+  if(!nav) return;
+  var rail=d.getElementById("dstocrail"), panel=d.getElementById("dstocpanel"),
+      open=d.getElementById("dstocopen");
+
+  // A MENU OF TWO IS NOISE ON A SHORT PAGE, AND THE ONE THING THAT SAVES HIM ON A LONG ONE.
+  // A flat count of 3 was the first rule and it was wrong in the expensive direction: Guy's review
+  // page has exactly two sections and runs to tens of thousands of pixels, so the page most in need
+  // of a way to move around was the page the rule switched the menu off on. The floor is therefore
+  // about the SCROLL, which is the thing he is actually struggling with - two entries earn their
+  // place once the page is more than about four screens tall.
+  var MIN_ENTRIES = 3;
+  var MIN_ENTRIES_LONG = 2;
+  var LONG_PAGE_SCREENS = 4;
+  function minEntries(){
+    var h = d.documentElement.scrollHeight || 0, v = W.innerHeight || 1;
+    return (h > v * LONG_PAGE_SCREENS) ? MIN_ENTRIES_LONG : MIN_ENTRIES;
+  }
+  var RAIL_NEEDS  = 232;   // px of clear gutter to the left of the page's own column
+
+  var secs=[], sig="", built=[], mode="";
+
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function vis(el){ return !!(el && (el.offsetParent!==null || el.getClientRects().length)); }
+
+  // ---- THE STATE COLOUR, READ OFF THE SECTION'S OWN PAINT ---------------------------------------
+  // Not declared by the page, because then every page and every future page has to remember to
+  // declare it, and the one that forgets shows green over a broken section. The four meanings are
+  // already painted into these pages by theme.html; this just reports what is there. Reading the
+  // live token means it follows dark mode and any future palette change with no second edit.
+  function rgbOf(hex){
+    var h=String(hex||"").trim().replace("#","");
+    if(h.length===3){ h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2]; }
+    if(!/^[0-9a-fA-F]{6}$/.test(h)) return null;
+    return "rgb("+parseInt(h.slice(0,2),16)+", "+parseInt(h.slice(2,4),16)+", "+parseInt(h.slice(4,6),16)+")";
+  }
+  var TOK={};
+  function tokens(){
+    var cs=W.getComputedStyle(d.documentElement);
+    TOK={ red:rgbOf(cs.getPropertyValue("--ds-red")),
+          amber:rgbOf(cs.getPropertyValue("--ds-amber")),
+          green:rgbOf(cs.getPropertyValue("--ds-green")) };
+  }
+  // Capped walk. Thirty sections times an uncapped subtree is a measurable stall on the To-Do List,
+  // and the answer never changes after the first few dozen painted nodes anyway.
+  var WALK_CAP=260;
+  function stateOf(el){
+    if(!el || !el.querySelectorAll) return "";
+    var hitAmber=false, hitGreen=false;
+    var nodes=el.querySelectorAll("*"), n=Math.min(nodes.length, WALK_CAP);
+    for(var i=-1;i<n;i++){
+      var node = (i<0) ? el : nodes[i];
+      var cs;
+      try{ cs=W.getComputedStyle(node); }catch(e){ continue; }
+      var vals=[cs.color, cs.backgroundColor, cs.borderLeftColor];
+      for(var j=0;j<vals.length;j++){
+        var v=vals[j];
+        if(!v || v==="rgba(0, 0, 0, 0)") continue;
+        if(TOK.red   && v===TOK.red)   return "red";      // red wins outright and stops the walk
+        if(TOK.amber && v===TOK.amber) hitAmber=true;
+        if(TOK.green && v===TOK.green) hitGreen=true;
+      }
+    }
+    if(hitAmber) return "amber";
+    if(hitGreen) return "green";
+    return "";
+  }
+
+  // ---- HOW FAR THE TOP OF A SECTION MUST CLEAR --------------------------------------------------
+  // The tab strip is sticky and its height differs per page and changes when it wraps, so it is
+  // measured rather than assumed. Landing a section UNDER the strip is the commonest way a jump
+  // menu feels broken: it moves, and the thing he wanted is still not on screen.
+  function topGap(){
+    var g=8;
+    var t=d.querySelector(".navtabs");
+    if(t){
+      var cs=W.getComputedStyle(t);
+      if(cs.position==="sticky"||cs.position==="fixed"){ g+=Math.ceil(t.getBoundingClientRect().height); }
+    }
+    return g;
+  }
+
+  // ---- THE LABEL IS CUT AT A MEANING BOUNDARY, NEVER AT A CHARACTER COUNT ----------------------
+  // Armin, note xmvhozqm, 2026-08-25: "the titles of every segment are too long and not obvious
+  // about what this segment is about... If you look at the menu on the left, the titles are so long
+  // that they don't fit. The titles need to be short and more descriptive of each segment."
+  //
+  // The old rule was slice(0,34)+"..." and it was the worst possible cut, because a heading in this
+  // vault front-loads the WHO and back-loads the point - "Igor the tax lawyer answered, and his
+  // time is your show time" truncated to "Igor the tax lawyer answered, and h..." which is longer
+  // to read AND tells him less than "Igor the tax lawyer". A blind truncation keeps the least
+  // informative half and adds three characters of noise.
+  //
+  // So it cuts at the first natural break instead - a colon, a dash, a comma, or a leading " and " -
+  // which is exactly where these headings stop naming the subject and start explaining it. The
+  // emoji is preserved because he asked for it by name ("The emojis are helpful, though"), and it
+  // is never counted against the budget, since one glyph carries more than the words that follow.
+  // A page can override the whole thing by putting data-short on its own heading; nothing has to.
+  // 22 characters of TEXT after the emoji. Measured against the rail: its text column is 135px,
+  // which holds about 19 characters on one line and about 38 across the two the label may now
+  // wrap to. 22 keeps almost every label on one line, and the few that wrap still fit.
+  var LABEL_MAX = 22;
+  function shorten(s){
+    var x=String(s||"").replace(/\s+/g," ").trim();
+    // Split the leading emoji (and any variation selector / zero-width joiner run) off the front.
+    var lead="", m=x.match(/^([^\w\s(]+[️⃣]*\s*)/);
+    if(m){ lead=m[1].trim()+" "; x=x.slice(m[1].length).trim(); }
+    if(x.length>LABEL_MAX){
+      // First real break: ": " / " - " / " — " / ", " / " and ". Take the first one that
+      // leaves something worth reading, so a heading starting "A, B and C" is not cut to "A".
+      var cuts=[], re=/(:\s|\s[-–—·|]\s|,\s|\sand\s|\swhen\s|\sthen\s|\sso\s)/g, mm;
+      while((mm=re.exec(x))!==null){ cuts.push(mm.index); }
+      // THE FLOOR IS 3, NOT 8, AND THE THREE CHARACTERS ARE LOAD-BEARING. Most headings in this
+      // vault are "<Person>, <what about them>", and a floor of 8 refused to cut at that comma
+      // whenever the name was short - so "Sol, how many of Guy's videos she has posted" became
+      // "Sol, how many of" instead of "Sol". A rule tuned to avoid a meaningless stub was throwing
+      // away the most meaningful label available. What actually has to hold is that the label says
+      // a WORD, so the guard is on the content rather than on the length.
+      for(var c=0;c<cuts.length;c++){
+        if(cuts[c]<3) continue;
+        var head=x.slice(0,cuts[c]);
+        if(!/[A-Za-z0-9]{3}/.test(head)) continue;
+        x=head; break;
+      }
+    }
+    // Still long: fall back to a WORD boundary, and no ellipsis - three dots inside a 26-character
+    // rail is a tenth of the width spent saying "there is more", which he can already see.
+    if(x.length>LABEL_MAX){
+      var sp=x.lastIndexOf(" ",LABEL_MAX);
+      x=(sp>8?x.slice(0,sp):x.slice(0,LABEL_MAX)).replace(/[\s,.;:–—·|-]+$/,"");
+    }
+    return (lead+x).trim();
+  }
+  // ---- TWO ROWS THAT READ THE SAME ARE WORSE THAN ONE LONG ROW --------------------------------
+  // Cutting at the first boundary keeps the FRONT of a heading, and sometimes the front is the part
+  // every sibling shares: "English livestream, August 12" / "... August 13" / "... August 14" all
+  // become "English livestream", and a menu of three identical rows is a menu he cannot use. It is
+  // the same shape as his own complaint about the feedback buttons - "why did you make all the
+  // emojis the same?? does that not defeat the purpose."
+  //
+  // No per-heading rule can see this, because each heading is genuinely distinct; only the SET
+  // shows it. So after every label is cut, colliding ones are re-cut to keep the TAIL instead - the
+  // half that differs. Declared labels are never touched: a page that named its own row has already
+  // made this decision, and overriding it would make data-short unreliable.
+  function tailOf(s){
+    var x=String(s||"").replace(/\s+/g," ").trim();
+    var lead="", m=x.match(/^([^\w\s(]+[️⃣]*\s*)/);
+    if(m){ lead=m[1].trim()+" "; x=x.slice(m[1].length).trim(); }
+    var re=/(:\s|\s[-–—]\s|,\s|\sand\s)/g, mm, last=-1, len=0;
+    while((mm=re.exec(x))!==null){ if(mm.index>=8){ last=mm.index; len=mm[0].length; break; } }
+    if(last<0) return "";
+    var t=x.slice(last+len).trim();
+    if(!t) return "";
+    if(t.length>LABEL_MAX){
+      var sp=t.lastIndexOf(" ",LABEL_MAX);
+      t=(sp>8?t.slice(0,sp):t.slice(0,LABEL_MAX)).replace(/[\s,.;:–—·|-]+$/,"");
+    }
+    return (lead+t).trim();
+  }
+  function dedupe(list){
+    var count={}, i;
+    for(i=0;i<list.length;i++){ var k=list[i].short; count[k]=(count[k]||0)+1; }
+    for(i=0;i<list.length;i++){
+      if(list[i].dec) continue;
+      if(count[list[i].short]<2) continue;
+      var t=tailOf(list[i].full);
+      // Only take the tail if it is actually different from what the collision already showed.
+      if(t && t!==list[i].short){ list[i].short=t; }
+    }
+  }
+
+  // A heading may state its own menu label. Checked on the section element AND its first heading,
+  // because the element the feedback layer hands back is sometimes the heading and sometimes its
+  // wrapper, and a page author should not have to know which.
+  function declared(el){
+    if(!el || !el.getAttribute) return "";
+    var v=el.getAttribute("data-short");
+    if(!v && el.querySelector){ var h=el.querySelector("h1,h2,h3,h4"); if(h){ v=h.getAttribute("data-short"); } }
+    return v?String(v).trim():"";
+  }
+
+  // ---- THE FIRST ROW IS ALWAYS "TOP", AND IT IS NOT A SECTION ----------------------------------
+  // Armin, same note: "The menu on the left is missing the first item, which should be the top
+  // horizontal menu. There should be a way for me to click on something to bring me all the way to
+  // the top, just in case I need to click on the menu at the very top."
+  //
+  // The tab strip that moves him BETWEEN dashboards lives at the very top of the page, and once he
+  // is 30,000px down there was no way back to it except dragging the scrollbar. It carries index
+  // -1 rather than being pushed into `built`, so it can never be counted toward the minimum entry
+  // rule (a two-section page must not earn a menu just because this row exists) and it can never be
+  // colour-coded, because it is not a section and has no state to report.
+  var TOP_LABEL = "Top of the page";
+  function rowsHtml(){
+    var h='<div class="dstoch">On this page</div>';
+    h+='<button type="button" class="dstocrow" data-i="-1">'+
+         '<span class="d" aria-hidden="true"></span>'+
+         '<span class="t">'+esc(TOP_LABEL)+'</span></button>';
+    for(var i=0;i<built.length;i++){
+      h+='<button type="button" class="dstocrow" data-i="'+i+'">'+
+           '<span class="d '+built[i].state+'" aria-hidden="true"></span>'+
+           '<span class="t">'+esc(built[i].short)+'</span></button>';
+    }
+    return h;
+  }
+
+  // ---- THE JUMP ITSELF --------------------------------------------------------------------------
+  // scrollTo on the window, NOT scrollIntoView, and that is measured rather than stylistic.
+  // scrollIntoView asks the browser to reveal the element in whatever it decides the nearest
+  // scroller is, and on a page inside a frame it can reasonably decide that is the frame rather
+  // than the document - so it does nothing, silently, and the menu looks broken while every other
+  // assertion about it passes. Computing the target and scrolling the window says exactly what is
+  // meant. scrollIntoView stays as the fallback for the one case scrollTo cannot serve: a page
+  // whose content scrolls inside an element rather than the document.
+  function scrollY(){ return W.pageYOffset || d.documentElement.scrollTop || d.body.scrollTop || 0; }
+  function jump(i){
+    // Index -1 is the "Top of the page" row. Straight to zero rather than to any element: the tab
+    // strip he is trying to reach is sticky, so scrolling an element into view could land him just
+    // below the thing he asked for. Instant, never smooth - these pages are tens of thousands of
+    // pixels tall and a long smooth scroll stops half way (measured, see the note in the jump below).
+    if(i<0){
+      try{ W.scrollTo({top:0, behavior:"auto"}); }catch(e){ try{ W.scrollTo(0,0); }catch(e2){} }
+      if(mode==="panel" || !panel.hidden){ panel.hidden=true; }
+      mark(-1);
+      return;
+    }
+    var el=built[i] && built[i].el;
+    if(!el) return;
+    var gap=topGap(), root=d.documentElement;
+    var before=scrollY();
+    var y = el.getBoundingClientRect().top + before - gap;
+    var max = Math.max(0, (root.scrollHeight||0) - (W.innerHeight||0));
+    y = Math.max(0, Math.min(y, max));
+    // SMOOTH ONLY FOR A SHORT HOP. Measured on his To-Do List, which is 40,000px tall: a smooth
+    // scroll of 39,600px stops roughly half way and stays there - the animation is interrupted
+    // while the page it is travelling through renders, and Chrome does not resume it. The menu then
+    // looks like it half works, which is worse than not working. Over about three screens the
+    // animation is a blur nobody can read anyway, so the long hops land instantly and only the
+    // short ones animate, where the movement genuinely helps him keep his place.
+    var far = Math.abs(y - before) > 3000;
+    try{ W.scrollTo({top:y, behavior: far ? "auto" : "smooth"}); }
+    catch(e){ try{ W.scrollTo(0,y); }catch(e2){} }
+    setTimeout(function(){
+      if(Math.abs(scrollY()-before) < 2 && Math.abs(y-before) > 4){
+        try{ el.style.scrollMarginTop = gap+"px"; el.scrollIntoView({block:"start"}); }
+        catch(e3){ try{ el.scrollIntoView(true); }catch(e4){} }
+      }
+    }, 450);
+
+    // ONE CORRECTION PASS, BECAUSE THE PAGE MOVES WHILE YOU TRAVEL THROUGH IT. The clip review
+    // pages carry hundreds of images that only load as they come near the viewport, so the target's
+    // position when the jump was computed is not its position when the jump lands - measured on
+    // Guy's page as an undershoot of 942px, which puts the thing he asked for just off the bottom
+    // of the screen. Re-measure once it has settled and close the gap. Instant, and only when the
+    // error is big enough to matter, so it can never turn into a fight with his own scrolling.
+    setTimeout(function(){
+      var off = el.getBoundingClientRect().top - gap;
+      if(Math.abs(off) > 24){
+        var root2 = d.documentElement;
+        var y2 = Math.max(0, Math.min(scrollY() + off,
+                 Math.max(0, (root2.scrollHeight||0) - (W.innerHeight||0))));
+        try{ W.scrollTo(0, y2); }catch(e5){}
+      }
+    }, 700);
+    if(mode==="panel" || !panel.hidden){ panel.hidden=true; }
+    mark(i);
+  }
+
+  function wire(host){
+    host.addEventListener("click", function(ev){
+      var b=ev.target; while(b && b!==host && !b.classList.contains("dstocrow")){ b=b.parentNode; }
+      if(!b || b===host) return;
+      // parseInt, then an explicit NaN guard - "||0" would turn the Top row's -1 into 0 and send
+      // him to the first section instead of the top of the page.
+      var idx=parseInt(b.getAttribute("data-i"),10);
+      jump(isNaN(idx)?0:idx);
+    });
+  }
+  wire(rail); wire(panel);
+
+  open.addEventListener("click", function(){ panel.hidden = !panel.hidden; });
+  // Tapping anywhere else puts the panel away. No dialog, no overlay that can trap him.
+  d.addEventListener("click", function(ev){
+    if(panel.hidden || mode!=="panel") return;
+    if(panel.contains(ev.target) || open.contains(ev.target)) return;
+    panel.hidden=true;
+  }, true);
+
+  // Keyed on the row's OWN data-i, never on its position in the list, because the Top row occupies
+  // DOM position 0 while carrying index -1. Reading position here is how the highlight would end up
+  // one row out on every page the moment that row was added.
+  function mark(active){
+    var hosts=[rail,panel];
+    for(var h=0;h<hosts.length;h++){
+      var rows=hosts[h].querySelectorAll(".dstocrow");
+      for(var i=0;i<rows.length;i++){
+        var idx=parseInt(rows[i].getAttribute("data-i"),10);
+        var on = (idx===active);
+        if(rows[i].classList.contains("on")!==on){ rows[i].classList.toggle("on", on); }
+      }
+    }
+  }
+
+  // ---- RAIL OR PANEL, MEASURED, NEVER GUESSED FROM A BREAKPOINT ---------------------------------
+  // A width breakpoint is wrong on both sides here: a wide window with a wide page column has no
+  // gutter, and a narrow window with a narrow column sometimes does. So it measures the actual
+  // space to the left of the page's own column - the same element the feedback fragment treats as
+  // the page - and it re-measures on resize, because a value taken once is wrong after a rotate.
+  function place(){
+    var col = W.__FBKCOL || d.querySelector(".wrap") || d.querySelector("main");
+    var left = 0;
+    if(col && col!==d.body){
+      var r=col.getBoundingClientRect();
+      if(r.width){ left = r.left; }
+    }
+    var want = (left >= RAIL_NEEDS && built.length) ? "rail" : (built.length ? "panel" : "none");
+
+    // EVERY WRITE HERE IS CONDITIONAL, AND THAT IS LOAD-BEARING RATHER THAN TIDY.
+    // This runs from the host page's own MutationObserver - the one that keeps the feedback buttons
+    // beside their cards - and that observer watches `hidden`, `class` and `style` on the whole
+    // subtree. Setting an attribute to the value it ALREADY HAS still counts as a mutation, so an
+    // unconditional `rail.style.left = ...` wakes the observer that just called it, forever. On the
+    // Money page that pinned a core and made the whole browser stop answering, twice, and it looked
+    // exactly like a hang rather than like a bug in this file. Write only on a real change and the
+    // second pass finds everything correct, mutates nothing, and the loop stops.
+    function setHidden(el, v){ if(el.hidden !== v){ el.hidden = v; } }
+    function setStyle(el, prop, v){ if(el.style[prop] !== v){ el.style[prop] = v; } }
+
+    if(want!=="rail"){ setHidden(rail, true); }
+    if(want!=="panel"){ setHidden(open, true); setHidden(panel, true); }
+    if(want==="rail"){
+      setHidden(rail, false);
+      setStyle(rail, "left", Math.max(10, Math.round(left - RAIL_NEEDS + 22)) + "px");
+      setStyle(rail, "width", (RAIL_NEEDS - 32) + "px");
+    }
+    if(want==="panel"){ setHidden(open, false); }
+    mode=want;
+  }
+
+  // ---- BUILD, AND ONLY WHEN SOMETHING ACTUALLY CHANGED ------------------------------------------
+  // Idempotent by signature, and that is load-bearing rather than tidy: this is driven by the same
+  // MutationObserver that keeps the feedback buttons beside their cards, so a build that always
+  // wrote to the DOM would wake the observer that called it and never stop.
+  function build(){
+    secs = W.__FBKSECTIONS || [];
+    tokens();
+    var next=[], parts=[];
+    for(var i=0;i<secs.length;i++){
+      var s=secs[i];
+      if(!s || !s.after || !s.after.parentNode) continue;
+      if(!vis(s.after)) continue;                       // filtered off the page: not somewhere to jump
+      var st=stateOf(s.after);
+      var dec=declared(s.after);
+      next.push({ el:s.after, short:(dec||shorten(s.label)), state:st, full:String(s.label||""), dec:!!dec });
+      parts.push(s.label+"|"+dec+"|"+st);
+    }
+    dedupe(next);
+    var nsig = parts.join(" >< ");
+    if(next.length < minEntries()){ nsig = "<none>"; next = []; }
+    if(nsig===sig){ place(); return; }
+    sig=nsig; built=next;
+    if(!built.length){ rail.hidden=true; open.hidden=true; panel.hidden=true; mode="none"; return; }
+    var html=rowsHtml();
+    rail.innerHTML=html;
+    panel.innerHTML=html+'<button type="button" class="dstocx" id="dstocclose">Close</button>';
+    var x=d.getElementById("dstocclose");
+    if(x){ x.addEventListener("click", function(){ panel.hidden=true; }); }
+    place();
+    onScroll();
+  }
+
+  var raf=0;
+  function onScroll(){
+    if(raf) return;
+    raf = W.requestAnimationFrame ? W.requestAnimationFrame(doMark) : setTimeout(doMark,80);
+  }
+  function doMark(){
+    raf=0;
+    var gap=topGap()+12, best=-1;
+    for(var i=0;i<built.length;i++){
+      var t=built[i].el.getBoundingClientRect().top;
+      if(t<=gap){ best=i; } else { break; }
+    }
+    // best stays -1 when nothing has scrolled past the header yet, which is exactly the state the
+    // "Top of the page" row describes - so it lights up on its own, with no special case.
+    mark(best);
+  }
+
+  // THROTTLED, because build() reads computed styles for every section to work out its colour and
+  // the event that drives it is a DOM mutation. On a page that repaints a list, that is thousands
+  // of style reads a second for an answer that changes perhaps twice a minute. Idempotent writes
+  // stop the loop; this stops the cost.
+  var pend=0;
+  function buildSoon(){
+    if(pend) return;
+    pend = setTimeout(function(){ pend=0; build(); }, 300);
+  }
+  try{ W.addEventListener("fbk:sections", buildSoon); }catch(e){}
+  try{ W.addEventListener("scroll", onScroll, {passive:true}); }catch(e){ W.addEventListener("scroll", onScroll); }
+  try{ W.addEventListener("resize", function(){ place(); onScroll(); }); }catch(e){}
+
+  // The feedback fragment may have finished before this script parsed, in which case no event is
+  // coming. Build once now, and once more after a frame for a page that paints its cards late.
+  build();
+  setTimeout(build, 60);
+  setTimeout(build, 400);
+
+  W.__dstocBuild = build;   // the host page can call this directly after its own filtering
+})();
+</script>
+
+<!-- TOC-END -->
 </body>
 </html>
