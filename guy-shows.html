@@ -270,13 +270,13 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-25T00:53:35Z">
+<div id="freshbar" class="fresh" data-built="2026-08-25T01:23:34Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Tue Aug 25, 08:53</b>
+    <b id="freshtitle">This page was updated Tue Aug 25, 09:16</b>
     <span id="freshage"></span>
   </div>
-  <span class="newtoday" id="newtoday" data-new="1"
-        title="Clips whose covers finished in the last 24 hours">New today: 1</span>
+  <span class="newtoday none" id="newtoday" data-new="0"
+        title="Clips whose covers finished in the last 24 hours">New today: 0</span>
   <button type="button" id="freshreload" class="fresh-btn" hidden>Get the newest version</button>
 </div>
 
@@ -4254,7 +4254,7 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
   box-shadow:var(--ds-shadow,0 8px 24px rgba(20,22,28,.18));
   font:600 13px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 
-#dstoc .dstoch{font:600 11px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+#dstoc .dstoch{font:600 12px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   letter-spacing:.02em;color:var(--ds-faint,#848b95);padding:6px 10px 8px;text-transform:none}
 /* 40px floor on every row: it is a thumb target, not a line of text. */
 #dstoc .dstocrow{display:flex;align-items:center;gap:8px;width:100%;min-height:40px;
@@ -4262,7 +4262,18 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
   color:var(--ds-dim,#555c66);font:500 13px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 #dstoc .dstocrow:hover{background:var(--ds-sunk,#eef1f5);color:var(--ds-ink,#171a1f)}
 #dstoc .dstocrow.on{background:var(--ds-blue-soft,#e9eefc);color:var(--ds-ink,#171a1f);font-weight:700}
-#dstoc .dstocrow .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* TWO LINES, NOT ONE CLIPPED LINE, AND THE NUMBER CAME FROM A MEASUREMENT.
+   The rail is 200px and its text column is 135px - room for about 19 characters including the
+   emoji - so a single nowrap line was clipping 15 of 21 labels on the Questions page at desktop
+   width. That IS his complaint ("the titles are so long that they don't fit"), and the obvious
+   fix - cut the words down to 19 characters - trades a clipped label for a meaningless one.
+   Wrapping to two lines costs about 17px on the rows that need it and nothing on the rows that
+   do not, and the rail already scrolls. Clamped at two so a long heading cannot turn one row
+   into a paragraph. */
+#dstoc .dstocrow{align-items:flex-start}
+#dstoc .dstocrow .d{margin-top:5px}
+#dstoc .dstocrow .t{flex:1;min-width:0;overflow:hidden;white-space:normal;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-clamp:2}
 /* The state dot. 8px, so thirty of them still read as a column rather than a rash of colour. */
 #dstoc .dstocrow .d{flex:0 0 auto;width:8px;height:8px;border-radius:50%;
   background:var(--ds-line,#dfe3e9)}
@@ -4381,7 +4392,10 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
   // emoji is preserved because he asked for it by name ("The emojis are helpful, though"), and it
   // is never counted against the budget, since one glyph carries more than the words that follow.
   // A page can override the whole thing by putting data-short on its own heading; nothing has to.
-  var LABEL_MAX = 26;   // characters of TEXT, after the emoji
+  // 22 characters of TEXT after the emoji. Measured against the rail: its text column is 135px,
+  // which holds about 19 characters on one line and about 38 across the two the label may now
+  // wrap to. 22 keeps almost every label on one line, and the few that wrap still fit.
+  var LABEL_MAX = 22;
   function shorten(s){
     var x=String(s||"").replace(/\s+/g," ").trim();
     // Split the leading emoji (and any variation selector / zero-width joiner run) off the front.
@@ -4390,20 +4404,67 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
     if(x.length>LABEL_MAX){
       // First real break: ": " / " - " / " — " / ", " / " and ". Take the first one that
       // leaves something worth reading, so a heading starting "A, B and C" is not cut to "A".
-      var cuts=[], re=/(:\s|\s[-–—]\s|,\s|\sand\s|\swhen\s|\sthen\s|\sso\s)/g, mm;
+      var cuts=[], re=/(:\s|\s[-–—·|]\s|,\s|\sand\s|\swhen\s|\sthen\s|\sso\s)/g, mm;
       while((mm=re.exec(x))!==null){ cuts.push(mm.index); }
+      // THE FLOOR IS 3, NOT 8, AND THE THREE CHARACTERS ARE LOAD-BEARING. Most headings in this
+      // vault are "<Person>, <what about them>", and a floor of 8 refused to cut at that comma
+      // whenever the name was short - so "Sol, how many of Guy's videos she has posted" became
+      // "Sol, how many of" instead of "Sol". A rule tuned to avoid a meaningless stub was throwing
+      // away the most meaningful label available. What actually has to hold is that the label says
+      // a WORD, so the guard is on the content rather than on the length.
       for(var c=0;c<cuts.length;c++){
-        if(cuts[c]>=8){ x=x.slice(0,cuts[c]); break; }
+        if(cuts[c]<3) continue;
+        var head=x.slice(0,cuts[c]);
+        if(!/[A-Za-z0-9]{3}/.test(head)) continue;
+        x=head; break;
       }
     }
     // Still long: fall back to a WORD boundary, and no ellipsis - three dots inside a 26-character
     // rail is a tenth of the width spent saying "there is more", which he can already see.
     if(x.length>LABEL_MAX){
       var sp=x.lastIndexOf(" ",LABEL_MAX);
-      x=(sp>8?x.slice(0,sp):x.slice(0,LABEL_MAX)).replace(/[\s,.;:–—-]+$/,"");
+      x=(sp>8?x.slice(0,sp):x.slice(0,LABEL_MAX)).replace(/[\s,.;:–—·|-]+$/,"");
     }
     return (lead+x).trim();
   }
+  // ---- TWO ROWS THAT READ THE SAME ARE WORSE THAN ONE LONG ROW --------------------------------
+  // Cutting at the first boundary keeps the FRONT of a heading, and sometimes the front is the part
+  // every sibling shares: "English livestream, August 12" / "... August 13" / "... August 14" all
+  // become "English livestream", and a menu of three identical rows is a menu he cannot use. It is
+  // the same shape as his own complaint about the feedback buttons - "why did you make all the
+  // emojis the same?? does that not defeat the purpose."
+  //
+  // No per-heading rule can see this, because each heading is genuinely distinct; only the SET
+  // shows it. So after every label is cut, colliding ones are re-cut to keep the TAIL instead - the
+  // half that differs. Declared labels are never touched: a page that named its own row has already
+  // made this decision, and overriding it would make data-short unreliable.
+  function tailOf(s){
+    var x=String(s||"").replace(/\s+/g," ").trim();
+    var lead="", m=x.match(/^([^\w\s(]+[️⃣]*\s*)/);
+    if(m){ lead=m[1].trim()+" "; x=x.slice(m[1].length).trim(); }
+    var re=/(:\s|\s[-–—]\s|,\s|\sand\s)/g, mm, last=-1, len=0;
+    while((mm=re.exec(x))!==null){ if(mm.index>=8){ last=mm.index; len=mm[0].length; break; } }
+    if(last<0) return "";
+    var t=x.slice(last+len).trim();
+    if(!t) return "";
+    if(t.length>LABEL_MAX){
+      var sp=t.lastIndexOf(" ",LABEL_MAX);
+      t=(sp>8?t.slice(0,sp):t.slice(0,LABEL_MAX)).replace(/[\s,.;:–—·|-]+$/,"");
+    }
+    return (lead+t).trim();
+  }
+  function dedupe(list){
+    var count={}, i;
+    for(i=0;i<list.length;i++){ var k=list[i].short; count[k]=(count[k]||0)+1; }
+    for(i=0;i<list.length;i++){
+      if(list[i].dec) continue;
+      if(count[list[i].short]<2) continue;
+      var t=tailOf(list[i].full);
+      // Only take the tail if it is actually different from what the collision already showed.
+      if(t && t!==list[i].short){ list[i].short=t; }
+    }
+  }
+
   // A heading may state its own menu label. Checked on the section element AND its first heading,
   // because the element the feedback layer hands back is sometimes the heading and sometimes its
   // wrapper, and a page author should not have to know which.
@@ -4585,9 +4646,10 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
       if(!vis(s.after)) continue;                       // filtered off the page: not somewhere to jump
       var st=stateOf(s.after);
       var dec=declared(s.after);
-      next.push({ el:s.after, short:(dec||shorten(s.label)), state:st });
+      next.push({ el:s.after, short:(dec||shorten(s.label)), state:st, full:String(s.label||""), dec:!!dec });
       parts.push(s.label+"|"+dec+"|"+st);
     }
+    dedupe(next);
     var nsig = parts.join(" >< ");
     if(next.length < minEntries()){ nsig = "<none>"; next = []; }
     if(nsig===sig){ place(); return; }
