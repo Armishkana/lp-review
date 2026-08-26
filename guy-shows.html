@@ -270,9 +270,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-26T11:19:19Z">
+<div id="freshbar" class="fresh" data-built="2026-08-26T11:44:13Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Wed Aug 26, 19:16</b>
+    <b id="freshtitle">This page was updated Wed Aug 26, 19:39</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday" id="newtoday" data-new="1"
@@ -2370,7 +2370,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
      of his, so none of the scrubbing that guards the handled register above can be forgotten here.
      A row lands here the moment read-feedback.ps1 parses a paste of his, which is the only evidence
      that exists of him actually handing a note over. -->
-<script id="fbkReceived" type="application/json">["yewvhflh","yhe5tmhn","yiqbg2uf","yjhk2j3s","ykhws0xg","yl2ks64r","yl4jo82t","yl7h4x8r","yl9ty0bd","yll03civ","ym152ezs","ynoaomks","ynszogdf","yo9fqtou","yocc3ale","ype68ea9","ypi0zcpm","ypl08g4e","ypo3u3x6","ypr01gub","yptpm1gl","ypwvd42x","ypzlf5rn","yq42dkxc","yq8uiqiy","y7ovfrjh","ytodvfis","ywp0a6ye","yxfnzvp1","xqoz8bqy","d911ph74","b6ca1j2p","bapgh91o","7d5tcmvb"]</script>
+<script id="fbkReceived" type="application/json">["0qo9cyvq","d911ph74","b6ca1j2p","bapgh91o","7d5tcmvb"]</script>
 <div class="fbk" id="fbk">
 <!-- DELIBERATELY ALMOST EMPTY WHEN THERE ARE NO NOTES. Armin, 2026-08-09, on the Messages page:
      "There's so much text and unnecessary stuff at the bottom of the screen that I don't know what
@@ -4514,6 +4514,26 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
   // A heading may state its own menu label. Checked on the section element AND its first heading,
   // because the element the feedback layer hands back is sometimes the heading and sometimes its
   // wrapper, and a page author should not have to know which.
+  // ---- A LIST ITEM IS NOT A DESTINATION ---------------------------------------------------------
+  // Rank and nesting between them handle almost everything, and they cannot see one case: a run of
+  // sibling sections that are all ITEMS of one list. On the Questions page each question card is a
+  // real top-level section with its own writing box, so eleven of them are eleven correct menu rows
+  // and the menu still ran to 740px against 614px of room on a laptop - it scrolled, which is the
+  // one thing he said it must never do.
+  //
+  // A page states this about itself, because only the page knows the difference between "eleven
+  // sections" and "one list of eleven". It is deliberately not inferable: a run of similar siblings
+  // is sometimes exactly what you want to jump between, and guessing would be wrong half the time.
+  // It cannot rot into a rubber stamp either, because the thing that bounds it is a MEASUREMENT -
+  // toc-test.html fails when the rail scrolls at any width, so over-declaring shows up as a menu
+  // with too little in it and under-declaring shows up as a red test.
+  function isItem(el){
+    if(!el || !el.getAttribute) return false;
+    if(el.getAttribute("data-nav")==="item") return true;
+    var h=el.querySelector && el.querySelector("h1,h2,h3,h4");
+    return !!(h && h.getAttribute("data-nav")==="item");
+  }
+
   function declared(el){
     if(!el || !el.getAttribute) return "";
     var v=el.getAttribute("data-short");
@@ -4725,7 +4745,7 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
     }
     if(ranked!==list.length) return list;          // a page that has not been rebuilt: leave it alone
     var kept=[];
-    for(i=0;i<list.length;i++){ if(list[i].rank===top) kept.push(list[i]); }
+    for(i=0;i<list.length;i++){ if(list[i].rank===top && !list[i].item) kept.push(list[i]); }
     var out=[];
     for(i=0;i<kept.length;i++){
       var inside=false;
@@ -4750,7 +4770,7 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
       var st=stateOf(s.after);
       var dec=declared(s.after);
       next.push({ el:s.after, short:(dec||shorten(s.label)), state:st, full:String(s.label||""),
-                  dec:!!dec, rank:(typeof s.rank==="number"?s.rank:0) });
+                  dec:!!dec, rank:(typeof s.rank==="number"?s.rank:0), item:isItem(s.after) });
     }
     next = pickTopLevel(next);
     for(i=0;i<next.length;i++){ parts.push(next[i].full+"|"+next[i].dec+"|"+next[i].state); }
