@@ -270,9 +270,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-26T10:30:36Z">
+<div id="freshbar" class="fresh" data-built="2026-08-26T11:00:58Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Wed Aug 26, 18:30</b>
+    <b id="freshtitle">This page was updated Wed Aug 26, 18:53</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday" id="newtoday" data-new="1"
@@ -2370,7 +2370,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
      of his, so none of the scrubbing that guards the handled register above can be forgotten here.
      A row lands here the moment read-feedback.ps1 parses a paste of his, which is the only evidence
      that exists of him actually handing a note over. -->
-<script id="fbkReceived" type="application/json">["du4zffkv","xqoz8bqy","d911ph74","b6ca1j2p","bapgh91o","7d5tcmvb"]</script>
+<script id="fbkReceived" type="application/json">["yewvhflh","yhe5tmhn","yiqbg2uf","yjhk2j3s","ykhws0xg","yl2ks64r","yl4jo82t","yl7h4x8r","yl9ty0bd","yll03civ","ym152ezs","ynoaomks","ynszogdf","yo9fqtou","yocc3ale","ype68ea9","ypi0zcpm","ypl08g4e","ypo3u3x6","ypr01gub","yptpm1gl","ypwvd42x","ypzlf5rn","yq42dkxc","yq8uiqiy","y7ovfrjh","ytodvfis","ywp0a6ye","yxfnzvp1","xqoz8bqy","d911ph74","b6ca1j2p","bapgh91o","7d5tcmvb"]</script>
 <div class="fbk" id="fbk">
 <!-- DELIBERATELY ALMOST EMPTY WHEN THERE ARE NO NOTES. Armin, 2026-08-09, on the Messages page:
      "There's so much text and unnecessary stuff at the bottom of the screen that I don't know what
@@ -2964,12 +2964,43 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   }
   settle();
 
+  // ---- HOW DEEP IS THIS SECTION? PUBLISHED HERE, DECIDED NOWHERE ELSE ---------------------------
+  // Armin, notes ynoaomks / ywp0a6ye and eleven more on 2026-08-26: "This segment doesn't need to be
+  // on the menu on the left because the menu on the left is getting too long... The whole point of
+  // the menu on the left is so that I don't have to scroll. This is just a subsection of the area
+  // above it."
+  //
+  // MEASURED CAUSE, and it is a design fault rather than a bug: the jump menu has exactly ONE input,
+  // this list, and this list exists to answer a DIFFERENT question. A feedback target is anything he
+  // might have an opinion about, so it is deliberately small and deliberately nested - ten numbered
+  // cards inside one block, four advice points inside one panel. A jump target is a DESTINATION, and
+  // there are only ever a handful of those on a page. Serving both from one list means every control
+  // added for the first purpose silently lengthens the menu, which is why the menu grew past the
+  // screen without anybody deciding it should.
+  //
+  // THE FIX IS NOT A SECOND DETECTOR. Two definitions of "a section" is the frozen-copy failure this
+  // vault names by name, and the whole reason the menu reads this list is so the two can never
+  // disagree. So the ONE detector publishes what it already knows - how deep each thing is - and
+  // each consumer decides what to do with it. The buttons keep every section. The menu keeps the
+  // top of the tree.
+  //
+  // RANK COMES FROM THE PAGE'S OWN MARKUP, never from an annotation, because a rule that has to be
+  // remembered per page is a rule the next page forgets. A real heading says its own level; anything
+  // titled by a summary, a styled div, or a declared name is by construction a block INSIDE a
+  // section rather than a section of the page.
+  function rankOf(t){
+    if(t==="H2") return 2;
+    if(t==="H3") return 3;
+    if(t==="H4") return 4;
+    return 5;                        // DECLARED, SUMMARY, .sith / .btitle / .calh / legend
+  }
   for(var s2=0;s2<found.length;s2++){
     var c=found[s2];
     if(c.drop || dropped[c.tag+"|"+c.cls]) continue;
     var lbl=c.label;
     if(lbl.length>70){ lbl=lbl.slice(0,70)+"..."; }
-    secs.push({ label:lbl, btn:"+ Feedback on: "+shortName(lbl), after:c.block });
+    secs.push({ label:lbl, btn:"+ Feedback on: "+shortName(lbl), after:c.block,
+                rank:rankOf(c.titleTag) });
   }
 
   // SELF-HEALING NOTE BINDING, because the rule above renumbers sections.
@@ -4636,6 +4667,63 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
   // Idempotent by signature, and that is load-bearing rather than tidy: this is driven by the same
   // MutationObserver that keeps the feedback buttons beside their cards, so a build that always
   // wrote to the DOM would wake the observer that called it and never stop.
+  // ---- THE MENU LISTS DESTINATIONS. IT DOES NOT LIST EVERY THING HE CAN COMMENT ON -------------
+  // Armin, fifteen notes on 2026-08-26, one per row he did not want: "This segment doesn't need to
+  // be on the menu on the left because the menu on the left is getting too long... The whole point
+  // of the menu on the left is so that I don't have to scroll. This is just a subsection of the
+  // area above it."
+  //
+  // MEASURED BEFORE ANYTHING WAS CHANGED, because "only show H2" is a guess and this vault has paid
+  // for guessed thresholds. His To-Do List was publishing 38 menu rows: 9 real headings and 28
+  // blocks nested inside them. The Questions page was publishing 12, four of which were the four
+  // advice points inside the one advice panel.
+  //
+  // THE CAUSE IS THAT ONE LIST WAS ANSWERING TWO QUESTIONS. A feedback target is anything he might
+  // have an opinion about, so it is deliberately small and deliberately nested. A jump target is a
+  // DESTINATION, and a page has a handful. Reading the feedback list for the menu was right - it is
+  // what stops the two drifting - but taking ALL of it meant every control added for the first
+  // purpose silently lengthened the menu. Nobody ever decided the menu should grow; it grew as a
+  // side effect, which is why no check saw it.
+  //
+  // THE RULE, and every part of it is derived from the page rather than annotated onto it:
+  //   1. RANK comes from the markup the detector already read - a real H2/H3/H4 says its own level,
+  //      and anything titled by a summary, a styled div or a declared name is by construction a
+  //      block inside a section rather than a section of the page.
+  //   2. THE TOP RANK IS THE PAGE'S OWN MINIMUM, never a fixed number. A page built entirely out of
+  //      declared blocks (Sol's clip pages, where every stream header is one) has a minimum of 5,
+  //      nothing is demoted, and its menu is untouched. A page with real headings demotes the rest.
+  //      Self-calibrating, so it cannot freeze one session's taste about what an H2 is for.
+  //   3. NESTING BEATS RANK. Anything sitting inside another kept row is that row's inside, whatever
+  //      it is titled. This is what removes the advice points from the Questions menu.
+  //   4. IT NEVER LEAVES HIM WITH LESS THAN A MENU. If the cut would drop below the floor that
+  //      decides whether a menu appears at all, or if a page has not been rebuilt and publishes no
+  //      rank, the full list is used. Failing back to the old behaviour is always safe; failing
+  //      forward to an empty rail is the regression.
+  function pickTopLevel(list){
+    if(!list.length) return list;
+    var i, top=99, ranked=0;
+    for(i=0;i<list.length;i++){
+      var r=list[i].rank;
+      if(typeof r!=="number" || r<=0) continue;
+      ranked++;
+      if(r<top) top=r;
+    }
+    if(ranked!==list.length) return list;          // a page that has not been rebuilt: leave it alone
+    var kept=[];
+    for(i=0;i<list.length;i++){ if(list[i].rank===top) kept.push(list[i]); }
+    var out=[];
+    for(i=0;i<kept.length;i++){
+      var inside=false;
+      for(var j=0;j<kept.length;j++){
+        if(j===i) continue;
+        if(kept[j].el!==kept[i].el && kept[j].el.contains(kept[i].el)){ inside=true; break; }
+      }
+      if(!inside) out.push(kept[i]);
+    }
+    if(out.length < minEntries()) return list;     // rather a long menu than no menu
+    return out;
+  }
+
   function build(){
     secs = W.__FBKSECTIONS || [];
     tokens();
@@ -4646,14 +4734,20 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
       if(!vis(s.after)) continue;                       // filtered off the page: not somewhere to jump
       var st=stateOf(s.after);
       var dec=declared(s.after);
-      next.push({ el:s.after, short:(dec||shorten(s.label)), state:st, full:String(s.label||""), dec:!!dec });
-      parts.push(s.label+"|"+dec+"|"+st);
+      next.push({ el:s.after, short:(dec||shorten(s.label)), state:st, full:String(s.label||""),
+                  dec:!!dec, rank:(typeof s.rank==="number"?s.rank:0) });
     }
+    next = pickTopLevel(next);
+    for(i=0;i<next.length;i++){ parts.push(next[i].full+"|"+next[i].dec+"|"+next[i].state); }
     dedupe(next);
     var nsig = parts.join(" >< ");
     if(next.length < minEntries()){ nsig = "<none>"; next = []; }
     if(nsig===sig){ place(); return; }
     sig=nsig; built=next;
+    // WHAT EACH ROW ACTUALLY POINTS AT, published so the click-test can check the menu against the
+    // PAGE rather than against a second copy of this rule living in the harness. data-i indexes
+    // this filtered list, so without it nothing outside here can map a row back to a section.
+    try{ W.__TOCROWS = built.map(function(b){ return b.el; }); }catch(e){}
     if(!built.length){ rail.hidden=true; open.hidden=true; panel.hidden=true; mode="none"; return; }
     var html=rowsHtml();
     rail.innerHTML=html;
