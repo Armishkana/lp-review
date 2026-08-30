@@ -271,9 +271,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-30T12:39:29Z">
+<div id="freshbar" class="fresh" data-built="2026-08-30T13:02:32Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Sun Aug 30, 20:39</b>
+    <b id="freshtitle">This page was updated Sun Aug 30, 21:02</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday" id="newtoday" data-new="1"
@@ -6942,9 +6942,20 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
     var box=d.getElementById("fbkDone"), list=d.getElementById("fbkDoneList"),
         okb=d.getElementById("fbkDoneOk");
     if(!box||!list||!justCleared.length) return;
+    // NEWEST FIRST, AND AT MOST 12 - the page-weight law's own list budget. This box is a
+    // receipt, not an archive: on any browser that has never tapped "Got it" (a new phone, a
+    // cleared browser, a first visit) the WHOLE history replays, and on 2026-08-30 that measured
+    // 114 rows and 28,000px on the To-Do List - 58% of the page - with the one button that
+    // dismisses it at the very bottom of the pile. A static page counter can never see this,
+    // because the pile is built from JSON at load. The register (feedback-handled.json) is the
+    // record; this shows the latest dozen, says how many more are in it, and "Got it" still
+    // clears ALL of them, shown or not.
+    var shownCleared=justCleared.slice().reverse();
+    var moreCleared=Math.max(0, shownCleared.length-12);
+    if(moreCleared){ shownCleared=shownCleared.slice(0,12); }
     list.innerHTML="";
-    for(var k=0;k<justCleared.length;k++){
-      var row=justCleared[k], wrap=d.createElement("div"); wrap.className="fbkdi";
+    for(var k=0;k<shownCleared.length;k++){
+      var row=shownCleared[k], wrap=d.createElement("div"); wrap.className="fbkdi";
       var said=d.createElement("p"); said.className="fbkdsaid";
       var t=row.note ? row.note.text : (row.h.said||"");
       t=String(t).replace(/\s+/g," ").trim();
@@ -6953,6 +6964,12 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
       did.textContent=row.h.did||"Done.";
       wrap.appendChild(said); wrap.appendChild(did);
       list.appendChild(wrap);
+    }
+    if(moreCleared){
+      var moreP=d.createElement("p"); moreP.className="fbkdsaid";
+      moreP.textContent=moreCleared+" older "+(moreCleared===1?"one is":"ones are")+
+        " also done and in the record. Got it clears them too.";
+      list.appendChild(moreP);
     }
     box.hidden=false;
     okb.addEventListener("click", function(){
