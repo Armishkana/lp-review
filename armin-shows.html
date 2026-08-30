@@ -270,9 +270,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-30T06:37:51Z">
+<div id="freshbar" class="fresh" data-built="2026-08-30T07:00:55Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Sun Aug 30, 14:37</b>
+    <b id="freshtitle">This page was updated Sun Aug 30, 15:00</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday" id="newtoday" data-new="3"
@@ -2444,6 +2444,9 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
     // the input is present but BURIED before believing it is absent. Volume of correct output is
     // its own defect - a receipt nobody can read is not a receipt.
     var touched = [];
+    // The SAME predicate decides the digest above and the ORDER of the detail rows below,
+    // so the two can never disagree about what counts as answered.
+    var answeredEls = [];
     clips.forEach(function(c){
       var vid = dstate(c, 'viddb');
       var seg = (c.getAttribute('data-seg') || '').split('::').pop();
@@ -2461,7 +2464,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
       if (ty || tn) { bits.push('titles ' + ty + ' yes / ' + tn + ' no'); }
       var nt = c.querySelector('.fbnote textarea');
       if (nt && nt.value.trim()) { bits.push('wrote a note'); }
-      if (bits.length) { touched.push('  SEG ' + seg + ' (' + st + '): ' + bits.join(', ')); }
+      if (bits.length) { touched.push('  SEG ' + seg + ' (' + st + '): ' + bits.join(', ')); answeredEls.push(c); }
     });
     lines.push('');
     if (touched.length) {
@@ -2471,8 +2474,22 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
     } else {
       lines.push('WHAT YOU ANSWERED: nothing yet - no clip on this page has been answered.');
     }
+    // ANSWERED ROWS FIRST, FILLER LAST. Four consecutive reports (2026-08-20, 08-23 x2, 08-28)
+    // arrived with no closing fence, cut at 8,121 / 13,610 / 6,153 / 15,696 chars - not a fixed
+    // ceiling, so it cannot be fixed by shaving bytes. What it CAN be fixed by is making sure the
+    // part that survives is the part carrying information: on 2026-08-28, 22 of her 26 answered
+    // clips lost their reasons while the surviving length was spent on 'NOT ANSWERED | not
+    // answered | not answered' rows. Nothing is removed - unanswered stays load-bearing for
+    // decision_stats - it is only moved BELOW the rows a human wrote.
+    var nAnswered = answeredEls.length;
+    var ordered = answeredEls.concat(
+      Array.prototype.filter.call(clips, function(c){ return answeredEls.indexOf(c) === -1; }));
     var curStream = null;
-    clips.forEach(function(c){
+    ordered.forEach(function(c, ci){
+      if (ci === nAnswered) {
+        lines.push('', '--- BELOW HERE: CLIPS NOT ANSWERED (machine record, no information in these rows) ---');
+        curStream = null;
+      }
       // The page spans several streams now, so every line has to say which stream it belongs to
       // or a "SEG 2" verdict is ambiguous across three different videos.
       var stream = c.getAttribute('data-stream');
