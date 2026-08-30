@@ -168,6 +168,7 @@ h1{font-size:clamp(21px,4.5vw,27px);line-height:1.15;margin:0;font-weight:800;le
 .fbnote{border-top:1px dashed var(--line);padding-top:var(--s3);display:flex;flex-direction:column;gap:var(--s2)}
 textarea{width:100%;min-height:62px;font:inherit;font-size:14px;background:var(--ground);color:var(--ink);border:1px solid var(--line);border-radius:3px;padding:10px;resize:vertical}
 textarea::placeholder{color:var(--dim)}
+.pastewarn{margin:4px 0 0;font-size:12.5px;font-weight:600;color:var(--accent)}
 /* Content sits LEFT, not centred: the injected feedback pill lives in the bottom-right corner on
    every page in the vault, so centring this bar's contents aimed them straight at it. Left-aligned,
    the two controls sit beside each other and each keeps its own space. */
@@ -270,9 +271,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-08-30T11:52:57Z">
+<div id="freshbar" class="fresh" data-built="2026-08-30T12:16:02Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Sun Aug 30, 19:52</b>
+    <b id="freshtitle">This page was updated Sun Aug 30, 20:16</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday none" id="newtoday" data-new="0"
@@ -1925,6 +1926,23 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   document.getElementById('lbclose').addEventListener('click', function(){ document.getElementById('lb').close(); });
   // Click the dark backdrop to dismiss, but never when clicking the image or the buttons.
   document.getElementById('lb').addEventListener('click', function(e){ if (e.target === this) this.close(); });
+
+  // A NOTE BOX THAT SWALLOWS A 10,000-CHARACTER PASTE WITHOUT A MURMUR DESTROYED ONE OF SOL'S REAL
+  // NOTES on 2026-08-13 (rework row 2026-08-14-dashboard-comment-box-swallowed-a-10k-paste): her
+  // whole Ali review landed in one cover's comment box and overwrote what she meant to say there.
+  // A note here is a sentence. WARN, NEVER TRUNCATE - cutting the text would be a second way to
+  // lose her words, and the accidental paste is only recognisable to her, not to this page.
+  // Delegated so it covers every note box on the page - cover, title, video and per-clip alike -
+  // because the defect is a property of an unbounded field, not of the one box it happened in.
+  document.addEventListener('input', function(e){
+    var t = e.target;
+    if (!t || t.tagName !== 'TEXTAREA' || t.readOnly) return;
+    var warn = t.parentNode.querySelector('.pastewarn');
+    if (t.value.length > 800) {
+      if (!warn) { warn = document.createElement('p'); warn.className = 'pastewarn'; t.parentNode.appendChild(warn); }
+      warn.textContent = 'This is ' + t.value.length + ' characters - a note here is usually a sentence. If this landed by accident, clear it; nothing is cut either way.';
+    } else if (warn) { warn.remove(); }
+  });
 
   // ONE bundled submission, every line tagged with its segment number so it can be matched back.
   //
