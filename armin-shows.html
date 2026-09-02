@@ -38,7 +38,7 @@ h1{font-size:clamp(21px,4.5vw,27px);line-height:1.15;margin:0;font-weight:800;le
 .howmore[open]>summary::before{content:"\2212"}
 .howmore[open]>summary{border-bottom:1px solid var(--line);margin-bottom:var(--s2)}
 .howmore>ol,.howmore>p{margin:0 0 var(--s2) 0}
-.autosave{border:1px solid var(--good);border-left:4px solid var(--good);border-radius:4px;padding:var(--s2) var(--s3);font-size:14.5px;background:var(--surface);color:var(--ink)}
+.autosave{border:1px solid var(--good);border-left:2px solid var(--good);border-radius:8px;padding:var(--s2) var(--s3);font-size:14.5px;background:var(--surface);color:var(--ink)}
 .autosave b{display:block;font-size:15.5px}
 .saved{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--good);opacity:0;transition:opacity .18s}
 .saved.on{opacity:1}
@@ -115,7 +115,7 @@ h1{font-size:clamp(21px,4.5vw,27px);line-height:1.15;margin:0;font-weight:800;le
 .viddec .db{flex:1 1 46%}
 /* ONE TAP FOR THE WHOLE CLIP. She is overwhelmed - his words - and the common answer is "all of
    it". Seven presses become one, and the button is honest about what it sets. */
-.allbtn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+.allbtn{font:inherit;font-size:12.5px;font-weight:800;letter-spacing:.02em;
         background:var(--accent);color:var(--accent-ink);border:1px solid var(--accent);border-radius:3px;
         padding:9px 14px;min-height:44px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
 .vidwhy textarea{width:100%;min-height:52px;font:inherit;font-size:13px;background:var(--ground);
@@ -124,7 +124,7 @@ h1{font-size:clamp(21px,4.5vw,27px);line-height:1.15;margin:0;font-weight:800;le
    it is the whole of "she should be able to communicate that easily": she can see at a glance that
    the page understood her, and she learns the arithmetic (1 of ours = 2 of hers) without reading
    an instruction. */
-.means{font-size:13.5px;line-height:1.45;border-left:3px solid var(--accent);padding:6px 0 6px 10px;color:var(--ink)}
+.means{font-size:13.5px;line-height:1.45;border-left:2px solid var(--accent);padding:6px 0 6px 10px;color:var(--ink)}
 .means b{font-weight:800}
 .means.none{border-left-color:var(--line);color:var(--dim)}
 /* A clip whose video is out. Dimmed, never hidden - she must still be able to see what she said no
@@ -160,7 +160,7 @@ h1{font-size:clamp(21px,4.5vw,27px);line-height:1.15;margin:0;font-weight:800;le
 #lbbar .row{display:flex;gap:var(--s1)}
 #dlhint{flex-basis:100%;font-size:12px;color:var(--dim);line-height:1.4}
 .descbox{background:var(--sunk);border:1px solid var(--line);border-radius:4px;padding:var(--s2);display:flex;flex-direction:column;gap:var(--s1)}
-.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);font-weight:700}
+.lbl{font-size:12px;letter-spacing:.03em;color:var(--dim);font-weight:700}
 .desctext{font-size:13.5px;line-height:1.5;margin:0;white-space:pre-wrap;word-break:break-word}
 .srtbox{border-color:var(--accent)}
 .srthow{margin:0;font-size:13px;line-height:1.5;color:var(--dim)}
@@ -176,7 +176,7 @@ textarea::placeholder{color:var(--dim)}
 .bar button{font:inherit;font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;border:0;border-radius:3px;padding:11px 20px;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
 /* THE SCOPE LABEL. One line naming which of the two feedback channels this bar is, so "Copy my
    answers" here and "Copy N feedback notes" in the pill can never read as the same button. */
-.bar .barscope{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:800;flex:0 0 auto}
+.bar .barscope{color:var(--dim);font-size:12px;letter-spacing:.04em;font-weight:800;flex:0 0 auto}
 /* The counter is two lines: the receipt on top, the completion figure under it. */
 .bar .count{display:flex;flex-direction:column;gap:1px;flex:1 1 auto;min-width:0;font-variant-numeric:tabular-nums}
 .bar .count .cbig{color:var(--ink);font-size:14px;font-weight:800;letter-spacing:.01em}
@@ -189,7 +189,7 @@ textarea::placeholder{color:var(--dim)}
    the bar keeps clear of the pill above it. */
 @media (max-width:560px){
   .bar{padding:8px var(--s2);gap:6px}
-  .bar .barscope{flex:1 1 100%;font-size:10px}
+  .bar .barscope{flex:1 1 100%;font-size:12px}
   .bar .count{flex:1 1 auto}
   .bar button{padding:11px 14px;font-size:12px}
 }
@@ -271,9 +271,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-09-02T02:03:29Z">
+<div id="freshbar" class="fresh" data-built="2026-09-02T02:26:44Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Wed Sep 2, 10:03</b>
+    <b id="freshtitle">This page was updated Wed Sep 2, 10:26</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday" id="newtoday" data-new="1"
@@ -2570,15 +2570,34 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
    is the private-note colour, so it can never be mistaken for something sendable.
    ============================================================================================== */
 :root{ --fb-card:#ffffff; --fb-ink:#16150f; --fb-line:#e2e0d8; --fb-dim:#5f5c52;
-       --fb-good:#1b6b3a; --fb-warm:#9a6b00; --fb-accent:#1f4fd8 }
+       --fb-good:#1b6b3a; --fb-warm:#9a6b00; --fb-accent:#1f4fd8; --fb-soft:#e9eefc }
 :root[data-fbk="dark"]{ --fb-card:#1e1e18; --fb-ink:#f2f1ea; --fb-line:#3a3931; --fb-dim:#a29e92;
-       --fb-good:#6ee7a0; --fb-warm:#f0b429; --fb-accent:#8fb0ff }
-.fbka{margin:2px 0 14px}
-.fbkbtn{display:inline-flex;align-items:center;min-height:40px;padding:8px 14px;border-radius:999px;
-  cursor:pointer;background:transparent;border:1px dashed var(--fb-line);
-  color:var(--fb-dim);
-  font:600 13px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-.fbkbtn.has{border:2px solid var(--fb-accent);color:var(--fb-accent);padding:7px 13px;font-weight:700}
+       --fb-good:#6ee7a0; --fb-warm:#f0b429; --fb-accent:#8fb0ff; --fb-soft:#242a38 }
+/* ================ THE ASK RECEDES, THE PAGE READS (2026-09-02) ==============================
+   Measured, not felt: on the To-Do List 48 of these are visible at 360px, 2831px of page, 8.9%
+   of its whole height - one dashed pill sitting in the GAP between every pair of cards. Read
+   top to bottom that is card, button, card, button, and the button won, because a dashed pill
+   with centred text that wraps to two lines is louder than the quiet card above it.
+
+   THE LABEL IS NOT THE PROBLEM AND MUST NOT BE TOUCHED. It names its own section because he
+   asked for that in those words - "says Feedback on the top card. Top card, I don't know what
+   that is" - and segment-test.html asserts the "+ Feedback on: " prefix. What was wrong was the
+   WEIGHT: a control that is offered on every section can never be styled like a call to action,
+   because 48 calls to action are 48 refusals to read.
+
+   So: no dashed border (a dash reads as unfinished, and it is the loudest tell here), text left
+   so a wrapped label looks deliberate instead of broken, dim until it has something to say. The
+   40px tap target is kept in full - it shrinks visually, never under the thumb.
+   ========================================================================================== */
+.fbka{margin:-2px 0 12px}
+.fbkbtn{display:inline-flex;align-items:center;min-height:40px;padding:8px 10px;border-radius:8px;
+  cursor:pointer;background:transparent;border:1px solid transparent;
+  color:var(--fb-dim);text-align:left;max-width:100%;
+  font:600 12.5px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.fbkbtn:hover{color:var(--fb-accent);border-color:var(--fb-line)}
+/* Something is waiting in it, so now it may speak: accent text on the soft fill, no slab. */
+.fbkbtn.has{border-color:var(--fb-line);background:var(--fb-soft);color:var(--fb-accent);
+  font-weight:700}
 /* A solid left bar in the private-note blue, so the area he writes IN is a visibly different object
    from the message blocks he copies OUT. Colour alone is not enough on a page where he is scanning
    fast: the shape has to differ too. */
@@ -2588,7 +2607,10 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
    the page header text. */
 .fbktop{margin:1rem 0 .25rem;max-width:44rem}
 .fbktop .fbkin{margin-top:.5rem}
-.fbkwhole > .fbkbtn{border-style:solid;border-width:2px;border-color:var(--fb-accent);
+/* The whole-page control sits directly under the H1, so a 2px accent outline made the loudest
+   thing on his day's first screen a request for feedback. Outline of a hairline, accent text:
+   still obviously pressable, no longer competing with the page title above it. */
+.fbkwhole > .fbkbtn{border-style:solid;border-width:1px;border-color:var(--fb-line);
   color:var(--fb-accent);font-weight:700}
 .fbkabout{margin:0 0 6px;font-size:13px;color:var(--fb-dim)}
 .fbkta{width:100%;min-height:104px;padding:10px 12px;border-radius:10px;
@@ -2870,7 +2892,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
      of his, so none of the scrubbing that guards the handled register above can be forgotten here.
      A row lands here the moment read-feedback.ps1 parses a paste of his, which is the only evidence
      that exists of him actually handing a note over. -->
-<script id="fbkReceived" type="application/json">["e2ai5cin","dz62a0rz","d911ph74","b6ca1j2p","bapgh91o","7d5tcmvb"]</script>
+<script id="fbkReceived" type="application/json">["d911ph74","b6ca1j2p","bapgh91o","7d5tcmvb"]</script>
 <div class="fbk" id="fbk">
 <!-- DELIBERATELY ALMOST EMPTY WHEN THERE ARE NO NOTES. Armin, 2026-08-09, on the Messages page:
      "There's so much text and unnecessary stuff at the bottom of the screen that I don't know what
