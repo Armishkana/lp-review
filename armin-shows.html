@@ -271,9 +271,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-09-02T00:52:30Z">
+<div id="freshbar" class="fresh" data-built="2026-09-02T01:16:42Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Wed Sep 2, 08:52</b>
+    <b id="freshtitle">This page was updated Wed Sep 2, 09:16</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday" id="newtoday" data-new="1"
@@ -2594,6 +2594,79 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
 .fbkta{width:100%;min-height:104px;padding:10px 12px;border-radius:10px;
   border:2px solid var(--fb-accent);background:var(--fb-card);color:var(--fb-ink);
   font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;resize:vertical}
+/* ================ WRITE WHILE YOU READ (2026-09-02, his note dz62a0rz) ======================
+   Armin, on the Messages page: "the way you wrote the message is that I'm seeing only parts of
+   the message. When I go to the feedback area to tell you what to fix, I have to scroll away, and
+   I can't read the message in its entirety while going through it and giving feedback to you at
+   the same time... I need to be able to not have to scroll up and down and also see the whole
+   message without it taking up a lot of the page."
+
+   TWO THINGS WERE WRONG AND ONLY ONE OF THEM WAS THE BOX.
+   (1) The composer was INLINE under the block. v3 moved it there on purpose - "a control that
+       acts on a thing belongs NEXT TO that thing" - and that is still right for a short section
+       and wrong for a 700-word draft, because next-to becomes below-and-far the moment the thing
+       is taller than the screen. It now DOCKS while it is open: a rail on a wide screen, a sheet
+       on a phone. He scrolls the whole message past a box that never moves.
+   (2) THE BLOCK ITSELF WAS TRUNCATED. The drafts on the Messages page live in
+       <textarea rows="14">, so "the whole message" was never on the page to begin with - no
+       arrangement of the composer could have fixed that half. While the box is open on a section,
+       every read-only box inside that section grows to its full height and every fold inside it
+       opens. Both go back when he closes it, which is the "without it taking up a lot of the
+       page" half of the same sentence.
+
+   THE DOM DOES NOT MOVE. The editor stays inside its own section's .fbkin and is positioned out
+   of the flow with CSS. Moving the node would have broken every selector in the three harnesses
+   that drive this box, and a rewrite that silently kills 150 passing assertions is not a fix.
+   ========================================================================================== */
+.fbkin.fbkdocked{position:fixed;z-index:2147483000;box-sizing:border-box;margin:0;
+  display:flex;flex-direction:column;background:var(--fb-card);
+  border:2px solid var(--fb-accent);border-left-width:2px;padding:0;
+  left:0;right:0;bottom:0;top:auto;border-bottom:0;border-radius:14px 14px 0 0;
+  height:46vh;max-height:80vh;min-height:170px;
+  box-shadow:0 -8px 28px rgba(0,0,0,.22)}
+.fbkin.fbkdocked[data-size="s"]{height:30vh}
+.fbkin.fbkdocked[data-size="l"]{height:74vh}
+@media (min-width:900px){
+  .fbkin.fbkdocked,
+  .fbkin.fbkdocked[data-size="s"],
+  .fbkin.fbkdocked[data-size="l"]{left:auto;right:0;top:0;bottom:0;
+    width:min(430px,38vw);height:auto;max-height:none;
+    border-radius:0;border-right:0;border-top:0;border-bottom:0;
+    box-shadow:-8px 0 28px rgba(0,0,0,.22)}
+}
+.fbkdhd{flex:0 0 auto;display:flex;align-items:center;gap:6px;padding:6px 8px 6px 12px;
+  border-bottom:1px solid var(--fb-line);background:var(--fb-card);border-radius:12px 12px 0 0}
+.fbkdlab{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font:700 12px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  text-transform:uppercase;letter-spacing:.05em;color:var(--fb-dim)}
+.fbkdbtn{flex:0 0 auto;min-height:40px;min-width:44px;padding:0 12px;border-radius:8px;cursor:pointer;
+  background:transparent;border:1px solid var(--fb-line);color:var(--fb-accent);
+  font:700 13px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+@media (min-width:900px){ .fbkdsize{display:none} }
+.fbkdbody{flex:1 1 auto;min-height:0;overflow:auto;padding:10px 12px;display:flex;flex-direction:column}
+.fbkin.fbkdocked .fbkabout{flex:0 0 auto}
+.fbkin.fbkdocked .fbkta{flex:1 1 auto;min-height:90px}
+.fbkin.fbkdocked .fbksaved,.fbkin.fbkdocked .fbkrow{flex:0 0 auto}
+/* The block he is writing about says so, so a docked box can never be about the wrong thing. */
+.fbksubj{outline:3px solid var(--fb-accent);outline-offset:6px;border-radius:8px}
+/* ---- the editor keeps his shape: bullets, numbers, bold ---------------------------------- */
+.fbkta[contenteditable]{overflow:auto;white-space:pre-wrap;word-wrap:break-word;
+  overflow-wrap:break-word;resize:none;-webkit-user-modify:read-write-plaintext-only;
+  -webkit-user-modify:read-write}
+.fbkta.fbkph:before{content:attr(data-ph);color:var(--fb-dim);pointer-events:none;display:block}
+.fbkta ul,.fbkta ol{margin:6px 0;padding-left:24px}
+.fbkta li{margin:3px 0}
+.fbkta p{margin:0 0 8px}
+.fbkta p:last-child{margin-bottom:0}
+.fbktools{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
+.fbktool{min-height:38px;min-width:44px;padding:0 12px;border-radius:8px;cursor:pointer;
+  background:transparent;border:1px solid var(--fb-line);color:var(--fb-ink);
+  font:700 14px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.fbktool:hover{border-color:var(--fb-accent);color:var(--fb-accent)}
+/* His bullets show in the little list under the section too, not only while he is typing. */
+.fbkntx ul,.fbkntx ol{margin:4px 0;padding-left:20px}
+.fbkntx p{margin:0 0 6px}
+.fbkntx p:last-child{margin-bottom:0}
 /* THE BUTTON ROW STOPS STRETCHING ON A BIG SCREEN. On a phone full-width buttons are right; on a
    1900px monitor "flex:1 1 auto" spread three of them edge to edge, each one a vast slab with a
    few words marooned in the middle, which is a good part of what read as ugly. Full width up to
@@ -2797,7 +2870,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
      of his, so none of the scrubbing that guards the handled register above can be forgotten here.
      A row lands here the moment read-feedback.ps1 parses a paste of his, which is the only evidence
      that exists of him actually handing a note over. -->
-<script id="fbkReceived" type="application/json">["d911ph74","b6ca1j2p","bapgh91o","7d5tcmvb"]</script>
+<script id="fbkReceived" type="application/json">["e2ai5cin","dz62a0rz","d911ph74","b6ca1j2p","bapgh91o","7d5tcmvb"]</script>
 <div class="fbk" id="fbk">
 <!-- DELIBERATELY ALMOST EMPTY WHEN THERE ARE NO NOTES. Armin, 2026-08-09, on the Messages page:
      "There's so much text and unnecessary stuff at the bottom of the screen that I don't know what
@@ -3642,6 +3715,225 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
   var editing=null;                 // id of the note the open composer owns
   var commitTimer=null;
 
+  // ===================== HIS FORMATTING SURVIVES (2026-09-02, note dz62a0rz) ==================
+  // "the text boxes don't save the formatting. It's just text like a notepad rather than a Word
+  //  document, where my bullet points and everything else will be saved... Figure out how to do
+  //  that with the feedback on all of our dashboards, not just this one."
+  //
+  // A <textarea> cannot hold a bullet, so the box is a contenteditable now. THREE THINGS MAKE THAT
+  // safe rather than a rewrite:
+  //   1. IT STILL HAS A .value. Defined below with a getter and a setter, so commit(), the restore
+  //      path and all three click-test harnesses keep reading and writing exactly as they did.
+  //      Nothing outside these lines knows this stopped being a textarea.
+  //   2. WHAT TRAVELS IS STILL TEXT. .value returns markdown - "- " for bullets, "1. " for
+  //      numbers, "**bold**" - because the report he pastes into chat is plain text by design and
+  //      is parsed by read-feedback.ps1. Structure that only existed as HTML would arrive in my
+  //      chat as markup and be lost in the vault. Markdown keeps the shape in a form both of us
+  //      read.
+  //   3. PASTED HTML IS REBUILT, NEVER INSERTED. fbkClean walks a whitelist and drops every
+  //      attribute. He pastes from anywhere, and the note list re-renders what he wrote, so an
+  //      <img onerror> pasted off a web page would otherwise run on his own dashboard.
+  function fbkEsc(s){ return String(s==null?"":s)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+  var FBK_BLOCK={P:1,DIV:1,UL:1,OL:1,LI:1};
+  function fbkClean(html){
+    var srcEl=d.createElement("div"); srcEl.innerHTML=String(html||"");
+    var out=d.createElement("div");
+    walkInto(srcEl,out,"");
+    return out.innerHTML;
+    function walkInto(from,to,ctx){
+      for(var n=from.firstChild;n;n=n.nextSibling){
+        if(n.nodeType===3){ to.appendChild(d.createTextNode(n.nodeValue)); continue; }
+        if(n.nodeType!==1) continue;
+        var t=n.tagName, keep="";
+        if(t==="SCRIPT"||t==="STYLE"||t==="NOSCRIPT"||t==="IFRAME"||t==="OBJECT") continue;
+        if(t==="BR"){ to.appendChild(d.createElement("br")); continue; }
+        if(t==="UL"||t==="OL"||t==="LI"){ keep=t; }
+        else if(t==="B"||t==="STRONG"){ keep="B"; }
+        else if(t==="I"||t==="EM"){ keep="I"; }
+        else if(t==="P"||t==="DIV"){ keep=(ctx==="LI")?"":"P"; }
+        if(!keep){ walkInto(n,to,ctx); continue; }
+        var el=d.createElement(keep); to.appendChild(el);
+        walkInto(n,el,(keep==="LI"?"LI":ctx));
+      }
+    }
+  }
+
+  // ---- the editor -> the text that travels --------------------------------------------------
+  function fbkToText(root){
+    var out=[];
+    function txt(s){ return String(s||"").replace(/\u00a0/g," ").replace(/[ \t]+/g," ").replace(/^ | $/g,""); }
+    function inlineOf(el){
+      var s="";
+      for(var c=el.firstChild;c;c=c.nextSibling){
+        if(c.nodeType===3){ s+=c.nodeValue; continue; }
+        if(c.nodeType!==1) continue;
+        var t=c.tagName;
+        if(FBK_BLOCK[t]) continue;                       // a block child is emitted on its own
+        if(t==="BR"){ s+="\n"; continue; }
+        var inner=inlineOf(c);
+        if(t==="B"||t==="STRONG"){ var b=inner.replace(/^\s+|\s+$/g,""); s+= b?("**"+b+"**"):""; }
+        else if(t==="I"||t==="EM"){ var i2=inner.replace(/^\s+|\s+$/g,""); s+= i2?("*"+i2+"*"):""; }
+        else { s+=inner; }
+      }
+      return s;
+    }
+    function pushLines(prefix,indent,s){
+      var parts=String(s).split("\n"), wrote=false;
+      for(var k=0;k<parts.length;k++){
+        var t=txt(parts[k]);
+        if(!t){ continue; }
+        out.push(indent+((k===0)?(prefix||""):"")+t); wrote=true;
+      }
+      if(!wrote && prefix){ out.push(indent+prefix); }
+    }
+    function emitBlock(el,indent,prefix){
+      pushLines(prefix,indent,inlineOf(el));
+      for(var c=el.firstChild;c;c=c.nextSibling){
+        if(c.nodeType===1&&(c.tagName==="UL"||c.tagName==="OL")){ emitList(c,indent+"    "); }
+      }
+    }
+    function emitList(list,indent){
+      var num=1, ordered=(list.tagName==="OL");
+      for(var li=list.firstChild;li;li=li.nextSibling){
+        if(li.nodeType!==1||li.tagName!=="LI") continue;
+        emitBlock(li,indent,(ordered?(num+". "):"- ")); num++;
+      }
+      out.push("");
+    }
+    (function(root2){
+      var pend=[];
+      function flush(){
+        if(!pend.length) return;
+        var holder2=d.createElement("div");
+        for(var k=0;k<pend.length;k++){ holder2.appendChild(pend[k].cloneNode(true)); }
+        pushLines("","",inlineOf(holder2));
+        out.push(""); pend=[];
+      }
+      for(var c=root2.firstChild;c;c=c.nextSibling){
+        if(c.nodeType===1&&(c.tagName==="UL"||c.tagName==="OL")){ flush(); emitList(c,""); continue; }
+        if(c.nodeType===1&&(c.tagName==="P"||c.tagName==="DIV")){ flush(); emitBlock(c,"",""); out.push(""); continue; }
+        if(c.nodeType===1&&c.tagName==="LI"){ flush(); emitBlock(c,"","- "); continue; }
+        pend.push(c);
+      }
+      flush();
+    })(root);
+    // Collapse runs of blank lines, and never end on one.
+    var lines=[], blank=false;
+    for(var k2=0;k2<out.length;k2++){
+      var L=out[k2];
+      if(L===""){ if(blank||!lines.length) continue; blank=true; lines.push(""); }
+      else { blank=false; lines.push(L); }
+    }
+    while(lines.length && lines[lines.length-1]===""){ lines.pop(); }
+    return lines.join("\n");
+  }
+
+  // ---- text (an old note, or a harness assignment) -> the editor -----------------------------
+  function fbkInlineMd(s){
+    var e=fbkEsc(s);
+    e=e.replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>");
+    e=e.replace(/(^|[^*])\*([^*\n]+)\*/g,"$1<i>$2</i>");
+    return e;
+  }
+  function fbkBullet(l){ return /^\s*[-*\u2022]\s+/.test(l); }
+  function fbkNumber(l){ return /^\s*\d+[.)]\s+/.test(l); }
+  function fbkFromText(s){
+    var lines=String(s==null?"":s).split(/\r?\n/), html="", i=0;
+    while(i<lines.length){
+      if(fbkBullet(lines[i])||fbkNumber(lines[i])){
+        var ordered=fbkNumber(lines[i]), items=[];
+        while(i<lines.length && (ordered?fbkNumber(lines[i]):fbkBullet(lines[i]))){
+          var body=lines[i].replace(ordered?/^\s*\d+[.)]\s+/:/^\s*[-*\u2022]\s+/,"");
+          items.push("<li>"+fbkInlineMd(body)+"</li>"); i++;
+        }
+        html+= (ordered?"<ol>":"<ul>")+items.join("")+(ordered?"</ol>":"</ul>");
+        continue;
+      }
+      if(!lines[i].replace(/^\s+|\s+$/g,"")){ i++; continue; }
+      var para=[];
+      while(i<lines.length && lines[i].replace(/^\s+|\s+$/g,"") && !fbkBullet(lines[i]) && !fbkNumber(lines[i])){
+        para.push(fbkInlineMd(lines[i])); i++;
+      }
+      html+="<p>"+para.join("<br>")+"</p>";
+    }
+    return html;
+  }
+
+  function fbkPh(el){
+    if(!el) return;
+    var t=(el.textContent||"").replace(/^\s+|\s+$/g,"");
+    var hasList=!!el.querySelector("li");
+    if(!t && !hasList){ el.classList.add("fbkph"); } else { el.classList.remove("fbkph"); }
+  }
+  function fbkInsert(html){
+    try{ if(d.execCommand && d.execCommand("insertHTML",false,html)) return true; }catch(e){}
+    try{
+      var sel=W.getSelection(); if(!sel||!sel.rangeCount) return false;
+      var r=sel.getRangeAt(0); r.deleteContents();
+      var tmp=d.createElement("div"); tmp.innerHTML=html;
+      var frag=d.createDocumentFragment(), last=null, n;
+      while((n=tmp.firstChild)){ last=frag.appendChild(n); }
+      r.insertNode(frag);
+      if(last){ r.setStartAfter(last); r.collapse(true); sel.removeAllRanges(); sel.addRange(r); }
+      return true;
+    }catch(e){ return false; }
+  }
+  function fbkCmd(name){ try{ d.execCommand(name,false,null); }catch(e){} }
+
+  // The box, with .value, so nothing outside this function has to know what it is made of.
+  function fbkMakeEditor(ph){
+    var el=d.createElement("div");
+    el.className="fbkta fbkph";
+    el.setAttribute("contenteditable","true");
+    el.setAttribute("role","textbox");
+    el.setAttribute("aria-multiline","true");
+    el.setAttribute("aria-label","Your note");
+    el.setAttribute("data-ph",ph);
+    try{ Object.defineProperty(el,"value",{
+      get:function(){ return fbkToText(el); },
+      set:function(v){ el.innerHTML=fbkFromText(v); fbkPh(el); },
+      configurable:true }); }catch(e){}
+    // Chrome wraps each line in a <div> by default; ask for <p> so the tree the cleaner and the
+    // serialiser walk is the same one in every browser.
+    try{ d.execCommand("defaultParagraphSeparator",false,"p"); }catch(e){}
+    el.addEventListener("paste", function(ev){
+      try{
+        var dt=ev.clipboardData||W.clipboardData; if(!dt) return;
+        var h=dt.getData("text/html"), t=dt.getData("text/plain");
+        if(!h && !t) return;
+        ev.preventDefault();
+        fbkInsert(h?fbkClean(h):fbkFromText(t));
+        fbkPh(el);
+        el.dispatchEvent(new Event("input",{bubbles:true}));
+      }catch(e){}
+    });
+    return el;
+  }
+  function fbkToolbar(ed){
+    var bar2=d.createElement("div"); bar2.className="fbktools";
+    var defs=[["&#8226; List","insertUnorderedList","Bullet list"],
+              ["1. List","insertOrderedList","Numbered list"],
+              ["<b>B</b>","bold","Bold"]];
+    for(var k=0;k<defs.length;k++){
+      (function(def){
+        var b=d.createElement("button"); b.type="button"; b.className="fbktool";
+        b.innerHTML=def[0]; b.title=def[2]; b.setAttribute("aria-label",def[2]);
+        // mousedown, not click: by click time the caret has already left the editor.
+        b.addEventListener("mousedown", function(ev){ ev.preventDefault(); });
+        b.addEventListener("click", function(ev){
+          ev.preventDefault();
+          try{ ed.focus(); }catch(e){}
+          fbkCmd(def[1]); fbkPh(ed);
+          ed.dispatchEvent(new Event("input",{bubbles:true}));
+        });
+        bar2.appendChild(b);
+      })(defs[k]);
+    }
+    return bar2;
+  }
+
   // Reads the open composer and writes it into notes. Called on every keystroke (debounced), on
   // close, on page hide, and before any copy. It is idempotent, so calling it too often is free -
   // which is the point: the expensive mistake is calling it too rarely.
@@ -3668,17 +3960,121 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
       // persist text; whether the note has been handed over is not its business unless the text
       // actually changed.
       if(notes[idx].text!==v){ notes[idx].text=v; notes[idx].at=stamp(); notes[idx].sent=false; }
+      // The shape he typed, kept alongside the text. THE TEXT REMAINS THE RECORD - it is what
+      // travels in the report and what every check reads - and this is only so reopening a note
+      // gives him his own bullets back rather than the markdown he never typed.
+      notes[idx].html=(ta.innerHTML!==undefined)?fbkClean(ta.innerHTML):"";
     }
     else {
-      var n={id:newId(), i:openAt, label:labelFor(openAt), text:v, at:stamp(), sent:false};
+      var n={id:newId(), i:openAt, label:labelFor(openAt), text:v, at:stamp(), sent:false,
+             html:((ta.innerHTML!==undefined)?fbkClean(ta.innerHTML):"")};
       notes.push(n); editing=n.id;
     }
     save();
   }
 
+  // ============ THE BOX STAYS ON SCREEN WHILE HE READS THE THING IT IS ABOUT =================
+  // The DOM never moves: the editor is still inside its own section's .fbkin, and .fbkdocked only
+  // takes it out of the FLOW. That matters more than it looks - three harnesses reach it as
+  // holder(i).querySelector(".fbkin .fbkta"), and re-parenting the node would have killed every
+  // one of those assertions silently while the page still looked right.
+  var dockRestore=null;             // what to put back when he closes it
+  function dockWide(){ return W.innerWidth>=900; }
+  function dockSize(){
+    try{ var v=W.localStorage.getItem("fbkDockSize"); if(v==="s"||v==="m"||v==="l") return v; }catch(e){}
+    return "m";
+  }
+  function dockSetSize(v){
+    try{ W.localStorage.setItem("fbkDockSize",v); }catch(e){}
+    var box=d.querySelector(".fbkin.fbkdocked");
+    if(box){ box.setAttribute("data-size",v); dockFit(); }
+  }
+  // The page keeps room for the dock, so the bottom of the page is still reachable and nothing he
+  // needs is hidden underneath it. Measured from the rendered box, never assumed from the CSS -
+  // 46vh is a number in a stylesheet and the pixels are what he actually loses.
+  function dockFit(){
+    var box=d.querySelector(".fbkin.fbkdocked"); if(!box||!dockRestore) return;
+    var r=box.getBoundingClientRect(), b=d.body, wide=dockWide();
+    b.style.paddingRight = wide ? (Math.ceil(r.width)+"px") : dockRestore.pr;
+    b.style.paddingBottom = wide ? dockRestore.pb : (Math.ceil(r.height+16)+"px");
+    // The floating pill carries Copy. It must never end up underneath the box he is writing in.
+    if(bar){
+      bar.style.right  = wide ? (Math.ceil(r.width+12)+"px") : dockRestore.barR;
+      bar.style.bottom = wide ? dockRestore.barB : (Math.ceil(r.height+12)+"px");
+    }
+  }
+  // WHAT HE IS WRITING ABOUT, WHOLE. The drafts on the Messages page sit in <textarea rows="14">
+  // and its long blocks sit in <details>, so "the message in its entirety" was not on the page at
+  // all. While the box is open, the block it belongs to opens up and every read-only box in it
+  // grows to its full height; the page then scrolls through the message past a box that stays put.
+  // Every change is recorded and put back on close - that is the "without it taking up a lot of
+  // the page" half, and it is why nothing here is permanent.
+  function subjectOpen(i){
+    var blk=(i>=0 && secs[i]) ? secs[i].after : null;
+    var undo=[];
+    if(blk){
+      blk.classList.add("fbksubj");
+      var tas=blk.querySelectorAll("textarea");
+      for(var k=0;k<tas.length;k++){
+        var tb=tas[k];
+        if(tb.className&&String(tb.className).indexOf("fbkta")>=0) continue;
+        undo.push({el:tb,kind:"ta",h:tb.style.height,ov:tb.style.overflow});
+        tb.style.overflow="hidden"; tb.style.height="auto";
+        tb.style.height=(tb.scrollHeight+6)+"px";
+      }
+      var dets=blk.querySelectorAll("details");
+      for(var k2=0;k2<dets.length;k2++){
+        var dt=dets[k2];
+        if(dt.querySelector(".fbkta")) continue;         // never force the composer's own folds
+        if(!dt.open){ undo.push({el:dt,kind:"det"}); dt.open=true; }
+      }
+    }
+    return {blk:blk,undo:undo};
+  }
+  function subjectClose(s){
+    if(!s) return;
+    if(s.blk){ s.blk.classList.remove("fbksubj"); }
+    for(var k=0;k<s.undo.length;k++){
+      var u=s.undo[k];
+      if(u.kind==="ta"){ u.el.style.height=u.h; u.el.style.overflow=u.ov; }
+      else if(u.kind==="det"){ u.el.open=false; }
+    }
+  }
+  function dockOn(i,box){
+    var b=d.body;
+    dockRestore={ pr:b.style.paddingRight, pb:b.style.paddingBottom,
+                  barR:(bar?bar.style.right:""), barB:(bar?bar.style.bottom:""),
+                  subj:subjectOpen(i) };
+    box.classList.add("fbkdocked");
+    box.setAttribute("data-size",dockSize());
+    dockFit();
+    W.addEventListener("resize",dockFit);
+    // Start him at the top of the thing he is writing about, so the first thing he reads is the
+    // beginning of the message rather than wherever he happened to be standing.
+    if(dockRestore.subj && dockRestore.subj.blk){
+      try{
+        var top=dockRestore.subj.blk.getBoundingClientRect().top+(W.pageYOffset||0)-12;
+        W.scrollTo(0,Math.max(0,top));
+      }catch(e){}
+    }
+  }
+  function dockOff(){
+    var box=d.querySelector(".fbkin.fbkdocked");
+    if(box){ box.classList.remove("fbkdocked"); box.removeAttribute("data-size"); }
+    W.removeEventListener("resize",dockFit);
+    if(dockRestore){
+      d.body.style.paddingRight=dockRestore.pr;
+      d.body.style.paddingBottom=dockRestore.pb;
+      if(bar){ bar.style.right=dockRestore.barR; bar.style.bottom=dockRestore.barB; }
+      subjectClose(dockRestore.subj);
+    }
+    dockRestore=null;
+  }
+
   function closeEditor(){
     if(openAt===null) return;
     commit();                       // READ IT BEFORE DESTROYING IT. This ordering is the whole fix.
+    dockOff();
     var hh=holder(openAt); if(hh){ hh.querySelector(".fbkin").innerHTML=""; }
     openAt=null; editing=null; paint();
   }
@@ -3698,17 +4094,39 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
     // what segment." It used to read "About: To-Do List - section: The top card" - a page name and
     // an internal name, joined by a dash, describing a card headed something else entirely. It now
     // quotes the heading printed on the block directly above it, and says so in a full sentence.
-    box.innerHTML='<p class="fbkabout">'+(i<0 ? 'Your note about <b></b>' : 'Your note about the part above, headed <b></b>')+'</p>'+
-      '<textarea class="fbkta" placeholder="What is wrong, confusing, missing, or what would make it better? How it looks, how it works, anything."></textarea>'+
-      '<p class="fbksaved" aria-live="polite">Saves as you type. There is no save button and you cannot lose this.</p>'+
-      '<div class="fbkrow"><button type="button" class="fbkghost fbkcancel"></button></div>';
-    box.querySelector(".fbkcancel").textContent =
-      (i<0 ? "Done" : "Done with " + shortName(secs[i] ? secs[i].label : "this section"));
+    var doneTxt=(i<0 ? "Done" : "Done with " + shortName(secs[i] ? secs[i].label : "this section"));
+    box.innerHTML='<div class="fbkdhd"><span class="fbkdlab"></span>'+
+      '<button type="button" class="fbkdbtn fbkdsize" aria-label="Make this box taller or shorter">Size</button>'+
+      '<button type="button" class="fbkdbtn fbkdclose">Done</button></div>'+
+      '<div class="fbkdbody">'+
+      '<p class="fbkabout">'+(i<0 ? 'Your note about <b></b>' : 'Your note about the part outlined on the page, headed <b></b>')+'</p>'+
+      '<div class="fbkslot"></div>'+
+      '<p class="fbksaved" aria-live="polite">Saves as you type. There is no save button and you cannot lose this. Bullets, numbers and bold are kept.</p>'+
+      '<div class="fbkrow"><button type="button" class="fbkghost fbkcancel"></button></div>'+
+      '</div>';
+    box.querySelector(".fbkcancel").textContent=doneTxt;
+    box.querySelector(".fbkdlab").textContent=displayLabel(i);
     box.querySelector("b").textContent=displayLabel(i);
-    var ta=box.querySelector(".fbkta");
-    if(existing){ ta.value=existing.text; }
+    var ta=fbkMakeEditor("What is wrong, confusing, missing, or what would make it better? How it looks, how it works, anything.");
+    var slot=box.querySelector(".fbkslot");
+    slot.parentNode.insertBefore(fbkToolbar(ta), slot);
+    slot.parentNode.insertBefore(ta, slot);
+    slot.parentNode.removeChild(slot);
+    // His own shape comes back if we kept it; otherwise the text is re-read as markdown, which is
+    // what makes a note written before today open as a list rather than as "- " characters.
+    if(existing){
+      if(existing.html){ ta.innerHTML=fbkClean(existing.html); fbkPh(ta); }
+      else { ta.value=existing.text; }
+    }
+    box.querySelector(".fbkdclose").addEventListener("click", closeEditor);
+    box.querySelector(".fbkdsize").addEventListener("click", function(){
+      var order=["s","m","l"], cur=dockSize();
+      dockSetSize(order[(order.indexOf(cur)+1)%order.length]);
+    });
+    dockOn(i,box);
     var savedEl=box.querySelector(".fbksaved");
     ta.addEventListener("input", function(){
+      fbkPh(ta);
       if(commitTimer){ clearTimeout(commitTimer); }
       commitTimer=setTimeout(function(){
         commit(); paintCountsOnly();
@@ -3928,7 +4346,13 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
     var row=d.createElement("div"); row.className="fbkn"+(n.sent?" sent":"");
     var left=d.createElement("div"); left.className="fbknl";
     var tx=d.createElement("div"); tx.className="fbkntx";
-    tx.textContent=(withLabel? n.label+" - " : "")+n.text;
+    // His bullets show here too, not only inside the box while he is typing them. The html is
+    // rebuilt by fbkClean on the way in and again here, so nothing he pasted can execute.
+    if(n.html){
+      tx.innerHTML=(withLabel? fbkEsc(n.label+" - ") : "")+fbkClean(n.html);
+    } else {
+      tx.textContent=(withLabel? n.label+" - " : "")+n.text;
+    }
     var tg=d.createElement("div"); tg.className="fbkntag";
     // COPYING IS NOT DELIVERY, SO A COPIED NOTE IS NOT FINISHED AND MUST NOT READ AS FINISHED.
     // Armin, 2026-08-10: "what if I copy it and then I don't paste it?" Exactly right - the copy
