@@ -38,7 +38,7 @@ h1{font-size:clamp(21px,4.5vw,27px);line-height:1.15;margin:0;font-weight:800;le
 .howmore[open]>summary::before{content:"\2212"}
 .howmore[open]>summary{border-bottom:1px solid var(--line);margin-bottom:var(--s2)}
 .howmore>ol,.howmore>p{margin:0 0 var(--s2) 0}
-.autosave{border:1px solid var(--good);border-left:4px solid var(--good);border-radius:4px;padding:var(--s2) var(--s3);font-size:14.5px;background:var(--surface);color:var(--ink)}
+.autosave{border:1px solid var(--good);border-left:2px solid var(--good);border-radius:8px;padding:var(--s2) var(--s3);font-size:14.5px;background:var(--surface);color:var(--ink)}
 .autosave b{display:block;font-size:15.5px}
 .saved{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--good);opacity:0;transition:opacity .18s}
 .saved.on{opacity:1}
@@ -93,7 +93,7 @@ h1{font-size:clamp(21px,4.5vw,27px);line-height:1.15;margin:0;font-weight:800;le
    NOT YET ANSWERED - the third one has to be visible or a silent page reads as approval, which
    is the exact failure this replaces. */
 .dec{display:flex;flex-direction:column;gap:var(--s1)}
-.decq{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim);font-weight:800}
+.decq{font-size:12.5px;letter-spacing:.02em;color:var(--dim);font-weight:800}
 .decbtns{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 /* 44px and 12px everywhere, not only under the phone media query. These are now THE controls on
    the page and Sol reviews on a phone every day; a floor that only exists at one width is the
@@ -115,7 +115,7 @@ h1{font-size:clamp(21px,4.5vw,27px);line-height:1.15;margin:0;font-weight:800;le
 .viddec .db{flex:1 1 46%}
 /* ONE TAP FOR THE WHOLE CLIP. She is overwhelmed - his words - and the common answer is "all of
    it". Seven presses become one, and the button is honest about what it sets. */
-.allbtn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+.allbtn{font:inherit;font-size:12.5px;font-weight:800;letter-spacing:.02em;
         background:var(--accent);color:var(--accent-ink);border:1px solid var(--accent);border-radius:3px;
         padding:9px 14px;min-height:44px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
 .vidwhy textarea{width:100%;min-height:52px;font:inherit;font-size:13px;background:var(--ground);
@@ -124,7 +124,7 @@ h1{font-size:clamp(21px,4.5vw,27px);line-height:1.15;margin:0;font-weight:800;le
    it is the whole of "she should be able to communicate that easily": she can see at a glance that
    the page understood her, and she learns the arithmetic (1 of ours = 2 of hers) without reading
    an instruction. */
-.means{font-size:13.5px;line-height:1.45;border-left:3px solid var(--accent);padding:6px 0 6px 10px;color:var(--ink)}
+.means{font-size:13.5px;line-height:1.45;border-left:2px solid var(--accent);padding:6px 0 6px 10px;color:var(--ink)}
 .means b{font-weight:800}
 .means.none{border-left-color:var(--line);color:var(--dim)}
 /* A clip whose video is out. Dimmed, never hidden - she must still be able to see what she said no
@@ -160,7 +160,7 @@ h1{font-size:clamp(21px,4.5vw,27px);line-height:1.15;margin:0;font-weight:800;le
 #lbbar .row{display:flex;gap:var(--s1)}
 #dlhint{flex-basis:100%;font-size:12px;color:var(--dim);line-height:1.4}
 .descbox{background:var(--sunk);border:1px solid var(--line);border-radius:4px;padding:var(--s2);display:flex;flex-direction:column;gap:var(--s1)}
-.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);font-weight:700}
+.lbl{font-size:12px;letter-spacing:.03em;color:var(--dim);font-weight:700}
 .desctext{font-size:13.5px;line-height:1.5;margin:0;white-space:pre-wrap;word-break:break-word}
 .srtbox{border-color:var(--accent)}
 .srthow{margin:0;font-size:13px;line-height:1.5;color:var(--dim)}
@@ -176,11 +176,11 @@ textarea::placeholder{color:var(--dim)}
 .bar button{font:inherit;font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;border:0;border-radius:3px;padding:11px 20px;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
 /* THE SCOPE LABEL. One line naming which of the two feedback channels this bar is, so "Copy my
    answers" here and "Copy N feedback notes" in the pill can never read as the same button. */
-.bar .barscope{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:800;flex:0 0 auto}
+.bar .barscope{color:var(--dim);font-size:12px;letter-spacing:.04em;font-weight:800;flex:0 0 auto}
 /* The counter is two lines: the receipt on top, the completion figure under it. */
 .bar .count{display:flex;flex-direction:column;gap:1px;flex:1 1 auto;min-width:0;font-variant-numeric:tabular-nums}
 .bar .count .cbig{color:var(--ink);font-size:14px;font-weight:800;letter-spacing:.01em}
-.bar .count .csmall{color:var(--dim);font-size:11.5px;font-weight:600;letter-spacing:.02em}
+.bar .count .csmall{color:var(--dim);font-size:12px;font-weight:600;letter-spacing:.02em}
 /* A REFUSED WRITE TURNS THE WHOLE BAR RED AND STAYS RED. See flashSaved(). */
 .bar.savefail{background:var(--bad);border-top-color:var(--bad)}
 .bar.savefail .count .cbig,.bar.savefail .count .csmall,.bar.savefail .barscope{color:#fff}
@@ -189,7 +189,7 @@ textarea::placeholder{color:var(--dim)}
    the bar keeps clear of the pill above it. */
 @media (max-width:560px){
   .bar{padding:8px var(--s2);gap:6px}
-  .bar .barscope{flex:1 1 100%;font-size:10px}
+  .bar .barscope{flex:1 1 100%;font-size:12px}
   .bar .count{flex:1 1 auto}
   .bar button{padding:11px 14px;font-size:12px}
 }
@@ -271,9 +271,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-09-02T02:25:28Z">
+<div id="freshbar" class="fresh" data-built="2026-09-02T02:39:10Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Wed Sep 2, 10:16</b>
+    <b id="freshtitle">This page was updated Wed Sep 2, 10:39</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday none" id="newtoday" data-new="0"
@@ -4716,7 +4716,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   /* BLUE - the primary */
   --accent:var(--ds-blue)!important;       --accent-soft:var(--ds-blue-soft)!important;
   --accent-ink:var(--ds-on-blue)!important;
-  --chip:var(--ds-blue)!important;         --chip-ink:var(--ds-on-blue)!important;
+  --chip:var(--ds-blue-fill)!important;    --chip-ink:var(--ds-on-blue)!important;
   --momiji:var(--ds-blue)!important;       /* Japan pages: was the red maple, was their accent */
   --now-fg:var(--ds-blue)!important;       --now-bg:var(--ds-blue-soft)!important;
 
@@ -4770,7 +4770,22 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
    badges below it are .num - so this rule was tinting the list and leaving the 1 on the page's own
    --accent. Two blues that are nearly the same is worse than two that obviously differ: it reads as
    a rendering fault rather than a choice. One rule, both badges, identical colour by construction. */
-.tag.act, .btn.primary, button.copy, .pill.num, .num, .hero .n{ background-color:var(--ds-blue-fill)!important; }
+/* THE BARE `.num` IS GONE FROM THIS LIST, AND THAT IS THE WHOLE FIX (2026-09-02).
+   `.num` does not mean one thing across these pages. On the clip dashboards it is a filled badge.
+   On the Money page it is the MONOSPACE-NUMERALS class - build-money-page.ps1 line 261 gives it a
+   font-family and nothing else - and it is on every figure on the page: the headline, the masthead
+   stamp, all four totals, and every amount cell. So this rule was painting all of them in solid
+   fill blue while each kept its own green/red/grey text: #2f9e63 on #2f57c4 for the money coming
+   in, #5b86f0 on #2f57c4 for the $209 headline. In dark mode the page's most important column was
+   a stack of blue slabs with unreadable text in them, and no checker could see it because every
+   rule involved was individually correct and the collision only existed between them.
+   The bare selector was here to give the clip badge an accessible fill, so that job moves UP to
+   the token: --chip now carries --ds-blue-fill, which means any page filling its own badge gets
+   white at 6.4:1 instead of 3.44 without this stylesheet having to know the page's class names.
+   THE RULE THIS BOUGHT: a single-word class is not a selector, it is a guess about every page at
+   once. An !important background may only be aimed at a name that says what the thing IS
+   (.pill.num, .trow .num, .hero .n) - never at one that says what its content looks like. */
+.tag.act, .btn.primary, button.copy, .pill.num, .trow .num, .hero .n{ background-color:var(--ds-blue-fill)!important; }
 
 /* STAYS RED - genuinely urgent, and it would have turned blue with --accent. */
 .age.stale{ background:var(--ds-red)!important; color:var(--ds-on-red)!important; }
@@ -4898,6 +4913,16 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
   border:1px solid var(--ds-line,#dfe3e9);border-radius:22px;
   box-shadow:var(--ds-shadow,0 8px 24px rgba(20,22,28,.18));
   font:600 13px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+/* TWO FIXED BARS SHARED bottom:12px AND MET IN THE MIDDLE OF A PHONE. This one is pinned left,
+   the feedback bar is pinned right with a higher z-index, and at 360px the pair are wider than
+   the screen - so the feedback bar sat on top of this one and the label read "Jump" with its
+   second word underneath it. Below 430px the word goes and the control becomes the round icon
+   button it already looks like, which ends the collision outright instead of negotiating it.
+   The 44px target is untouched: it shrinks in width only. */
+@media (max-width:430px){
+  #dstocopen{padding:0;width:44px;justify-content:center;border-radius:50%;gap:0}
+  #dstocopen span:last-child{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+}
 
 #dstoc .dstoch{font:600 12px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   letter-spacing:.02em;color:var(--ds-faint,#848b95);padding:6px 10px 8px;text-transform:none}

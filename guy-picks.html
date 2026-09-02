@@ -1017,7 +1017,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">50 topics across 6 streams. Updated 2026-09-02T02:16:08Z.</p>
+  <p class="built">50 topics across 6 streams. Updated 2026-09-02T02:39:11Z.</p>
 </div>
 
 <div class="bar">
@@ -3766,7 +3766,7 @@
   /* BLUE - the primary */
   --accent:var(--ds-blue)!important;       --accent-soft:var(--ds-blue-soft)!important;
   --accent-ink:var(--ds-on-blue)!important;
-  --chip:var(--ds-blue)!important;         --chip-ink:var(--ds-on-blue)!important;
+  --chip:var(--ds-blue-fill)!important;    --chip-ink:var(--ds-on-blue)!important;
   --momiji:var(--ds-blue)!important;       /* Japan pages: was the red maple, was their accent */
   --now-fg:var(--ds-blue)!important;       --now-bg:var(--ds-blue-soft)!important;
 
@@ -3820,7 +3820,22 @@
    badges below it are .num - so this rule was tinting the list and leaving the 1 on the page's own
    --accent. Two blues that are nearly the same is worse than two that obviously differ: it reads as
    a rendering fault rather than a choice. One rule, both badges, identical colour by construction. */
-.tag.act, .btn.primary, button.copy, .pill.num, .num, .hero .n{ background-color:var(--ds-blue-fill)!important; }
+/* THE BARE `.num` IS GONE FROM THIS LIST, AND THAT IS THE WHOLE FIX (2026-09-02).
+   `.num` does not mean one thing across these pages. On the clip dashboards it is a filled badge.
+   On the Money page it is the MONOSPACE-NUMERALS class - build-money-page.ps1 line 261 gives it a
+   font-family and nothing else - and it is on every figure on the page: the headline, the masthead
+   stamp, all four totals, and every amount cell. So this rule was painting all of them in solid
+   fill blue while each kept its own green/red/grey text: #2f9e63 on #2f57c4 for the money coming
+   in, #5b86f0 on #2f57c4 for the $209 headline. In dark mode the page's most important column was
+   a stack of blue slabs with unreadable text in them, and no checker could see it because every
+   rule involved was individually correct and the collision only existed between them.
+   The bare selector was here to give the clip badge an accessible fill, so that job moves UP to
+   the token: --chip now carries --ds-blue-fill, which means any page filling its own badge gets
+   white at 6.4:1 instead of 3.44 without this stylesheet having to know the page's class names.
+   THE RULE THIS BOUGHT: a single-word class is not a selector, it is a guess about every page at
+   once. An !important background may only be aimed at a name that says what the thing IS
+   (.pill.num, .trow .num, .hero .n) - never at one that says what its content looks like. */
+.tag.act, .btn.primary, button.copy, .pill.num, .trow .num, .hero .n{ background-color:var(--ds-blue-fill)!important; }
 
 /* STAYS RED - genuinely urgent, and it would have turned blue with --accent. */
 .age.stale{ background:var(--ds-red)!important; color:var(--ds-on-red)!important; }
@@ -3948,6 +3963,16 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
   border:1px solid var(--ds-line,#dfe3e9);border-radius:22px;
   box-shadow:var(--ds-shadow,0 8px 24px rgba(20,22,28,.18));
   font:600 13px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+/* TWO FIXED BARS SHARED bottom:12px AND MET IN THE MIDDLE OF A PHONE. This one is pinned left,
+   the feedback bar is pinned right with a higher z-index, and at 360px the pair are wider than
+   the screen - so the feedback bar sat on top of this one and the label read "Jump" with its
+   second word underneath it. Below 430px the word goes and the control becomes the round icon
+   button it already looks like, which ends the collision outright instead of negotiating it.
+   The 44px target is untouched: it shrinks in width only. */
+@media (max-width:430px){
+  #dstocopen{padding:0;width:44px;justify-content:center;border-radius:50%;gap:0}
+  #dstocopen span:last-child{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+}
 
 #dstoc .dstoch{font:600 12px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   letter-spacing:.02em;color:var(--ds-faint,#848b95);padding:6px 10px 8px;text-transform:none}
