@@ -271,9 +271,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-09-02T02:39:10Z">
+<div id="freshbar" class="fresh" data-built="2026-09-02T02:52:50Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Wed Sep 2, 10:39</b>
+    <b id="freshtitle">This page was updated Wed Sep 2, 10:50</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday none" id="newtoday" data-new="0"
@@ -2198,6 +2198,26 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
    40px tap target is kept in full - it shrinks visually, never under the thumb.
    ========================================================================================== */
 .fbka{margin:-2px 0 12px}
+/* TWO CONTROLS BACK TO BACK, WITH NOTHING BETWEEN THEM, IS THE WALL HE REPORTED: "so many
+   feedback section and i do not know which is for which. and they are just next to each other."
+   It happens where a section CONTAINS other sections - on the Roadmap the group headings "Now 9
+   steps", "Next 5 steps" and "Later 4 steps" each own every step under them, so the group's own
+   control renders after its last child's control and the two end up 14px apart. Measured, not
+   guessed: three such pairs, and they were 14px apart under the old margin too, so this is older
+   than the restyle above.
+   The pair is legitimate - both controls are real and the coverage gate wants both - so the fix
+   is to make them look like two things rather than one block. Only the second control in a run
+   is pushed down, so nothing moves on the twelve pages that never stack two. */
+.fbka + .fbka{margin-top:64px}
+/* THE PAIR IS USUALLY NOT SIBLINGS, WHICH IS WHY THE RULE ABOVE CANNOT REACH IT (measured on the
+   Roadmap): the inner control is the last child of the group's own list, and the outer one is the
+   next child of the page wrapper, so they are 10px apart across two different parents and no
+   sibling selector exists that spans them. CSS cannot look backwards out of a container, but it
+   does not need to - the general fact is that A CONTROL WHICH ENDS ITS CONTAINER IS FOLLOWED BY
+   SOMETHING FROM OUTSIDE THAT CONTAINER, and that is exactly the case worth spacing. Stated that
+   way it needs no page's class names, which is the whole reason the bare `.num` rule in theme.html
+   went wrong. Controls that sit among content are never last children, so nothing else moves. */
+.fbka:last-child{margin-bottom:72px}
 .fbkbtn{display:inline-flex;align-items:center;min-height:40px;padding:8px 10px;border-radius:8px;
   cursor:pointer;background:transparent;border:1px solid transparent;
   color:var(--fb-dim);text-align:left;max-width:100%;
