@@ -1017,7 +1017,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">50 topics across 6 streams. Updated 2026-09-02T01:05:20Z.</p>
+  <p class="built">50 topics across 6 streams. Updated 2026-09-02T01:29:43Z.</p>
 </div>
 
 <div class="bar">
@@ -1624,6 +1624,33 @@
   var KEY="fbkNotes3::"+PAGE;
   var notes=[];
   try{ var raw=W.localStorage.getItem(KEY); if(raw){ notes=JSON.parse(raw)||[]; } }catch(e){ notes=[]; }
+  // ---- A TITLE WITH AN EMOJI IN IT IS A FRAGILE KEY (found 2026-09-02, in this browser) -------
+  // Every one of these titles starts with an emoji by house rule, so the key contains bytes whose
+  // meaning depends on how the document was decoded. Measured, not theorised: this machine holds
+  // BOTH "fbkNotes3::(emoji) Messages" and a mojibake twin of the same name, and the notes written
+  // in one are invisible from the other. Nothing errors - the box simply opens empty, which is the
+  // exact experience the 2026-08-09 data loss taught us to treat as the worst kind of failure.
+  // THIS ONLY EVER ADOPTS, NEVER DISCARDS. If the current key already has notes it does nothing.
+  // Otherwise it looks for a stored key whose name matches this page once every non-ASCII
+  // character is dropped from both, and takes it over. It cannot lose anything: the source key is
+  // left where it is.
+  if(!notes.length){
+    try{
+      var plain=function(s){ return String(s||"").replace(/[^\x20-\x7e]+/g," ").replace(/\s+/g," ")
+                                    .replace(/^ | $/g,"").toLowerCase(); };
+      var want=plain(PAGE);
+      if(want){
+        for(var sk=0; sk<W.localStorage.length; sk++){
+          var k2=W.localStorage.key(sk);
+          if(!k2 || k2===KEY || k2.indexOf("fbkNotes3::")!==0) continue;
+          if(plain(k2.slice(11))!==want) continue;
+          var got=null;
+          try{ got=JSON.parse(W.localStorage.getItem(k2)||"[]"); }catch(e2){ got=null; }
+          if(got && got.length){ notes=got; try{ W.localStorage.setItem(KEY, JSON.stringify(notes)); }catch(e3){} break; }
+        }
+      }
+    }catch(e){}
+  }
 
   // ---- A SILENT catch{} ON SAVE IS HOW WORK DISAPPEARS --------------------------------------
   // The old save() swallowed every error. If the browser refused the write - storage full, storage
@@ -2395,8 +2422,26 @@
     .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
   var FBK_BLOCK={P:1,DIV:1,UL:1,OL:1,LI:1};
+  // THE PARSE MUST BE INERT, AND A DETACHED <div> IS NOT INERT. Caught by the harness, not by
+  // reading it: setting .innerHTML on a plain detached div still starts image loads in Chrome, so
+  // a pasted <img src=x onerror=...> FIRED ITS HANDLER while this function was on its way to
+  // stripping the tag. The whitelist was doing its job perfectly and the damage happened before it
+  // ever ran. A <template> parses into an inert document - no loads, no handlers, no scripts -
+  // which is the only version of "clean it first" that is actually first.
+  // THE GENERAL FORM: sanitising a string is not the same as parsing it safely. Ask what the parse
+  // itself sets off before asking what the filter keeps.
   function fbkClean(html){
-    var srcEl=d.createElement("div"); srcEl.innerHTML=String(html||"");
+    var srcEl;
+    var tpl=d.createElement("template");
+    if("content" in tpl){ tpl.innerHTML=String(html||""); srcEl=tpl.content; }
+    else {
+      // NO LITERAL BODY TAG IN THIS FILE. inject-feedback.ps1 anchors the fragment on the page's
+      // LAST closing body tag, and its own guard caught this the moment it shipped: a closing tag
+      // inside this script split the page and 118,659 characters ended up after it. parseFromString
+      // supplies the document structure itself, so the wrapper was never needed.
+      try{ srcEl=(new W.DOMParser()).parseFromString(String(html||""),"text/html").body; }
+      catch(e){ srcEl=d.createElement("div"); srcEl.textContent=String(html||"").replace(/<[^>]*>/g,""); }
+    }
     var out=d.createElement("div");
     walkInto(srcEl,out,"");
     return out.innerHTML;
@@ -2444,12 +2489,19 @@
         if(!t){ continue; }
         out.push(indent+((k===0)?(prefix||""):"")+t); wrote=true;
       }
-      if(!wrote && prefix){ out.push(indent+prefix); }
+      if(!wrote && prefix){ out.push(indent+prefix); wrote=true; }
+      return wrote;
     }
+    // A LIST ONLY INDENTS UNDER A LINE THAT EXISTS. Found by driving the toolbar rather than by
+    // reading the code: insertUnorderedList leaves <p><ul>...</ul></p> in Chrome - the list wrapped
+    // in the paragraph it replaced - so a top-level bullet had a parent block and came out as
+    // "    - item", which reads as a sub-point of nothing. fbkNorm below unwraps it at the source;
+    // this is the second belt, because a tree can also reach here from a paste.
     function emitBlock(el,indent,prefix){
-      pushLines(prefix,indent,inlineOf(el));
+      var wrote=pushLines(prefix,indent,inlineOf(el));
+      var inner=wrote?(indent+"    "):indent;
       for(var c=el.firstChild;c;c=c.nextSibling){
-        if(c.nodeType===1&&(c.tagName==="UL"||c.tagName==="OL")){ emitList(c,indent+"    "); }
+        if(c.nodeType===1&&(c.tagName==="UL"||c.tagName==="OL")){ emitList(c,inner); }
       }
     }
     function emitList(list,indent){
@@ -2539,6 +2591,25 @@
     }catch(e){ return false; }
   }
   function fbkCmd(name){ try{ d.execCommand(name,false,null); }catch(e){} }
+  // A LIST IS NEVER A CHILD OF A PARAGRAPH. Chrome's insertUnorderedList wraps the new list in the
+  // paragraph it came from, which renders perfectly and is a different sentence to anything reading
+  // the tree - the first bullet he made with the button serialised as an indented sub-point.
+  // Cheap, idempotent, and run only where the artifact can be created.
+  function fbkNorm(el){
+    if(!el) return;
+    var lists=el.querySelectorAll("p > ul, p > ol");
+    for(var k=lists.length-1;k>=0;k--){
+      var L=lists[k], p=L.parentNode;
+      if(!p||!p.parentNode) continue;
+      p.parentNode.insertBefore(L, p.nextSibling);
+    }
+    var ps=el.querySelectorAll("p");
+    for(var j=ps.length-1;j>=0;j--){
+      var pp=ps[j];
+      if(pp.querySelector("ul,ol,br,b,i")) continue;
+      if(!(pp.textContent||"").replace(/\s+/g,"")){ pp.parentNode.removeChild(pp); }
+    }
+  }
 
   // The box, with .value, so nothing outside this function has to know what it is made of.
   function fbkMakeEditor(ph){
@@ -2563,7 +2634,7 @@
         if(!h && !t) return;
         ev.preventDefault();
         fbkInsert(h?fbkClean(h):fbkFromText(t));
-        fbkPh(el);
+        fbkNorm(el); fbkPh(el);
         el.dispatchEvent(new Event("input",{bubbles:true}));
       }catch(e){}
     });
@@ -2583,7 +2654,7 @@
         b.addEventListener("click", function(ev){
           ev.preventDefault();
           try{ ed.focus(); }catch(e){}
-          fbkCmd(def[1]); fbkPh(ed);
+          fbkCmd(def[1]); fbkNorm(ed); fbkPh(ed);
           ed.dispatchEvent(new Event("input",{bubbles:true}));
         });
         bar2.appendChild(b);
@@ -2650,16 +2721,24 @@
   // The page keeps room for the dock, so the bottom of the page is still reachable and nothing he
   // needs is hidden underneath it. Measured from the rendered box, never assumed from the CSS -
   // 46vh is a number in a stylesheet and the pixels are what he actually loses.
+  // ONE THING OWNS THE BOTTOM OF THE PAGE, AND IT IS NOT THIS FUNCTION.
+  // The first version wrote body.style.paddingBottom and bar.style.bottom directly - and paint()
+  // writes both of those on every repaint, so a single keystroke silently undid the room the dock
+  // had reserved, and the page kept the dock's spacing after it closed. TWO WRITERS ON ONE
+  // PROPERTY IS THE DEFECT, not the values either of them chose. The dock now only declares HOW
+  // MUCH ROOM IT NEEDS and paintBottomRoom() adds that to its own lift. Found by the harness in
+  // its first run, which is the argument for having written the harness.
+  var dockPad=0;
+  function dockLift(){ return dockPad; }
   function dockFit(){
-    var box=d.querySelector(".fbkin.fbkdocked"); if(!box||!dockRestore) return;
-    var r=box.getBoundingClientRect(), b=d.body, wide=dockWide();
-    b.style.paddingRight = wide ? (Math.ceil(r.width)+"px") : dockRestore.pr;
-    b.style.paddingBottom = wide ? dockRestore.pb : (Math.ceil(r.height+16)+"px");
-    // The floating pill carries Copy. It must never end up underneath the box he is writing in.
-    if(bar){
-      bar.style.right  = wide ? (Math.ceil(r.width+12)+"px") : dockRestore.barR;
-      bar.style.bottom = wide ? dockRestore.barB : (Math.ceil(r.height+12)+"px");
-    }
+    var box=d.querySelector(".fbkin.fbkdocked");
+    if(!box||!dockRestore){ dockPad=0; paintBottomRoom(); return; }
+    var r=box.getBoundingClientRect(), wide=dockWide();
+    dockPad = wide ? 0 : Math.ceil(r.height+4);
+    // The rail is the dock's own to own - nothing else writes either of these two.
+    d.body.style.paddingRight = wide ? (Math.ceil(r.width)+"px") : dockRestore.pr;
+    if(bar){ bar.style.right = wide ? (Math.ceil(r.width+12)+"px") : dockRestore.barR; }
+    paintBottomRoom();
   }
   // WHAT HE IS WRITING ABOUT, WHOLE. The drafts on the Messages page sit in <textarea rows="14">
   // and its long blocks sit in <details>, so "the message in its entirety" was not on the page at
@@ -2672,19 +2751,25 @@
     var undo=[];
     if(blk){
       blk.classList.add("fbksubj");
-      var tas=blk.querySelectorAll("textarea");
+      // THE FOLDS OPEN FIRST. A textarea inside a closed <details> has no layout, so scrollHeight
+      // reads as nothing and it gets "expanded" to a few pixels - which looks exactly like the crop
+      // he is complaining about. The order is the whole fix.
+      var dets=blk.querySelectorAll("details");
+      for(var k2=0;k2<dets.length;k2++){
+        var dt=dets[k2];
+        if(dt.querySelector(".fbkta")) continue;         // never force the composer's own folds
+        if(!dt.open){ undo.push({el:dt,kind:"det"}); dt.open=true; }
+      }
+      // READ-ONLY ONES ONLY - those are the messages we are SHOWING him. A textarea he types into
+      // (the "ask me anything" box on the Questions page) has nothing cropped to reveal, and
+      // resizing a control he is about to use is a change he did not ask for.
+      var tas=blk.querySelectorAll("textarea[readonly]");
       for(var k=0;k<tas.length;k++){
         var tb=tas[k];
         if(tb.className&&String(tb.className).indexOf("fbkta")>=0) continue;
         undo.push({el:tb,kind:"ta",h:tb.style.height,ov:tb.style.overflow});
         tb.style.overflow="hidden"; tb.style.height="auto";
         tb.style.height=(tb.scrollHeight+6)+"px";
-      }
-      var dets=blk.querySelectorAll("details");
-      for(var k2=0;k2<dets.length;k2++){
-        var dt=dets[k2];
-        if(dt.querySelector(".fbkta")) continue;         // never force the composer's own folds
-        if(!dt.open){ undo.push({el:dt,kind:"det"}); dt.open=true; }
       }
     }
     return {blk:blk,undo:undo};
@@ -2700,11 +2785,12 @@
   }
   function dockOn(i,box){
     var b=d.body;
-    dockRestore={ pr:b.style.paddingRight, pb:b.style.paddingBottom,
-                  barR:(bar?bar.style.right:""), barB:(bar?bar.style.bottom:""),
+    dockRestore={ pr:b.style.paddingRight,
+                  barR:(bar?bar.style.right:""),
                   subj:subjectOpen(i) };
     box.classList.add("fbkdocked");
     box.setAttribute("data-size",dockSize());
+    _lift=null;                      // the page's furniture changed; re-measure it
     dockFit();
     W.addEventListener("resize",dockFit);
     // Start him at the top of the thing he is writing about, so the first thing he reads is the
@@ -2722,11 +2808,13 @@
     W.removeEventListener("resize",dockFit);
     if(dockRestore){
       d.body.style.paddingRight=dockRestore.pr;
-      d.body.style.paddingBottom=dockRestore.pb;
-      if(bar){ bar.style.right=dockRestore.barR; bar.style.bottom=dockRestore.barB; }
+      if(bar){ bar.style.right=dockRestore.barR; }
       subjectClose(dockRestore.subj);
     }
     dockRestore=null;
+    dockPad=0;
+    _lift=null;
+    paintBottomRoom();
   }
 
   function closeEditor(){
@@ -2966,6 +3054,12 @@
     for(var i=0;i<els.length;i++){
       var el=els[i];
       if(el===bar || bar.contains(el) || el.contains(bar)) continue;
+      // AND NEVER THE DOCKED COMPOSER. It is fixed and bottom-anchored on a phone, so this loop
+      // read it as the host page's own bottom bar: the room it needed was counted twice while it
+      // was open, and _lift CACHED that height, so the page kept a 339px dead band at the bottom
+      // long after the box had closed. A measurement that can see a thing this component itself
+      // put on the screen is measuring its own output.
+      if(el.className && String(el.className).indexOf("fbkdocked")>=0) continue;
       var cs=W.getComputedStyle(el);
       if(cs.position!=="fixed" || cs.display==="none" || cs.visibility==="hidden") continue;
       var r=el.getBoundingClientRect();
@@ -3029,6 +3123,17 @@
     return row;
   }
   function head(txt){ var p=d.createElement("p"); p.className="fbkhead"; p.textContent=txt; return p; }
+
+  // THE ONE PLACE THE BOTTOM OF THE PAGE IS DECIDED. The host page's own bottom bar, plus the room
+  // a docked composer needs, plus the pill itself. A 40px pill needs 40px of room, not 132 - the
+  // old value was sized for a two-button slab and left a dead band at the bottom of every page long
+  // after the slab was the reason for it.
+  function paintBottomRoom(){
+    if(!bar) return;
+    var lift=hostBottomBar()+dockLift();
+    bar.style.bottom=(12+lift)+"px";
+    d.body.style.paddingBottom=(64+lift)+"px";
+  }
 
   function paint(){
     for(var i=-1;i<secs.length;i++){
@@ -3198,11 +3303,7 @@
     // The dot means "something here is not with me yet", which is the only thing that is genuinely
     // outstanding. The LABEL still counts every note, because that is what the button will copy.
     bar.classList.toggle("pending", u.length>0);
-    var lift=hostBottomBar();
-    bar.style.bottom=(12+lift)+"px";
-    // A 40px pill needs 40px of room, not 132. The old value was sized for a two-button slab and
-    // left a dead band at the bottom of every page long after the slab was the reason for it.
-    d.body.style.paddingBottom=(64+lift)+"px";
+    paintBottomRoom();
     barVisible();
   }
 
