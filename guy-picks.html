@@ -1017,7 +1017,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">50 topics across 6 streams. Updated 2026-09-04T12:02:15Z.</p>
+  <p class="built">50 topics across 6 streams. Updated 2026-09-04T12:25:11Z.</p>
 </div>
 
 <div class="bar">
@@ -3790,7 +3790,11 @@
     if(!holder(i)) return;
     if(!(openAt===i && editing===n.id)){ openEditor(i, n.id); }
     var blk=(i>=0 && secs[i]) ? secs[i].after : holder(i);
+    // ALWAYS land on the block, even when the composer was already open on this very note: the
+    // composer's own scroll runs only when it opens, and the harness caught a jump that outlined a
+    // section 1,755px below the fold and moved nothing.
     if(i<0){ try{ holder(i).scrollIntoView({block:"center"}); }catch(e){} }
+    else if(blk){ try{ var bt=blk.getBoundingClientRect().top+(W.pageYOffset||0)-12; W.scrollTo(0,Math.max(0,bt)); }catch(e){} }
     if(blk){ blk.classList.add("fbkjump"); W.setTimeout(function(){ blk.classList.remove("fbkjump"); }, 2400); }
   }
   if(barList){ barList.addEventListener("click", function(){ toggleDrawer(); }); }
