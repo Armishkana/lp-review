@@ -271,9 +271,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-09-04T11:39:13Z">
+<div id="freshbar" class="fresh" data-built="2026-09-04T12:02:15Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Fri Sep 4, 19:39</b>
+    <b id="freshtitle">This page was updated Fri Sep 4, 20:02</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday none" id="newtoday" data-new="0"
@@ -2478,6 +2478,42 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   overflow:hidden;text-overflow:ellipsis;
   font:700 13px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 .fbkbaradd[hidden]{display:none}
+/* THE LIST BEHIND THE NUMBER. Armin, 2026-09-04, note uyioiw9o: the counter "shouldn't just be
+   the number. It should also be a list of which sections already have feedback... click on each
+   piece of feedback ... jump to the part of the page ... and also edit it if needed." A row in the
+   pill, and a drawer above it. The drawer is wider than the pill so a note preview is readable, and
+   it scrolls inside itself so it can never cover the whole screen. */
+.fbkbarlist{flex:1 1 auto;min-width:0;min-height:44px;padding:0 14px;border:0;
+  background:transparent;color:var(--fb-ink);cursor:pointer;text-align:left;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;
+  font:600 13px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.fbkbarlist[hidden]{display:none}
+.fbkbarlist.open{background:var(--fb-soft)}
+.fbkdrawer{position:fixed;right:12px;bottom:170px;z-index:9001;width:min(24rem, calc(100vw - 24px));
+  max-height:min(60vh, 540px);overflow:auto;background:var(--fb-card);border:1px solid var(--fb-line);
+  border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.22);color:var(--fb-ink);
+  font:400 13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.fbkdrawer[hidden]{display:none}
+.fbkdrh{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--fb-line);
+  position:sticky;top:0;background:var(--fb-card);font-weight:700}
+.fbkdrh b{flex:1 1 auto;min-width:0}
+.fbkdrx{flex:0 0 auto;min-height:36px;padding:0 10px;border:1px solid var(--fb-line);border-radius:8px;
+  background:transparent;color:var(--fb-dim);cursor:pointer;
+  font:600 12.5px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.fbkdsec{display:flex;align-items:center;gap:8px;padding:10px 12px 4px;font-weight:700}
+.fbkdsec .fbkdn{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fbkdcnt{flex:0 0 auto;min-width:22px;padding:2px 7px;border-radius:999px;background:var(--fb-accent);
+  color:#fff;font-size:12px;font-weight:700;text-align:center}
+.fbkdnote{display:block;width:100%;min-height:44px;padding:8px 12px 8px 22px;border:0;
+  border-top:1px solid var(--fb-line);background:transparent;color:var(--fb-ink);cursor:pointer;
+  text-align:left;font:400 13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.fbkdnote:hover,.fbkdnote:focus{background:rgba(127,127,127,.12)}
+.fbkdnote .fbkdtx{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fbkdnote .fbkdst{display:block;font-size:11.5px;color:var(--fb-dim);margin-top:2px}
+.fbkdnote .fbkdst.pend{color:var(--fb-accent)}
+.fbkdempty{padding:12px;color:var(--fb-dim)}
+/* The block a tapped note is about lights up for a moment, so the jump is visibly a jump. */
+.fbkjump{outline:3px solid var(--fb-accent);outline-offset:4px;border-radius:8px}
 /* Also a word, for the same reason. "x" on a control he cannot name is one more thing to wonder
    about, and what it does - put the card away until the page is reloaded - is not obvious. */
 .fbkbarx{flex:0 0 auto;min-height:44px;padding:0 12px;border:0;border-left:1px solid var(--fb-line);
@@ -2551,6 +2587,9 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 <button type="button" class="fbkbaract" id="fbkBarAct" hidden></button>
 <button type="button" class="fbkbarclr" id="fbkBarActClr" hidden>Clear</button>
 </div>
+<div class="fbkbrow" id="fbkRowList" hidden>
+<button type="button" class="fbkbarlist" id="fbkBarList" aria-expanded="false"><span id="fbkBarListTxt">See my notes</span></button>
+</div>
 <div class="fbkbrow" id="fbkRowFb" hidden>
 <button type="button" class="fbkbarbtn" id="fbkBarGo"><span id="fbkBarTxt">Copy my feedback</span></button>
 <button type="button" class="fbkbarclr" id="fbkBarClr" hidden>Clear</button>
@@ -2559,6 +2598,10 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 <button type="button" class="fbkbaradd" id="fbkBarAdd">&#43; Write feedback</button>
 <button type="button" class="fbkbarx" id="fbkBarX" aria-label="Put this away until the page is reloaded">Hide</button>
 </div>
+</div>
+<div class="fbkdrawer" id="fbkDrawer" hidden>
+<div class="fbkdrh"><b id="fbkDrTitle">Your notes on this page</b><button type="button" class="fbkdrx" id="fbkDrX">Close</button></div>
+<div id="fbkDrBody"></div>
 </div>
 <script>
 (function(){
@@ -2890,7 +2933,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
       var cls=(typeof el.className==="string") ? el.className : "";
       if(tag==="SCRIPT"||tag==="STYLE"||tag==="NAV"||tag==="H1"||tag==="LINK"||tag==="META") continue;
       if(SKIP_CLS.test(cls)) continue;
-      if(el.id==="fbk"||el.id==="fbkBar"||el.id==="fbkWhole") continue;
+      if(el.id==="fbk"||el.id==="fbkBar"||el.id==="fbkWhole"||el.id==="fbkDrawer") continue;
       // (f) A BLOCK MAY DECLARE ITS OWN NAME, AND THEN IT IS ALWAYS A SEGMENT.
       // Added 2026-08-13. Armin had a task row open on his To-Do List, filling the screen, and
       // there was no writing box anywhere on it: "This area is missing its own feedback section,
@@ -3817,14 +3860,17 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     openAt=null; editing=null; paint();
   }
 
-  function openEditor(i){
-    if(openAt===i){ closeEditor(); return; }
+  function openEditor(i, noteId){
+    // A plain tap on a section button toggles. A jump from the notes list (noteId given) lands on
+    // THAT note, and re-targets an already open composer to a different note in the same section.
+    if(openAt===i && (noteId==null || editing===noteId)){ closeEditor(); return; }
     closeEditor();
     openAt=i;
     // Reopening a section returns him to what he already wrote there, rather than a blank box that
     // makes it look like the words are gone.
     var existing=null;
-    for(var k=0;k<notes.length;k++){ if(notes[k].i===i && !notes[k].sent){ existing=notes[k]; break; } }
+    if(noteId!=null){ for(var k0=0;k0<notes.length;k0++){ if(notes[k0].id===noteId){ existing=notes[k0]; break; } } }
+    if(!existing){ for(var k=0;k<notes.length;k++){ if(notes[k].i===i && !notes[k].sent){ existing=notes[k]; break; } } }
     editing = existing ? existing.id : null;
     var box=holder(i).querySelector(".fbkin");
     // THE BOX SAYS WHAT IT IS ABOUT IN THE PAGE'S OWN WORDS. Armin, 2026-08-11, pointing a red
@@ -3894,7 +3940,10 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
       barAct=d.getElementById("fbkBarAct"),
       barActClr=d.getElementById("fbkBarActClr"), barClr=d.getElementById("fbkBarClr"),
       rowAct=d.getElementById("fbkRowAct"), rowFb=d.getElementById("fbkRowFb"),
-      rowWrite=d.getElementById("fbkRowWrite");
+      rowWrite=d.getElementById("fbkRowWrite"),
+      rowList=d.getElementById("fbkRowList"), barList=d.getElementById("fbkBarList"),
+      barListTxt=d.getElementById("fbkBarListTxt"), drawer=d.getElementById("fbkDrawer"),
+      drBody=d.getElementById("fbkDrBody"), drX=d.getElementById("fbkDrX");
 
   // ---- THE HOST PAGE'S OWN MAIN BUTTON, RIDING IN THIS PILL ---------------------------------
   // A page opts in by setting window.__PAGEBTN before this fragment runs:
@@ -4066,6 +4115,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     for(var i=0;i<els.length;i++){
       var el=els[i];
       if(el===bar || bar.contains(el) || el.contains(bar)) continue;
+      // AND NEVER THE NOTES LIST. Fixed and bottom-anchored too, and it is this component's own output.
+      if(drawer && (el===drawer || drawer.contains(el))) continue;
       // AND NEVER THE DOCKED COMPOSER. It is fixed and bottom-anchored on a phone, so this loop
       // read it as the host page's own bottom bar: the room it needed was counted twice while it
       // was open, and _lift CACHED that height, so the page kept a 339px dead band at the bottom
@@ -4145,6 +4196,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     var lift=hostBottomBar()+dockLift();
     bar.style.bottom=(12+lift)+"px";
     d.body.style.paddingBottom=(64+lift)+"px";
+    try{ placeDrawer(); }catch(e){}
   }
 
   // ============ THE COUNTER IS PAINTED FIRST, AND NOTHING IS ALLOWED TO STOP IT ==============
@@ -4183,6 +4235,10 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     var anyUnsent=false;
     for(var z=0;z<notes.length;z++){ if(!notes[z].sent){ anyUnsent=true; break; } }
     bar.classList.toggle("pending", anyUnsent);
+    // THE LIST BEHIND THE NUMBER is painted here, with the number, so the two can never disagree.
+    if(rowList){ rowList.hidden = !notes.length; }
+    if(barListTxt){ barListTxt.textContent = barListLabel(); }
+    if(drawerOpen){ if(notes.length){ paintDrawer(); } else { toggleDrawer(false); } }
   }
 
   function paint(){
@@ -4580,6 +4636,8 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     // empty bordered strip across the card, and hiding some buttons in a row and not others is what
     // made this thing change shape as he scrolled. One decision, applied to a row.
     if(rowFb){ rowFb.hidden = fbOff || !notes.length; }
+    if(rowList){ rowList.hidden = fbOff || !notes.length; }
+    if(fbOff && drawerOpen){ toggleDrawer(false); }
     if(rowWrite){ rowWrite.hidden = fbOff; }
     if(barClr){ barClr.hidden = !notes.length; }
     bar.classList.toggle("actonly", fbOff);
@@ -4588,6 +4646,106 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   }
   W.addEventListener("scroll", barVisible, {passive:true});
   W.addEventListener("resize", barVisible);
+
+  // ---- 5c. THE LIST BEHIND THE NUMBER (2026-09-04, note uyioiw9o) ---------------------------
+  // Armin: "when I see the feedback counter at the bottom right, it shouldn't just be the number.
+  // It should also be a list of which sections already have feedback, so I could see the number of
+  // feedback items that I've added on each dashboard... a way for me to click on each piece of
+  // feedback that I already have and make it jump to the part of the page where the feedback is
+  // associated. I should be able to click on it and see the feedback that I've already written,
+  // and also edit it if needed. This should be the case for all the dashboards."
+  // A row in the pill opens a drawer above it: every section that has a note, with a count, and
+  // every note under its section. Tapping a note closes the drawer, scrolls to that section and
+  // opens the composer WITH THAT NOTE IN IT - reading and editing are the same tap. It lives in
+  // this fragment, so every dashboard has it, including the ones not built yet.
+  var drawerOpen=false;
+  function sectionNameOf(i){
+    if(i<0) return "The whole page";
+    return secs[i] ? secs[i].label : "Another part of the page";
+  }
+  function previewOf(n){
+    var t=String(n.text||"").replace(/\s+/g," ").trim();
+    t=t.replace(/^[-*]\s+/,"").replace(/\*\*/g,"");
+    if(t.length>110) t=t.slice(0,107)+"...";
+    return t || "(an empty note)";
+  }
+  function noteGroups(){
+    var by={}, keys=[];
+    for(var k=0;k<notes.length;k++){
+      var n=notes[k], key=String(typeof n.i==="number" ? n.i : -1);
+      if(!by[key]){ by[key]=[]; keys.push(key); }
+      by[key].push(n);
+    }
+    keys.sort(function(a,b){ return parseInt(a,10)-parseInt(b,10); });   // page order, whole page first
+    return {by:by, keys:keys};
+  }
+  function barListLabel(){
+    if(drawerOpen) return "Hide the list";
+    var n=notes.length, m=noteGroups().keys.length;
+    return "See my "+n+" note"+(n===1?"":"s")+" in "+m+" section"+(m===1?"":"s");
+  }
+  function paintDrawer(){
+    if(!drawer||!drBody) return;
+    drBody.innerHTML="";
+    if(!notes.length){
+      var e=d.createElement("p"); e.className="fbkdempty"; e.textContent="Nothing written on this page yet.";
+      drBody.appendChild(e); return;
+    }
+    var g=noteGroups();
+    for(var q=0;q<g.keys.length;q++){
+      var i=parseInt(g.keys[q],10), list=g.by[g.keys[q]];
+      var h=d.createElement("div"); h.className="fbkdsec";
+      var nm=d.createElement("span"); nm.className="fbkdn"; nm.textContent=sectionNameOf(i);
+      var c=d.createElement("span"); c.className="fbkdcnt"; c.textContent=String(list.length);
+      h.appendChild(nm); h.appendChild(c); drBody.appendChild(h);
+      for(var k=0;k<list.length;k++){
+        (function(n){
+          var b=d.createElement("button"); b.type="button"; b.className="fbkdnote"; b.setAttribute("data-note",n.id);
+          var tx=d.createElement("span"); tx.className="fbkdtx"; tx.textContent=previewOf(n);
+          var st=d.createElement("span"); st.className="fbkdst"+(n.sent?"":" pend");
+          st.textContent = got(n) ? "with me, being worked on. Tap to read it"
+                         : (n.sent ? "copied. Tap to read or edit" : "not copied yet. Tap to read or edit");
+          b.appendChild(tx); b.appendChild(st);
+          b.addEventListener("click", function(){ jumpToNote(n); });
+          drBody.appendChild(b);
+        })(list[k]);
+      }
+    }
+  }
+  // Sits directly above the pill, whatever the pill's bottom is right now (host bar, dock, both).
+  function placeDrawer(){
+    if(!drawer||!bar) return;
+    var b=parseInt(bar.style.bottom,10); if(isNaN(b)) b=12;
+    drawer.style.bottom=(b+bar.offsetHeight+8)+"px";
+    drawer.style.right=bar.style.right||"12px";
+  }
+  function toggleDrawer(force){
+    if(!drawer) return;
+    drawerOpen = (typeof force==="boolean") ? force : !drawerOpen;
+    if(drawerOpen && !notes.length) drawerOpen=false;
+    if(drawerOpen){ paintDrawer(); placeDrawer(); }
+    drawer.hidden=!drawerOpen;
+    if(barList){ barList.className="fbkbarlist"+(drawerOpen?" open":""); barList.setAttribute("aria-expanded", drawerOpen?"true":"false"); }
+    if(barListTxt){ barListTxt.textContent=barListLabel(); }
+  }
+  function jumpToNote(n){
+    toggleDrawer(false);
+    var i=(typeof n.i==="number") ? n.i : -1;
+    if(got(n)){
+      // Already with me: it lives in the received fold at the bottom of the box, not under its section.
+      var fold=d.querySelector(".fbkgot");
+      if(fold){ fold.open=true; try{ fold.scrollIntoView({block:"center"}); }catch(e){} }
+      return;
+    }
+    if(!holder(i)) return;
+    if(!(openAt===i && editing===n.id)){ openEditor(i, n.id); }
+    var blk=(i>=0 && secs[i]) ? secs[i].after : holder(i);
+    if(i<0){ try{ holder(i).scrollIntoView({block:"center"}); }catch(e){} }
+    if(blk){ blk.classList.add("fbkjump"); W.setTimeout(function(){ blk.classList.remove("fbkjump"); }, 2400); }
+  }
+  if(barList){ barList.addEventListener("click", function(){ toggleDrawer(); }); }
+  if(drX){ drX.addEventListener("click", function(){ toggleDrawer(false); }); }
+  d.addEventListener("keydown", function(e){ if(e.key==="Escape" && drawerOpen){ toggleDrawer(false); } });
 
   // ---- 6a. TELL HIM WHAT WAS DONE, ONCE -----------------------------------------------------
   (function(){
@@ -4671,6 +4829,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
               if(n){ save(); paint(); }
               return n;
             },
+            listOpen:function(){ return drawerOpen; },
             handledCount:handled.length, board:BOARD, built:BUILT, page:PAGE,
             theme:d.documentElement.getAttribute("data-fbk"), pageBg:paintedBg(d.body),
             sections:function(){ var o=[]; for(var k=0;k<secs.length;k++){ o.push(secs[k].label); } return o; },
