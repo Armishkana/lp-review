@@ -271,9 +271,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-09-04T13:11:47Z">
+<div id="freshbar" class="fresh" data-built="2026-09-04T13:34:41Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Fri Sep 4, 21:11</b>
+    <b id="freshtitle">This page was updated Fri Sep 4, 21:34</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday none" id="newtoday" data-new="0"
@@ -5134,239 +5134,6 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
 })();
 </script>
 <!-- FEEDBACK-END -->
-<!-- THEME-START -->
-<!-- ===============================================================================================
-     THE DESIGN SYSTEM. ONE FILE. EVERY DASHBOARD.
-
-     Armin, 2026-08-11, two instructions in one breath:
-       "Some of the pages have too much red in it. I prefer mostly blue and green and use red and
-        orange only for urgent or very important things. This has to be the case for all the pages."
-       "The dashboards need to have a consistent design so i can flow through them, seamlessly; for
-        example, tabs at the top is not consistent between the dashboards."
-
-     WHY A SHARED FILE AND NOT THIRTEEN EDITS. Every page here was written at a different time with
-     its own private colour vocabulary - --accent, --momiji, --chip, --neg, --crit, --no - and each
-     one was individually defensible. Nobody ever chose "the Messages page should be half red"; it
-     arrived one reasonable decision at a time, which is exactly the failure this vault names: a
-     standard copied into many places becomes many standards. So the palette is DECLARED ONCE, here,
-     and every page's own names are ALIASED onto it. Change a colour here and thirteen pages change.
-
-     HOW IT WINS. Injected last in the document by inject-theme.ps1, and every alias carries
-     !important - which IS honoured for custom properties. Without it a page's own
-     `:root[data-theme="dark"]{--accent:#e06a5f}` outranks a plain `:root` here on specificity and
-     the page keeps its old colour in dark mode only, which is the kind of half-fix nobody sees.
-     Setting a variable on a DESCENDANT still works normally, so per-component variants are intact.
-
-     THE BUDGET, measured rather than felt, by projects/hub/palette-check.html at 360px:
-        To-Do List  blue 69.3  red 19.1   <- he called this one good
-        Questions   green 75.7 red 16.6   <- he called this one good
-        Messages    green 35.1 red 63.0   <- "the messages page has too much red"
-     So the ceiling is derived from the pages he approved, not invented: RED <= 20% of painted
-     colour, RED+AMBER <= 30%, BLUE+GREEN >= 65%. Never raise a ceiling to silence the checker.
-
-     THE FOUR MEANINGS. Nothing else gets a colour.
-        BLUE   the ordinary primary. Links, the thing to press, the current tab, anything outgoing.
-        GREEN  good, done, kept, yours, money coming in.
-        AMBER  waiting on someone, needs attention, not yet a problem.
-        RED    urgent or very important ONLY. Overdue, broken, rejected, money going out.
-     ================================================================================================ -->
-<style id="ds-theme">
-/* ---- 1. THE TOKENS ---------------------------------------------------------------------------
-   Declared in all four contexts the pages between them use, because they do not agree on how dark
-   mode arrives: some listen to the OS (@media), some to the data-theme attribute the artifact
-   runtime stamps on <html>, some to both. Covering all four is also what finally makes the theme
-   TOGGLE work on the pages that only ever listened to the OS. */
-:root{
-  --ds-bg:#f7f8fa; --ds-card:#ffffff; --ds-sunk:#eef1f5;
-  --ds-ink:#171a1f; --ds-dim:#555c66; --ds-faint:#848b95; --ds-line:#dfe3e9;
-  --ds-blue:#1f4fd8;  --ds-blue-soft:#e9eefc;  --ds-on-blue:#ffffff;
-  --ds-green:#1b6b3a; --ds-green-soft:#e4f2ea; --ds-on-green:#ffffff;
-  --ds-amber:#8a5a12; --ds-amber-soft:#f8eddb; --ds-on-amber:#ffffff;
-  --ds-red:#b3261e;   --ds-red-soft:#fbe6e4;   --ds-on-red:#ffffff;
-  --ds-bar:rgba(247,248,250,.92);
-  --ds-shadow:0 1px 2px rgba(20,22,28,.05),0 8px 24px rgba(20,22,28,.06);
-}
-@media (prefers-color-scheme: dark){
-  :root{
-    --ds-bg:#12141a; --ds-card:#1b1e25; --ds-sunk:#161920;
-    --ds-ink:#eceef2; --ds-dim:#a4abb6; --ds-faint:#7e858f; --ds-line:#2d323b;
-    /* These four are chosen so WHITE still reads on top of them, because the pages hardcode
-       color:#fff on filled buttons and chips. A prettier pastel would have quietly made every
-       primary button unreadable in dark mode - the kind of regression a colour audit never
-       catches because it is looking at hue, not contrast. */
-    --ds-blue:#5b86f0;  --ds-blue-soft:#18213c;  --ds-on-blue:#ffffff;
-    --ds-green:#2f9e63; --ds-green-soft:#152a1f; --ds-on-green:#ffffff;
-    --ds-amber:#d9a441; --ds-amber-soft:#2b2216; --ds-on-amber:#1a1409;
-    --ds-red:#e0574c;   --ds-red-soft:#2e1a18;   --ds-on-red:#ffffff;
-    --ds-bar:rgba(18,20,26,.92);
-    --ds-shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
-  }
-}
-:root[data-theme="dark"]{
-  --ds-bg:#12141a; --ds-card:#1b1e25; --ds-sunk:#161920;
-  --ds-ink:#eceef2; --ds-dim:#a4abb6; --ds-faint:#7e858f; --ds-line:#2d323b;
-  --ds-blue:#5b86f0;  --ds-blue-soft:#18213c;  --ds-on-blue:#ffffff;
-  --ds-green:#2f9e63; --ds-green-soft:#152a1f; --ds-on-green:#ffffff;
-  --ds-amber:#d9a441; --ds-amber-soft:#2b2216; --ds-on-amber:#1a1409;
-  --ds-red:#e0574c;   --ds-red-soft:#2e1a18;   --ds-on-red:#ffffff;
-  --ds-bar:rgba(18,20,26,.92);
-  --ds-shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
-}
-:root[data-theme="light"]{
-  --ds-bg:#f7f8fa; --ds-card:#ffffff; --ds-sunk:#eef1f5;
-  --ds-ink:#171a1f; --ds-dim:#555c66; --ds-faint:#848b95; --ds-line:#dfe3e9;
-  --ds-blue:#1f4fd8;  --ds-blue-soft:#e9eefc;  --ds-on-blue:#ffffff;
-  --ds-green:#1b6b3a; --ds-green-soft:#e4f2ea; --ds-on-green:#ffffff;
-  --ds-amber:#8a5a12; --ds-amber-soft:#f8eddb; --ds-on-amber:#ffffff;
-  --ds-red:#b3261e;   --ds-red-soft:#fbe6e4;   --ds-on-red:#ffffff;
-  --ds-bar:rgba(247,248,250,.92);
-  --ds-shadow:0 1px 2px rgba(20,22,28,.05),0 8px 24px rgba(20,22,28,.06);
-}
-
-/* ---- 2. THE ALIASES ---------------------------------------------------------------------------
-   Every colour name any of the thirteen pages invented, pointed at the four meanings above. A name
-   that appears on only one page is harmless everywhere else, so they all live in one list.
-   ONE DELIBERATE RE-MEANING, on the Messages page: outgoing text used to be RED and his own private
-   notes BLUE, so the two could never be confused (his ask, 2026-08-06). Outgoing is now BLUE and his
-   notes GREEN. Two distinct colours, same guarantee, and neither of them is red. */
-:root{
-  /* surfaces and text */
-  --bg:var(--ds-bg)!important;          --ground:var(--ds-bg)!important;     --paper:var(--ds-bg)!important;
-  --card:var(--ds-card)!important;      --panel:var(--ds-card)!important;    --surface:var(--ds-card)!important;
-  --sunk:var(--ds-sunk)!important;      --ground-2:var(--ds-sunk)!important; --panel-2:var(--ds-sunk)!important;
-  --ink:var(--ds-ink)!important;        --fg:var(--ds-ink)!important;
-  --dim:var(--ds-dim)!important;        --soft:var(--ds-dim)!important;      --mid:var(--ds-dim)!important;
-  --ink-soft:var(--ds-dim)!important;   --ink-2:var(--ds-dim)!important;
-  --faint:var(--ds-faint)!important;    --ink-faint:var(--ds-faint)!important;
-  --muted:var(--ds-faint)!important;    --ink-3:var(--ds-faint)!important;
-  --line:var(--ds-line)!important;      --rule:var(--ds-line)!important;     --hair:var(--ds-line)!important;
-  --bar:var(--ds-bar)!important;        --shadow:var(--ds-shadow)!important;
-
-  /* BLUE - the primary */
-  --accent:var(--ds-blue)!important;       --accent-soft:var(--ds-blue-soft)!important;
-  --accent-ink:var(--ds-on-blue)!important;
-  --chip:var(--ds-blue-fill)!important;    --chip-ink:var(--ds-on-blue)!important;
-  --momiji:var(--ds-blue)!important;       /* Japan pages: was the red maple, was their accent */
-  --now-fg:var(--ds-blue)!important;       --now-bg:var(--ds-blue-soft)!important;
-
-  /* GREEN - good, done, yours */
-  --ok:var(--ds-green)!important;          --ok-soft:var(--ds-green-soft)!important;
-  --ok-bg:var(--ds-green-soft)!important;  --good:var(--ds-green)!important;
-  --pos:var(--ds-green)!important;         --yes:var(--ds-green)!important;
-  --yesbg:var(--ds-green-soft)!important;  --cedar:var(--ds-green)!important;
-  --note:var(--ds-green)!important;        --note-soft:var(--ds-green-soft)!important;
-  --done-fg:var(--ds-green)!important;     --done-bg:var(--ds-green-soft)!important;
-
-  /* AMBER - waiting, needs attention */
-  --warn:var(--ds-amber)!important;        --warn-soft:var(--ds-amber-soft)!important;
-  --warn-bg:var(--ds-amber-soft)!important;--warnbg:var(--ds-amber-soft)!important;
-  --warm:var(--ds-amber)!important;        --amber:var(--ds-amber)!important;
-  --amberbg:var(--ds-amber-soft)!important;--ginkgo:var(--ds-amber)!important;
-  /* "waiting" is NOT amber. On the trip pages it is the default state of nearly every row - "Needs
-     a yes", "To do", "September" - and painting the default state a warning colour is how a page
-     ends up 51% amber while every individual badge looks reasonable. Amber has to mean something
-     is off; a thing that has simply not happened yet is grey. */
-  --wait-fg:var(--ds-dim)!important;       --wait-bg:var(--ds-sunk)!important;
-
-  /* RED - urgent or very important only */
-  --hot:var(--ds-red)!important;           --bad:var(--ds-red)!important;
-  --neg:var(--ds-red)!important;           --crit:var(--ds-red)!important;
-  --crit-bg:var(--ds-red-soft)!important;  --no:var(--ds-red)!important;
-  --nobg:var(--ds-red-soft)!important;
-
-  /* the feedback box ships its own vocabulary; point it at the same four meanings */
-  --fb-card:var(--ds-card)!important;      --fb-ink:var(--ds-ink)!important;
-  --fb-line:var(--ds-line)!important;      --fb-dim:var(--ds-dim)!important;
-  --fb-good:var(--ds-green)!important;     --fb-warm:var(--ds-amber)!important;
-  --fb-accent:var(--ds-blue)!important;
-}
-
-/* ---- 3. THE EXCEPTIONS ------------------------------------------------------------------------
-   Aliasing a NAME cannot fix a case where one name carried two meanings. These are the handful of
-   places where the page-level remap would land on the wrong side of his rule, in both directions.
-   They live here, with the palette, so the whole colour decision can be read in one sitting. */
-
-/* ONE COLOUR CANNOT DO BOTH JOBS IN DARK MODE, so there are two blues.
-   --ds-blue has to be light enough to read AS TEXT on a dark page; a solid button filled with that
-   same light blue and the white label the pages hardcode comes out at 3.4:1, which is under the bar
-   for small bold type. Measured, not assumed: white on the dark --ds-blue is 3.44, white on
-   --ds-blue-fill is 6.4. Light mode needs no split, so there the two are the same colour. */
-:root{ --ds-blue-fill:var(--ds-blue); }
-@media (prefers-color-scheme: dark){ :root{ --ds-blue-fill:#2f57c4; } }
-:root[data-theme="dark"]{ --ds-blue-fill:#2f57c4; }
-:root[data-theme="light"]{ --ds-blue-fill:var(--ds-blue); }
-/* .hero .n joined this list on 2026-08-12. It is the "1" badge on the first task, and the numbered
-   badges below it are .num - so this rule was tinting the list and leaving the 1 on the page's own
-   --accent. Two blues that are nearly the same is worse than two that obviously differ: it reads as
-   a rendering fault rather than a choice. One rule, both badges, identical colour by construction. */
-/* THE BARE `.num` IS GONE FROM THIS LIST, AND THAT IS THE WHOLE FIX (2026-09-02).
-   `.num` does not mean one thing across these pages. On the clip dashboards it is a filled badge.
-   On the Money page it is the MONOSPACE-NUMERALS class - build-money-page.ps1 line 261 gives it a
-   font-family and nothing else - and it is on every figure on the page: the headline, the masthead
-   stamp, all four totals, and every amount cell. So this rule was painting all of them in solid
-   fill blue while each kept its own green/red/grey text: #2f9e63 on #2f57c4 for the money coming
-   in, #5b86f0 on #2f57c4 for the $209 headline. In dark mode the page's most important column was
-   a stack of blue slabs with unreadable text in them, and no checker could see it because every
-   rule involved was individually correct and the collision only existed between them.
-   The bare selector was here to give the clip badge an accessible fill, so that job moves UP to
-   the token: --chip now carries --ds-blue-fill, which means any page filling its own badge gets
-   white at 6.4:1 instead of 3.44 without this stylesheet having to know the page's class names.
-   THE RULE THIS BOUGHT: a single-word class is not a selector, it is a guess about every page at
-   once. An !important background may only be aimed at a name that says what the thing IS
-   (.pill.num, .trow .num, .hero .n) - never at one that says what its content looks like. */
-.tag.act, .btn.primary, button.copy, .pill.num, .trow .num, .hero .n{ background-color:var(--ds-blue-fill)!important; }
-
-/* STAYS RED - genuinely urgent, and it would have turned blue with --accent. */
-.age.stale{ background:var(--ds-red)!important; color:var(--ds-on-red)!important; }
-.flag--red{ border-left-color:var(--ds-red)!important; }
-.flag--red strong, .flag--red b{ color:var(--ds-red)!important; }
-
-/* STOPS BEING RED/AMBER - these paint most of a page, so they were the actual complaint.
-   "no mid-roll" is a revenue note on nearly every clip, not an emergency: amber, not red.
-   The hook explainer sits on every card on the Arm Us page and was a solid amber slab. */
-.nomid{ color:var(--ds-amber)!important; }
-.hookwhy{ background:var(--ds-blue-soft)!important; border-left-color:var(--ds-blue)!important; }
-.hookwhy b{ color:var(--ds-blue)!important; }
-/* The trip pages: the ordinary aside on a day, and the big "here is the decision" box on the money
-   page. Both were warm - amber and red-tinted - and both are the NORMAL state of that page, not an
-   alarm. The red aside (.flag--red) keeps its red above, which is the whole point of having two. */
-.flag{ border-left-color:var(--ds-blue)!important; }
-.call{ background:var(--ds-blue-soft)!important; border-color:var(--ds-blue)!important; }
-/* The highlighted word in the trip pages' hero and banner titles. It was a salmon hex written
-   straight into the page, so no token could reach it - the only two of its kind in thirteen pages,
-   and found by counting, not by looking. Fixed at the SOURCE (projects/japan/prep.html and
-   trip-plan.html now read this token) rather than overridden from here: an override would have left
-   the hex in the file and the checker rightly failing forever on a page that looked correct.
-   Fixed tint, not themed: both sit on a dark photo whichever theme the reader is in. */
-:root{ --ds-hero-hi:#cfe0ff; }
-
-/* NO PAGE EVER SCROLLS SIDEWAYS. Armin, 2026-08-12, on Messages: "The page does not automatically
-   fit my screen area, so there is a bar at the bottom that I have to drag left and right... you
-   check all dashboards and make sure that this doesn't happen anywhere."
-   The cause of that one is fixed at its source (the tab strip no longer sizes itself with 100vw,
-   which counts the vertical scrollbar the page cannot use). THIS IS THE BACKSTOP, so the next
-   full-bleed element somebody adds cannot bring the bar back.
-   clip, NOT hidden, and the difference is load-bearing: `hidden` makes this element a scroll
-   container and can break the sticky tab strip; `clip` forbids scrolling without becoming one, so
-   sticky keeps working. Vertical scrolling is untouched - visible+clip is a legal pair.
-   It is deliberately on the root only. A page that genuinely needs to scroll something sideways -
-   a wide table, a code block - still can, because those carry their own overflow-x:auto box, and
-   this rule cannot reach inside them. */
-html{ overflow-x:clip; }
-
-/* A LINK IN A SENTENCE IS STILL SOMETHING HE TAPS WITH A THUMB. Text is about 20px tall; the floor
-   for a tap target is 40. Fixed page by page today on the trip pages and Arm Us, then found again
-   on Messages - seven of them - which is the signal that it belongs here rather than in each page.
-   PADDING, NOT display:inline-flex, and the difference matters: an inline-flex link cannot wrap
-   across two lines, so one long link in a paragraph would push the page sideways, which is the very
-   thing being fixed two rules up. Vertical padding grows the hit area and leaves wrapping alone.
-   Invisible: these links carry no background, so nothing moves on screen.
-   Scoped to links inside prose. Anything that is already a button, pill, tab or card has its own
-   size and is deliberately untouched. */
-p a:not([class]), li a:not([class]){ padding-block:11px; }
-</style>
-
-<!-- THEME-END -->
 <!-- TOC-START -->
 <!-- ===============================================================================================
      THE JUMP MENU. ONE FILE. EVERY DASHBOARD, HIS AND SHARED ALIKE.
@@ -5987,4 +5754,237 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
 </script>
 
 <!-- TOC-END -->
+<!-- THEME-START -->
+<!-- ===============================================================================================
+     THE DESIGN SYSTEM. ONE FILE. EVERY DASHBOARD.
+
+     Armin, 2026-08-11, two instructions in one breath:
+       "Some of the pages have too much red in it. I prefer mostly blue and green and use red and
+        orange only for urgent or very important things. This has to be the case for all the pages."
+       "The dashboards need to have a consistent design so i can flow through them, seamlessly; for
+        example, tabs at the top is not consistent between the dashboards."
+
+     WHY A SHARED FILE AND NOT THIRTEEN EDITS. Every page here was written at a different time with
+     its own private colour vocabulary - --accent, --momiji, --chip, --neg, --crit, --no - and each
+     one was individually defensible. Nobody ever chose "the Messages page should be half red"; it
+     arrived one reasonable decision at a time, which is exactly the failure this vault names: a
+     standard copied into many places becomes many standards. So the palette is DECLARED ONCE, here,
+     and every page's own names are ALIASED onto it. Change a colour here and thirteen pages change.
+
+     HOW IT WINS. Injected last in the document by inject-theme.ps1, and every alias carries
+     !important - which IS honoured for custom properties. Without it a page's own
+     `:root[data-theme="dark"]{--accent:#e06a5f}` outranks a plain `:root` here on specificity and
+     the page keeps its old colour in dark mode only, which is the kind of half-fix nobody sees.
+     Setting a variable on a DESCENDANT still works normally, so per-component variants are intact.
+
+     THE BUDGET, measured rather than felt, by projects/hub/palette-check.html at 360px:
+        To-Do List  blue 69.3  red 19.1   <- he called this one good
+        Questions   green 75.7 red 16.6   <- he called this one good
+        Messages    green 35.1 red 63.0   <- "the messages page has too much red"
+     So the ceiling is derived from the pages he approved, not invented: RED <= 20% of painted
+     colour, RED+AMBER <= 30%, BLUE+GREEN >= 65%. Never raise a ceiling to silence the checker.
+
+     THE FOUR MEANINGS. Nothing else gets a colour.
+        BLUE   the ordinary primary. Links, the thing to press, the current tab, anything outgoing.
+        GREEN  good, done, kept, yours, money coming in.
+        AMBER  waiting on someone, needs attention, not yet a problem.
+        RED    urgent or very important ONLY. Overdue, broken, rejected, money going out.
+     ================================================================================================ -->
+<style id="ds-theme">
+/* ---- 1. THE TOKENS ---------------------------------------------------------------------------
+   Declared in all four contexts the pages between them use, because they do not agree on how dark
+   mode arrives: some listen to the OS (@media), some to the data-theme attribute the artifact
+   runtime stamps on <html>, some to both. Covering all four is also what finally makes the theme
+   TOGGLE work on the pages that only ever listened to the OS. */
+:root{
+  --ds-bg:#f7f8fa; --ds-card:#ffffff; --ds-sunk:#eef1f5;
+  --ds-ink:#171a1f; --ds-dim:#555c66; --ds-faint:#848b95; --ds-line:#dfe3e9;
+  --ds-blue:#1f4fd8;  --ds-blue-soft:#e9eefc;  --ds-on-blue:#ffffff;
+  --ds-green:#1b6b3a; --ds-green-soft:#e4f2ea; --ds-on-green:#ffffff;
+  --ds-amber:#8a5a12; --ds-amber-soft:#f8eddb; --ds-on-amber:#ffffff;
+  --ds-red:#b3261e;   --ds-red-soft:#fbe6e4;   --ds-on-red:#ffffff;
+  --ds-bar:rgba(247,248,250,.92);
+  --ds-shadow:0 1px 2px rgba(20,22,28,.05),0 8px 24px rgba(20,22,28,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --ds-bg:#12141a; --ds-card:#1b1e25; --ds-sunk:#161920;
+    --ds-ink:#eceef2; --ds-dim:#a4abb6; --ds-faint:#7e858f; --ds-line:#2d323b;
+    /* These four are chosen so WHITE still reads on top of them, because the pages hardcode
+       color:#fff on filled buttons and chips. A prettier pastel would have quietly made every
+       primary button unreadable in dark mode - the kind of regression a colour audit never
+       catches because it is looking at hue, not contrast. */
+    --ds-blue:#5b86f0;  --ds-blue-soft:#18213c;  --ds-on-blue:#ffffff;
+    --ds-green:#2f9e63; --ds-green-soft:#152a1f; --ds-on-green:#ffffff;
+    --ds-amber:#d9a441; --ds-amber-soft:#2b2216; --ds-on-amber:#1a1409;
+    --ds-red:#e0574c;   --ds-red-soft:#2e1a18;   --ds-on-red:#ffffff;
+    --ds-bar:rgba(18,20,26,.92);
+    --ds-shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --ds-bg:#12141a; --ds-card:#1b1e25; --ds-sunk:#161920;
+  --ds-ink:#eceef2; --ds-dim:#a4abb6; --ds-faint:#7e858f; --ds-line:#2d323b;
+  --ds-blue:#5b86f0;  --ds-blue-soft:#18213c;  --ds-on-blue:#ffffff;
+  --ds-green:#2f9e63; --ds-green-soft:#152a1f; --ds-on-green:#ffffff;
+  --ds-amber:#d9a441; --ds-amber-soft:#2b2216; --ds-on-amber:#1a1409;
+  --ds-red:#e0574c;   --ds-red-soft:#2e1a18;   --ds-on-red:#ffffff;
+  --ds-bar:rgba(18,20,26,.92);
+  --ds-shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+}
+:root[data-theme="light"]{
+  --ds-bg:#f7f8fa; --ds-card:#ffffff; --ds-sunk:#eef1f5;
+  --ds-ink:#171a1f; --ds-dim:#555c66; --ds-faint:#848b95; --ds-line:#dfe3e9;
+  --ds-blue:#1f4fd8;  --ds-blue-soft:#e9eefc;  --ds-on-blue:#ffffff;
+  --ds-green:#1b6b3a; --ds-green-soft:#e4f2ea; --ds-on-green:#ffffff;
+  --ds-amber:#8a5a12; --ds-amber-soft:#f8eddb; --ds-on-amber:#ffffff;
+  --ds-red:#b3261e;   --ds-red-soft:#fbe6e4;   --ds-on-red:#ffffff;
+  --ds-bar:rgba(247,248,250,.92);
+  --ds-shadow:0 1px 2px rgba(20,22,28,.05),0 8px 24px rgba(20,22,28,.06);
+}
+
+/* ---- 2. THE ALIASES ---------------------------------------------------------------------------
+   Every colour name any of the thirteen pages invented, pointed at the four meanings above. A name
+   that appears on only one page is harmless everywhere else, so they all live in one list.
+   ONE DELIBERATE RE-MEANING, on the Messages page: outgoing text used to be RED and his own private
+   notes BLUE, so the two could never be confused (his ask, 2026-08-06). Outgoing is now BLUE and his
+   notes GREEN. Two distinct colours, same guarantee, and neither of them is red. */
+:root{
+  /* surfaces and text */
+  --bg:var(--ds-bg)!important;          --ground:var(--ds-bg)!important;     --paper:var(--ds-bg)!important;
+  --card:var(--ds-card)!important;      --panel:var(--ds-card)!important;    --surface:var(--ds-card)!important;
+  --sunk:var(--ds-sunk)!important;      --ground-2:var(--ds-sunk)!important; --panel-2:var(--ds-sunk)!important;
+  --ink:var(--ds-ink)!important;        --fg:var(--ds-ink)!important;
+  --dim:var(--ds-dim)!important;        --soft:var(--ds-dim)!important;      --mid:var(--ds-dim)!important;
+  --ink-soft:var(--ds-dim)!important;   --ink-2:var(--ds-dim)!important;
+  --faint:var(--ds-faint)!important;    --ink-faint:var(--ds-faint)!important;
+  --muted:var(--ds-faint)!important;    --ink-3:var(--ds-faint)!important;
+  --line:var(--ds-line)!important;      --rule:var(--ds-line)!important;     --hair:var(--ds-line)!important;
+  --bar:var(--ds-bar)!important;        --shadow:var(--ds-shadow)!important;
+
+  /* BLUE - the primary */
+  --accent:var(--ds-blue)!important;       --accent-soft:var(--ds-blue-soft)!important;
+  --accent-ink:var(--ds-on-blue)!important;
+  --chip:var(--ds-blue-fill)!important;    --chip-ink:var(--ds-on-blue)!important;
+  --momiji:var(--ds-blue)!important;       /* Japan pages: was the red maple, was their accent */
+  --now-fg:var(--ds-blue)!important;       --now-bg:var(--ds-blue-soft)!important;
+
+  /* GREEN - good, done, yours */
+  --ok:var(--ds-green)!important;          --ok-soft:var(--ds-green-soft)!important;
+  --ok-bg:var(--ds-green-soft)!important;  --good:var(--ds-green)!important;
+  --pos:var(--ds-green)!important;         --yes:var(--ds-green)!important;
+  --yesbg:var(--ds-green-soft)!important;  --cedar:var(--ds-green)!important;
+  --note:var(--ds-green)!important;        --note-soft:var(--ds-green-soft)!important;
+  --done-fg:var(--ds-green)!important;     --done-bg:var(--ds-green-soft)!important;
+
+  /* AMBER - waiting, needs attention */
+  --warn:var(--ds-amber)!important;        --warn-soft:var(--ds-amber-soft)!important;
+  --warn-bg:var(--ds-amber-soft)!important;--warnbg:var(--ds-amber-soft)!important;
+  --warm:var(--ds-amber)!important;        --amber:var(--ds-amber)!important;
+  --amberbg:var(--ds-amber-soft)!important;--ginkgo:var(--ds-amber)!important;
+  /* "waiting" is NOT amber. On the trip pages it is the default state of nearly every row - "Needs
+     a yes", "To do", "September" - and painting the default state a warning colour is how a page
+     ends up 51% amber while every individual badge looks reasonable. Amber has to mean something
+     is off; a thing that has simply not happened yet is grey. */
+  --wait-fg:var(--ds-dim)!important;       --wait-bg:var(--ds-sunk)!important;
+
+  /* RED - urgent or very important only */
+  --hot:var(--ds-red)!important;           --bad:var(--ds-red)!important;
+  --neg:var(--ds-red)!important;           --crit:var(--ds-red)!important;
+  --crit-bg:var(--ds-red-soft)!important;  --no:var(--ds-red)!important;
+  --nobg:var(--ds-red-soft)!important;
+
+  /* the feedback box ships its own vocabulary; point it at the same four meanings */
+  --fb-card:var(--ds-card)!important;      --fb-ink:var(--ds-ink)!important;
+  --fb-line:var(--ds-line)!important;      --fb-dim:var(--ds-dim)!important;
+  --fb-good:var(--ds-green)!important;     --fb-warm:var(--ds-amber)!important;
+  --fb-accent:var(--ds-blue)!important;
+}
+
+/* ---- 3. THE EXCEPTIONS ------------------------------------------------------------------------
+   Aliasing a NAME cannot fix a case where one name carried two meanings. These are the handful of
+   places where the page-level remap would land on the wrong side of his rule, in both directions.
+   They live here, with the palette, so the whole colour decision can be read in one sitting. */
+
+/* ONE COLOUR CANNOT DO BOTH JOBS IN DARK MODE, so there are two blues.
+   --ds-blue has to be light enough to read AS TEXT on a dark page; a solid button filled with that
+   same light blue and the white label the pages hardcode comes out at 3.4:1, which is under the bar
+   for small bold type. Measured, not assumed: white on the dark --ds-blue is 3.44, white on
+   --ds-blue-fill is 6.4. Light mode needs no split, so there the two are the same colour. */
+:root{ --ds-blue-fill:var(--ds-blue); }
+@media (prefers-color-scheme: dark){ :root{ --ds-blue-fill:#2f57c4; } }
+:root[data-theme="dark"]{ --ds-blue-fill:#2f57c4; }
+:root[data-theme="light"]{ --ds-blue-fill:var(--ds-blue); }
+/* .hero .n joined this list on 2026-08-12. It is the "1" badge on the first task, and the numbered
+   badges below it are .num - so this rule was tinting the list and leaving the 1 on the page's own
+   --accent. Two blues that are nearly the same is worse than two that obviously differ: it reads as
+   a rendering fault rather than a choice. One rule, both badges, identical colour by construction. */
+/* THE BARE `.num` IS GONE FROM THIS LIST, AND THAT IS THE WHOLE FIX (2026-09-02).
+   `.num` does not mean one thing across these pages. On the clip dashboards it is a filled badge.
+   On the Money page it is the MONOSPACE-NUMERALS class - build-money-page.ps1 line 261 gives it a
+   font-family and nothing else - and it is on every figure on the page: the headline, the masthead
+   stamp, all four totals, and every amount cell. So this rule was painting all of them in solid
+   fill blue while each kept its own green/red/grey text: #2f9e63 on #2f57c4 for the money coming
+   in, #5b86f0 on #2f57c4 for the $209 headline. In dark mode the page's most important column was
+   a stack of blue slabs with unreadable text in them, and no checker could see it because every
+   rule involved was individually correct and the collision only existed between them.
+   The bare selector was here to give the clip badge an accessible fill, so that job moves UP to
+   the token: --chip now carries --ds-blue-fill, which means any page filling its own badge gets
+   white at 6.4:1 instead of 3.44 without this stylesheet having to know the page's class names.
+   THE RULE THIS BOUGHT: a single-word class is not a selector, it is a guess about every page at
+   once. An !important background may only be aimed at a name that says what the thing IS
+   (.pill.num, .trow .num, .hero .n) - never at one that says what its content looks like. */
+.tag.act, .btn.primary, button.copy, .pill.num, .trow .num, .hero .n{ background-color:var(--ds-blue-fill)!important; }
+
+/* STAYS RED - genuinely urgent, and it would have turned blue with --accent. */
+.age.stale{ background:var(--ds-red)!important; color:var(--ds-on-red)!important; }
+.flag--red{ border-left-color:var(--ds-red)!important; }
+.flag--red strong, .flag--red b{ color:var(--ds-red)!important; }
+
+/* STOPS BEING RED/AMBER - these paint most of a page, so they were the actual complaint.
+   "no mid-roll" is a revenue note on nearly every clip, not an emergency: amber, not red.
+   The hook explainer sits on every card on the Arm Us page and was a solid amber slab. */
+.nomid{ color:var(--ds-amber)!important; }
+.hookwhy{ background:var(--ds-blue-soft)!important; border-left-color:var(--ds-blue)!important; }
+.hookwhy b{ color:var(--ds-blue)!important; }
+/* The trip pages: the ordinary aside on a day, and the big "here is the decision" box on the money
+   page. Both were warm - amber and red-tinted - and both are the NORMAL state of that page, not an
+   alarm. The red aside (.flag--red) keeps its red above, which is the whole point of having two. */
+.flag{ border-left-color:var(--ds-blue)!important; }
+.call{ background:var(--ds-blue-soft)!important; border-color:var(--ds-blue)!important; }
+/* The highlighted word in the trip pages' hero and banner titles. It was a salmon hex written
+   straight into the page, so no token could reach it - the only two of its kind in thirteen pages,
+   and found by counting, not by looking. Fixed at the SOURCE (projects/japan/prep.html and
+   trip-plan.html now read this token) rather than overridden from here: an override would have left
+   the hex in the file and the checker rightly failing forever on a page that looked correct.
+   Fixed tint, not themed: both sit on a dark photo whichever theme the reader is in. */
+:root{ --ds-hero-hi:#cfe0ff; }
+
+/* NO PAGE EVER SCROLLS SIDEWAYS. Armin, 2026-08-12, on Messages: "The page does not automatically
+   fit my screen area, so there is a bar at the bottom that I have to drag left and right... you
+   check all dashboards and make sure that this doesn't happen anywhere."
+   The cause of that one is fixed at its source (the tab strip no longer sizes itself with 100vw,
+   which counts the vertical scrollbar the page cannot use). THIS IS THE BACKSTOP, so the next
+   full-bleed element somebody adds cannot bring the bar back.
+   clip, NOT hidden, and the difference is load-bearing: `hidden` makes this element a scroll
+   container and can break the sticky tab strip; `clip` forbids scrolling without becoming one, so
+   sticky keeps working. Vertical scrolling is untouched - visible+clip is a legal pair.
+   It is deliberately on the root only. A page that genuinely needs to scroll something sideways -
+   a wide table, a code block - still can, because those carry their own overflow-x:auto box, and
+   this rule cannot reach inside them. */
+html{ overflow-x:clip; }
+
+/* A LINK IN A SENTENCE IS STILL SOMETHING HE TAPS WITH A THUMB. Text is about 20px tall; the floor
+   for a tap target is 40. Fixed page by page today on the trip pages and Arm Us, then found again
+   on Messages - seven of them - which is the signal that it belongs here rather than in each page.
+   PADDING, NOT display:inline-flex, and the difference matters: an inline-flex link cannot wrap
+   across two lines, so one long link in a paragraph would push the page sideways, which is the very
+   thing being fixed two rules up. Vertical padding grows the hit area and leaves wrapping alone.
+   Invisible: these links carry no background, so nothing moves on screen.
+   Scoped to links inside prose. Anything that is already a button, pill, tab or card has its own
+   size and is deliberately untouched. */
+p a:not([class]), li a:not([class]){ padding-block:11px; }
+</style>
+
+<!-- THEME-END -->
 </body></html>
