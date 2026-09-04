@@ -271,9 +271,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-09-04T13:35:04Z">
+<div id="freshbar" class="fresh" data-built="2026-09-04T13:59:03Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Fri Sep 4, 21:35</b>
+    <b id="freshtitle">This page was updated Fri Sep 4, 21:59</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday none" id="newtoday" data-new="0"
@@ -2757,6 +2757,20 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     for(var ri=0;ri<rl.length;ri++){ received[rl[ri]]=true; }
   }catch(e){ received={}; }
   function got(n){ return !!(n && received[n.id]); }
+  // ---- 0a3. DELETED, NOT FOLDED (2026-09-04, his THIRD ask, note xsbcyr6l on the Messages page):
+  // "when I submit a copy and paste of feedback to you on Cloud, when I come back here, the feedback
+  // is still there? ... You should notice that the feedback has already been submitted and remove
+  // it. You should clear it yourself. This should be the standard for all the dashboards everywhere."
+  // The 2026-08-17 answer to the same ask (0a2 above) kept a received note ON the page in a folded
+  // line, which is exactly what he was still seeing. A received note is now removed from this
+  // browser at load. The vault is its record from the moment read-feedback.ps1 registered it, so
+  // nothing of his is lost; it is simply no longer his to look at. What he sees when it is finished
+  // is the receipt box (6a), once.
+  (function(){
+    var keep=[], dropped=0;
+    for(var i=0;i<notes.length;i++){ if(received[notes[i].id]){ dropped++; } else { keep.push(notes[i]); } }
+    if(dropped){ notes=keep; save(); }
+  })();
   var justCleared=[];
   if(handled.length){
     for(var hi=0;hi<handled.length;hi++){
@@ -4296,7 +4310,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     whoEl.innerHTML="";
     whoEl.appendChild(d.createTextNode("These notes are about "));
     var b=d.createElement("b"); b.textContent=PAGE; whoEl.appendChild(b);
-    whoEl.appendChild(d.createTextNode(" and nothing else. They stay here until I have acted on them and told you what I did. Copying never removes anything."));
+    whoEl.appendChild(d.createTextNode(" and nothing else. They leave this page by themselves once I have received them. Copying alone never removes anything."));
 
     var u=unsent(), sn=sentOnes();
     // Everything explanatory hides until there is something to explain. This whole block used to
@@ -4322,7 +4336,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
       var gt=gotOnes();
       var st=d.createElement("p"); st.className="fbkempty";
       st.textContent = sn.length===notes.length
-        ? ("All "+notes.length+(notes.length===1?" note is":" notes are")+" with me. They stay on this page until I have acted on each one and told you what I did.")
+        ? ("All "+notes.length+(notes.length===1?" note is":" notes are")+" copied. Paste it to me and it leaves this page by itself.")
         : ((notes.length-sn.length)+" of "+notes.length+" not copied yet.");
       listEl.appendChild(st);
 
