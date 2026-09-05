@@ -1017,7 +1017,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">50 topics across 6 streams. Updated 2026-09-05T10:30:58Z.</p>
+  <p class="built">50 topics across 6 streams. Updated 2026-09-05T10:55:35Z.</p>
 </div>
 
 <div class="bar">
@@ -3018,6 +3018,29 @@
   // feature, and the next page with a main action needs no change to this file.
   var PAGEBTN = (W.__PAGEBTN && typeof W.__PAGEBTN.onClick === "function") ? W.__PAGEBTN : null;
   var actLockUntil = 0;
+  // ---- ONE COPY BUTTON FOR EVERYTHING HE HANDS ME (2026-09-05, note 896nkquc) ----------------
+  // Armin, on the questions page: "the copying of answers and the copying of feedback are two
+  // different buttons. I don't like that. I think they should be added up and counted as the same
+  // number, and I shouldn't have to copy two things when I give it to Claude."
+  // WHY IT WAS TWO: the answers button and the feedback pill were built three days apart, each
+  // checked on its own, and each correct on its own - the defect lived only in their combination,
+  // which no per-control check can see. A host page that ALSO supplies text() (what it wants
+  // copied) and count() (how many things that is) is now MERGED: one row, one number, one press
+  // copies the page's own text and the notes as a single paste, and sent() is called only after a
+  // copy that really reached the clipboard. A page without text() keeps the two-row shape.
+  var MERGED = !!(PAGEBTN && typeof PAGEBTN.text === "function");
+  function hostText(){ if(!MERGED) return ""; var t = val(PAGEBTN.text); return t ? String(t) : ""; }
+  function hostCount(){
+    if(!MERGED) return 0;
+    var c = parseInt(val(PAGEBTN.count), 10);
+    if(isNaN(c)) return hostText() ? 1 : 0;
+    return c;
+  }
+  function hostNoun(n){
+    var base = (PAGEBTN && PAGEBTN.noun) ? String(val(PAGEBTN.noun) || "answer") : "answer";
+    return n + " " + base + (n === 1 ? "" : "s");
+  }
+  function mergedTotal(){ return notes.length + hostCount(); }
   // CODE FROM ANOTHER FILE NEVER THROWS INTO THIS ONE. __PAGEBTN is supplied by the host dashboard,
   // so calling it is calling a stranger; an exception raised in there used to escape through
   // paintAction() and kill the rest of the feedback repaint (see paintTheCount above). A broken
@@ -3036,6 +3059,13 @@
   function paintAction(){
     if(!barAct) return;
     if(!PAGEBTN){ barAct.hidden = true; if(rowAct){ rowAct.hidden = true; } return; }
+    if(MERGED){
+      // The host's own row is gone; its count rides in the one copy row instead.
+      barAct.hidden = true; if(rowAct){ rowAct.hidden = true; }
+      try{ paintTheCount(); }catch(e0){}
+      try{ barVisible(); }catch(e1){}
+      return;
+    }
     var empty = !!val(PAGEBTN.disabled);
     barAct.hidden = false;
     barAct.disabled = empty;
@@ -3138,6 +3168,15 @@
   // note" would have answered half his complaint and left the half that actually confuses him.
   function barCopyLabel(){
     var n=notes.length;
+    if(MERGED){
+      var h=hostCount(), t=n+h;
+      if(!t) return "Copy for Claude";
+      var parts=[];
+      if(h){ parts.push(hostNoun(h)); }
+      if(n){ parts.push(n+" note"+(n===1?"":"s")); }
+      // One number first, always. The breakdown only when there are two kinds to tell apart.
+      return "Copy all "+t+" for Claude"+(parts.length>1 ? " ("+parts.join(" + ")+")" : "");
+    }
     return "Copy "+n+" feedback note"+(n===1 ? "" : "s");
   }
 
@@ -3294,8 +3333,15 @@
   function paintTheCount(){
     if(!bar) return;
     if(barTxt && nowMs() >= barLockUntil){ barTxt.textContent = barCopyLabel(); }
-    if(rowFb){ rowFb.hidden = !notes.length; }
-    if(barClr){ barClr.hidden = !notes.length; }
+    if(MERGED){
+      if(rowFb){ rowFb.hidden = !mergedTotal(); }
+      // Clear is offered when there are notes to clear, or the host can clear its own marks.
+      var canHostClear = (typeof PAGEBTN.clear === "function") && hostCount() > 0;
+      if(barClr){ barClr.hidden = !(notes.length || canHostClear); barClr.textContent = canHostClear ? "Clear all" : "Clear notes"; }
+    } else {
+      if(rowFb){ rowFb.hidden = !notes.length; }
+      if(barClr){ barClr.hidden = !notes.length; }
+    }
     var anyUnsent=false;
     for(var z=0;z<notes.length;z++){ if(!notes[z].sent){ anyUnsent=true; break; } }
     bar.classList.toggle("pending", anyUnsent);
@@ -3645,6 +3691,27 @@
   // double as the way to start a note - that is its own row now, always present.
   barGo.addEventListener("click", function(){
     var list=notes;
+    if(MERGED){
+      commit();
+      var ht=hostText(), blocks=[];
+      if(ht){ blocks.push(ht); }
+      if(list.length){ blocks.push(payload(list)); }
+      if(!blocks.length){ openWhole(); return; }
+      barLockUntil = nowMs()+3600;
+      var total = list.length + hostCount();
+      copyLadder(blocks.join("\n\n"), function(){
+        barTxt.textContent="Copied - now paste it into the chat";
+        fallEl.hidden=true;
+        if(list.length){ markSent(list); }
+        if(typeof PAGEBTN.sent === "function"){ try{ PAGEBTN.sent(); }catch(e){} }
+        flash("Copied all "+total+". Paste it into the chat with Claude, answers and notes together.");
+      }, function(){
+        revealForManualCopy(blocks.join("\n\n"), "Everything for Claude");
+        barTxt.textContent="Copy it from the box below";
+      });
+      W.setTimeout(function(){ barLockUntil=0; paint(); }, 6400);
+      return;
+    }
     if(!list.length){ openWhole(); return; }
     barLockUntil = nowMs()+3600;
     // barTxt, not barGo: doCopy() assigns textContent, which on the button would destroy the span
@@ -3666,6 +3733,13 @@
   // are still never destroyed on a single tap; the second tap is the guard.
   if(barClr){
     armThen(barClr, "Yes, delete", function(){
+      if(MERGED){
+        notes=[]; save();
+        if(typeof PAGEBTN.clear === "function"){ try{ PAGEBTN.clear(); }catch(e){} }
+        paint();
+        flash("Cleared. Nothing is waiting to be sent.");
+        return;
+      }
       if(!notes.length) return;
       notes=[]; save(); paint();
       flash("Cleared. Nothing is waiting to be sent.");
@@ -3699,14 +3773,20 @@
     // WHOLE ROWS, NEVER LOOSE BUTTONS. Hiding the buttons but leaving their row behind draws an
     // empty bordered strip across the card, and hiding some buttons in a row and not others is what
     // made this thing change shape as he scrolled. One decision, applied to a row.
-    if(rowFb){ rowFb.hidden = fbOff || !notes.length; }
+    if(MERGED){
+      // In merged mode the one copy row is the page's only copy control, so it stays even when
+      // the notes box at the bottom is on screen - that box's own button copies notes alone.
+      if(rowFb){ rowFb.hidden = !mergedTotal(); }
+    } else {
+      if(rowFb){ rowFb.hidden = fbOff || !notes.length; }
+    }
     if(rowList){ rowList.hidden = fbOff || !notes.length; }
     if(fbOff && drawerOpen){ toggleDrawer(false); }
     if(rowWrite){ rowWrite.hidden = fbOff; }
-    if(barClr){ barClr.hidden = !notes.length; }
+    if(!MERGED){ if(barClr){ barClr.hidden = !notes.length; } }
     bar.classList.toggle("actonly", fbOff);
     // Nothing left in it means nothing to show. With a host button it is never empty.
-    bar.hidden = fbOff && !(rowAct && !rowAct.hidden);
+    bar.hidden = fbOff && !(rowAct && !rowAct.hidden) && !(MERGED && mergedTotal() > 0);
   }
   W.addEventListener("scroll", barVisible, {passive:true});
   W.addEventListener("resize", barVisible);
