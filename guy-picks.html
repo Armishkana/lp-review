@@ -146,7 +146,7 @@
 <header class="ds-mast" data-ds="mast">
   <h1>Pick the clips you want uploaded</h1>
   <p class="ds-say" data-ds="say" id="saysize" data-say-own="the page script rewrites it from the pick tally; the shared row model does not fit a picks page"><b>11 topics</b> from your last 1 stream, newest first. Tap <b>Upload</b> or <b>Skip</b> on each one.</p>
-  <p class="ds-age stamp" data-ds="age" data-built="2026-09-06T13:57:12Z"><span class="ds-dot"></span><b>Sep 6</b></p>
+  <p class="ds-age stamp" data-ds="age" data-built="2026-09-06T14:22:07Z"><span class="ds-dot"></span><b>Sep 6</b></p>
 </header>
   <!-- WHY THE TITLE IS AN h2 AND THE FOLD SITS INSIDE IT. As a top-level <details> this block was a
        segment titled by its own <summary>, which the section detector ranks deeper than the <h2> on
@@ -409,7 +409,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">11 topics across 1 streams. Updated 2026-09-06T13:57:12Z.</p>
+  <p class="built">11 topics across 1 streams. Updated 2026-09-06T14:22:06Z.</p>
 </div>
 
 <div class="bar">
@@ -1030,6 +1030,20 @@
      A row lands here the moment read-feedback.ps1 parses a paste of his, which is the only evidence
      that exists of him actually handing a note over. -->
 <script id="fbkReceived" type="application/json">[]</script>
+<!-- THE HIGH-WATER MARK OF WHAT HE HAS HANDED OVER, PER BOARD (2026-09-06, note v93oqrw2).
+     The received list above can only clear a note whose ID survived the round trip. Every path
+     that loses the id - a note he typed and described in his own words, a paste truncated by a
+     phone clipboard, a dump I read but recorded under a different row - leaves the note sitting
+     in front of him forever, and there is no way for him to tell that kind apart from a note I
+     simply ignored. Five times he has asked for this and five times the answer fixed one more
+     id-losing path.
+     THIS DOES NOT DEPEND ON IDS AT ALL. The copy button copies EVERY note on the page, so a dump
+     stamped T proves that every note on that board older than T was in it. The mark is that T,
+     written by read-feedback.ps1 the moment it parses a paste. Anything at or before it goes.
+     It is a map so the hub, which embeds this fragment whole, can find its own row;
+     inject-feedback.ps1 narrows it to one row per page so a note on one board does not re-dirty
+     the other twelve. -->
+<script id="fbkWatermark" type="application/json">{}</script>
 <div class="fbk" id="fbk">
 <!-- DELIBERATELY ALMOST EMPTY WHEN THERE ARE NO NOTES. Armin, 2026-08-09, on the Messages page:
      "There's so much text and unnecessary stuff at the bottom of the screen that I don't know what
@@ -1242,6 +1256,41 @@
   (function(){
     var keep=[], dropped=0;
     for(var i=0;i<notes.length;i++){ if(received[notes[i].id]){ dropped++; } else { keep.push(notes[i]); } }
+    if(dropped){ notes=keep; save(); }
+  })();
+  // ---- 0a4. EVERYTHING IN THE PASTE LEAVES, NOT ONLY WHAT PARSED --------------------------------
+  // ARMIN, 2026-09-06, note v93oqrw2, on this same box for the fifth time: "Wasn't it that it was
+  // not clear when I came on this page, and I had to clear it myself, even though I already
+  // submitted that feedback to Claude? ... I asked you so many times to fix it, and you're still
+  // not fixing it."
+  //
+  // HE IS RIGHT AND EVERY EARLIER ANSWER WAS THE SAME SHAPE. 0a2 taught the page to clear a note on
+  // RECEIPT, 0a3 deleted it instead of folding it, and 2026-09-05 taught a hand-copy to carry its
+  // id. All three are keyed to the note's ID, so all three fail together on any path where the id
+  // does not survive - and the last time that happened the fix shipped to him was the sentence
+  // "Tap Delete on that one note once", which is literally the thing he is complaining about.
+  //
+  // THE KEY IS THE FAULT. This one is keyed to a fact about the world instead: the copy button
+  // copies EVERY note on this board, so a dump stamped T is proof that every note on this board
+  // written at or before T was handed over. read-feedback.ps1 writes T the moment it parses a
+  // paste, whether or not a single id in it was new. Nothing about an id can break it.
+  //
+  // It is deliberately <= and not <: markSent stamps the notes with the SAME string the report
+  // header carries, so an equal stamp is the ordinary case, not an edge one.
+  // A note he writes AFTER the paste is later than the mark and stays, which is the whole point.
+  (function(){
+    var WM="";
+    try{
+      var wb=d.getElementById("fbkWatermark");
+      var wm=wb?(JSON.parse(wb.textContent||"{}")||{}):{};
+      WM=String((wm && wm[BOARD]) || "");
+    }catch(e){ WM=""; }
+    if(!WM) return;
+    var keep=[], dropped=0;
+    for(var i=0;i<notes.length;i++){
+      var at=String(notes[i].at||"");
+      if(at && at<=WM){ dropped++; } else { keep.push(notes[i]); }
+    }
     if(dropped){ notes=keep; save(); }
   })();
   var justCleared=[];
@@ -3038,7 +3087,14 @@
     L.push("=== FEEDBACK | "+PAGE+" | "+BOARD+" ===");
     L.push("url: "+W.location.href);
     if(BUILT){ L.push("page built: "+BUILT); }
-    L.push("written: "+stamp()+" UTC");
+    // ONE STAMP, USED TWICE. The header's time and the time stamped onto each note by markSent are
+    // compared against each other by the watermark in 0a4, and they used to be two separate calls to
+    // stamp() a few milliseconds apart. Across a minute boundary the notes came out one minute LATER
+    // than the report that carried them, so the watermark would have kept exactly the notes it was
+    // built to clear - once an hour, unreproducibly, on the one mechanism he has asked for five
+    // times. Two readings of the same clock are not the same value; take it once and pass it on.
+    COPYSTAMP=stamp();
+    L.push("written: "+COPYSTAMP+" UTC");
     L.push(list.length===1 ? "1 note" : list.length+" notes");
     L.push("");
     for(var k=0;k<list.length;k++){
@@ -3051,8 +3107,14 @@
     L.push("=== END FEEDBACK | "+BOARD+" | "+list.length+(list.length===1?" note":" notes")+" ===");
     return L.join("\n");
   }
+  var COPYSTAMP="";
   function markSent(list){
-    var now=stamp();
+    // The stamp payload() just wrote into the report header, so the note and the report it went out
+    // in carry the same time. Cleared after use: markSent is also called with no report behind it
+    // (markAllSent from the host page), and a stale stamp there would date a note into the past and
+    // let the watermark delete something he never handed over.
+    var now=COPYSTAMP||stamp();
+    COPYSTAMP="";
     for(var k=0;k<list.length;k++){ list[k].sent=true; list[k].at=now; }
     save(); paint();
   }
