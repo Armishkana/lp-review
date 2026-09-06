@@ -271,9 +271,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </header>
 
 <!-- Self-checking freshness banner: the page compares its own build time against the clock. -->
-<div id="freshbar" class="fresh" data-built="2026-09-06T02:29:00Z">
+<div id="freshbar" class="fresh" data-built="2026-09-06T02:54:50Z">
   <div class="fresh-l">
-    <b id="freshtitle">This page was updated Sun Sep 6, 10:28</b>
+    <b id="freshtitle">This page was updated Sun Sep 6, 10:54</b>
     <span id="freshage"></span>
   </div>
   <span class="newtoday none" id="newtoday" data-new="0"
@@ -2006,12 +2006,17 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
    does not need to - the general fact is that A CONTROL WHICH ENDS ITS CONTAINER IS FOLLOWED BY
    SOMETHING FROM OUTSIDE THAT CONTAINER, and that is exactly the case worth spacing. Stated that
    way it needs no page's class names, which is the whole reason the bare `.num` rule in theme.html
-   went wrong. Controls that sit among content are never last children, so nothing else moves. */
-.fbka:last-child{margin-bottom:72px}
+   went wrong. Controls that sit among content are never last children, so nothing else moves.
+   NOT THE WHOLE-PAGE CONTROL (2026-09-06, SPEC.md C5): .fbkwhole is hoisted under the h1 and is the
+   last child of its .fbktop host on every page, so the rule written for the Roadmap's nested groups was
+   also opening a 72px void at the top of all 13 pages - measured at 360 on the To-Do List as an empty
+   band between the whole-page button and the first card. The Roadmap case keeps its 72px. */
+.fbka:last-child:not(.fbkwhole){margin-bottom:72px}
+/* THE LOOK LIVES IN theme.html's #ds-ui BLOCK NOW (2026-09-06, SPEC.md C5): font, border and colour
+   for .fbkbtn come from the anatomy layer, which is injected LAST and wins. Only the shape that the
+   harnesses and the click paths depend on stays here - the 40px target, the padding, the cursor. */
 .fbkbtn{display:inline-flex;align-items:center;min-height:40px;padding:8px 10px;border-radius:8px;
-  cursor:pointer;background:transparent;border:1px solid transparent;
-  color:var(--fb-dim);text-align:left;max-width:100%;
-  font:600 12.5px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  cursor:pointer;background:transparent;text-align:left;max-width:100%}
 .fbkbtn:hover{color:var(--fb-accent);border-color:var(--fb-line)}
 /* Something is waiting in it, so now it may speak: accent text on the soft fill, no slab. */
 .fbkbtn.has{border-color:var(--fb-line);background:var(--fb-soft);color:var(--fb-accent);
@@ -2028,8 +2033,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
 /* The whole-page control sits directly under the H1, so a 2px accent outline made the loudest
    thing on his day's first screen a request for feedback. Outline of a hairline, accent text:
    still obviously pressable, no longer competing with the page title above it. */
-.fbkwhole > .fbkbtn{border-style:solid;border-width:1px;border-color:var(--fb-line);
-  color:var(--fb-accent);font-weight:700}
+.fbkwhole > .fbkbtn{font-weight:700}
 .fbkabout{margin:0 0 6px;font-size:13px;color:var(--fb-dim)}
 .fbkta{width:100%;min-height:104px;padding:10px 12px;border-radius:10px;
   border:2px solid var(--fb-accent);background:var(--fb-card);color:var(--fb-ink);
@@ -4910,7 +4914,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</p>
   --fb-card:var(--ds-card)!important;      --fb-ink:var(--ds-ink)!important;
   --fb-line:var(--ds-line)!important;      --fb-dim:var(--ds-dim)!important;
   --fb-good:var(--ds-green)!important;     --fb-warm:var(--ds-amber)!important;
-  --fb-accent:var(--ds-blue)!important;
+  --fb-accent:var(--ds-blue)!important;    --fb-soft:var(--ds-blue-soft)!important;
 }
 
 /* ---- 3. THE EXCEPTIONS ------------------------------------------------------------------------
@@ -4997,6 +5001,341 @@ html{ overflow-x:clip; }
    size and is deliberately untouched. */
 p a:not([class]), li a:not([class]){ padding-block:11px; }
 </style>
+<style id="ds-ui">
+/* ---- DS-UI: THE ANATOMY LAYER (2026-09-06). Type, rhythm, radii, motion, components. ----------
+   Colour lives in #ds-theme above and ONLY there. Everything here reads a --ds-* token. Class names
+   start ds- and are read by no gate except dashboard-standard-check.ps1, which counts data-ds parts.
+   The existing contract names (.hero .n .markbox .mkbtn .trowx .trow .num #tband .tbbtn #tbplan
+   #tbsay #tbhid .wjob .wpct .board .btitle a.go .fbka .fbkbtn) are STYLED here, never renamed.
+   Spec: projects/hub/.redesign/SPEC.md section C1. Three selectors are narrower than the spec wrote
+   them, for the reason the .num note above gives (a one-word class is a guess about every page):
+   the hero frame is div.hero (the trip pages' photo hero is a <header class="hero">), the progress
+   track is .ds-bar/.wbar/.rmapprog .bar (bare .bar is the sticky header on Messages and Questions and
+   the fixed action bar on the clip pages), and the segmented-control border reset is .tbbtns > .tbbtn. */
+
+/* 1. TOKENS: type scale, rhythm, radii, targets, motion. Fixed px, DESIGN.md's ramp. */
+:root{
+  --ds-font:ui-sans-serif,"Segoe UI",system-ui,sans-serif;
+  --ds-mono:ui-monospace,Consolas,"Cascadia Mono",monospace;
+  --ds-fs-h1:24px; --ds-fs-h2:18px; --ds-fs-h3:16px; --ds-fs-body:15px;
+  --ds-fs-meta:13px; --ds-fs-small:12px; --ds-fs-say:19px; --ds-fs-num:28px; --ds-fs-fig:34px;
+  --ds-lh:1.5; --ds-lh-snug:1.3; --ds-lh-tight:1.15;
+  --ds-sp-1:4px; --ds-sp-2:8px; --ds-sp-3:12px; --ds-sp-4:16px; --ds-sp-5:20px; --ds-sp-6:24px; --ds-sp-7:32px; --ds-sp-8:48px;
+  --ds-r-sm:8px; --ds-r-md:10px; --ds-r-lg:12px; --ds-r-pill:999px;
+  --ds-tap:40px; --ds-tap-lg:48px; --ds-tap-xl:54px;
+  --ds-col:44rem;
+  --ds-hair:1px solid var(--ds-line);
+  --ds-focus:0 0 0 2px var(--ds-card),0 0 0 4px var(--ds-blue);
+  --ds-track:var(--ds-sunk);
+  --ds-t-fast:.15s;
+}
+@media (min-width:900px){ :root{ --ds-fs-h1:28px; --ds-fs-say:21px; --ds-fs-fig:38px; } }
+
+/* 2. BASE. */
+html{ scrollbar-width:thin; scrollbar-color:var(--ds-line) var(--ds-bg); }
+::-webkit-scrollbar{ width:10px; height:10px }
+::-webkit-scrollbar-thumb{ background:var(--ds-line); border-radius:5px; border:2px solid var(--ds-bg) }
+::selection{ background:var(--ds-blue-soft); color:var(--ds-ink) }
+body{ font:var(--ds-fs-body)/var(--ds-lh) var(--ds-font); color:var(--ds-ink); background:var(--ds-bg); caret-color:var(--ds-blue); }
+:focus-visible{ outline:none; box-shadow:var(--ds-focus); border-radius:6px }
+.wrap,main.wrap{ max-width:var(--ds-col); margin:0 auto; }
+h1,h2,h3,h4{ font-family:var(--ds-font); margin:0; }
+h1{ font-size:var(--ds-fs-h1); line-height:var(--ds-lh-tight); font-weight:700 }
+h2{ font-size:var(--ds-fs-h2); line-height:var(--ds-lh-snug); font-weight:700 }
+h3{ font-size:var(--ds-fs-h3); line-height:var(--ds-lh-snug); font-weight:700 }
+/* Figures line up. Every numeral class in the fleet, in one list. */
+.num,.mins,.mq,.amt,.pct,.big,.when,.rank,.n,.wpct,.ds-fig,.ds-count,.ds-cell .v,.tbm,.tbpm,time{ font-variant-numeric:tabular-nums lining-nums }
+/* No colour transitions anywhere a token is read. Only transform and shadow, on things already visible. */
+*,*::before,*::after{ transition-property:transform,box-shadow; transition-duration:var(--ds-t-fast); }
+@media (prefers-reduced-motion:reduce){ *,*::before,*::after{ transition:none } }
+
+/* 3. MASTHEAD: title, the page speaks, the age. The fragment hoists .fbktop right after the h1. */
+.ds-mast{ display:grid; grid-template-columns:1fr; gap:var(--ds-sp-2) var(--ds-sp-3); align-items:end; margin:var(--ds-sp-4) 0 var(--ds-sp-4) }
+.ds-mast h1{ order:1 }
+.ds-mast .ds-say{ order:2; margin:0 }
+.ds-mast .ds-age{ order:3; margin:0 }
+.ds-mast .fbktop{ order:4; margin:0; max-width:none }
+.ds-say{ font-size:var(--ds-fs-say); line-height:1.35; font-weight:500 }
+.ds-say b{ font-weight:700 }
+.ds-age{ font-size:var(--ds-fs-meta); color:var(--ds-faint); display:flex; align-items:center; gap:var(--ds-sp-2); flex-wrap:wrap }
+.ds-dot{ display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--ds-green); flex:0 0 auto }
+.ds-dot.amber{ background:var(--ds-amber) } .ds-dot.red{ background:var(--ds-red) } .ds-dot.grey{ background:var(--ds-line) }
+@media (min-width:700px){
+  .ds-mast{ grid-template-columns:1fr auto }
+  .ds-mast h1{ grid-column:1; grid-row:1 }
+  .ds-mast .fbktop{ grid-column:2; grid-row:1; align-self:center }
+  .ds-mast .ds-say{ grid-column:1/-1; grid-row:2 }
+  .ds-mast .ds-age{ grid-column:1/-1; grid-row:3 }
+}
+
+/* 4. PULSE: two cells and the NEXT line. Static at every width. */
+.ds-pulse{ margin:0 0 var(--ds-sp-4) }
+.ds-cells{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--ds-line); border:var(--ds-hair); border-radius:var(--ds-r-lg); overflow:hidden }
+.ds-cell{ background:var(--ds-card); padding:10px 12px; min-height:56px; min-width:0 }
+.ds-cell .k{ font:600 var(--ds-fs-small)/1.2 var(--ds-font); color:var(--ds-faint); display:block }
+.ds-cell .v{ font:700 17px/1.2 var(--ds-font); color:var(--ds-ink); display:block; margin-top:2px; overflow-wrap:anywhere }
+.ds-cell .s{ font:400 var(--ds-fs-small)/1.3 var(--ds-font); color:var(--ds-dim); display:block; margin-top:2px }
+.ds-cell .tl{ display:grid; grid-template-columns:auto 1fr; gap:0 var(--ds-sp-2); align-items:baseline }
+.ds-cell .tl .when{ font-weight:700 } .ds-cell .tl .away{ color:var(--ds-dim); font-size:var(--ds-fs-small) }
+.ds-next{ display:flex; align-items:center; gap:10px; min-height:var(--ds-tap-lg); padding:0 12px; margin-top:var(--ds-sp-2);
+  background:var(--ds-blue-soft); color:var(--ds-blue); border-radius:var(--ds-r-md); text-decoration:none; font-weight:700 }
+.ds-next .k{ flex:0 0 auto; font-size:var(--ds-fs-small); letter-spacing:.04em; text-transform:uppercase }
+.ds-next .t{ flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--ds-ink); font-weight:600 }
+.ds-next .m{ flex:0 0 auto; color:var(--ds-dim) }
+.ds-next:hover{ box-shadow:var(--ds-shadow) }
+
+/* 5. DECK, DECK HEAD, COUNT CHIP, CHIPS. */
+.ds-deck{ background:var(--ds-card); border:var(--ds-hair); border-radius:var(--ds-r-lg); padding:14px; margin:0 0 var(--ds-sp-4) }
+@media (min-width:700px){ .ds-deck{ padding:18px } }
+.ds-dh{ display:flex; align-items:center; gap:var(--ds-sp-2); margin:0 0 var(--ds-sp-2); flex-wrap:wrap }
+.ds-dh h2,.ds-dh h3{ flex:1 1 auto; min-width:0; margin:0 }
+.ds-dh .ds-count{ flex:0 0 auto }
+.ds-count{ font:700 var(--ds-fs-small)/1 var(--ds-font); color:var(--ds-dim); background:var(--ds-sunk); border-radius:var(--ds-r-pill); padding:6px 9px; white-space:nowrap }
+.ds-count.green{ background:var(--ds-green-soft); color:var(--ds-green) }
+.ds-count.red{ background:var(--ds-red-soft); color:var(--ds-red) }
+.ds-chip{ display:inline-flex; align-items:center; min-height:24px; padding:0 9px; border-radius:var(--ds-r-pill);
+  font:700 var(--ds-fs-small)/1 var(--ds-font); letter-spacing:.02em; background:var(--ds-sunk); color:var(--ds-dim); max-width:100%; overflow-wrap:anywhere }
+.ds-chip.blue{ background:var(--ds-blue-soft); color:var(--ds-blue) }
+.ds-chip.green{ background:var(--ds-green-soft); color:var(--ds-green) }
+.ds-chip.amber{ background:var(--ds-amber-soft); color:var(--ds-amber) }
+.ds-chip.red{ background:var(--ds-red-soft); color:var(--ds-red) }
+.ds-deckline{ margin:0 0 var(--ds-sp-3); color:var(--ds-dim); font-size:var(--ds-fs-meta) }
+
+/* 6. BUTTONS and their five states: default, hover, active, focus-visible, disabled. Pressed = selected. */
+.ds-btn,.btn,a.go,.tbbtn,.mkbtn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:var(--ds-tap);
+  padding:0 14px; border-radius:var(--ds-r-md); border:var(--ds-hair); background:var(--ds-card); color:var(--ds-ink);
+  font:600 var(--ds-fs-body)/1.2 var(--ds-font); text-decoration:none; cursor:pointer; box-sizing:border-box }
+.ds-btn:hover,.btn:hover,a.go:hover,.tbbtn:hover,.mkbtn:hover{ border-color:var(--ds-dim) }
+.ds-btn:active,.btn:active,a.go:active,.tbbtn:active,.mkbtn:active{ transform:translateY(1px) }
+.ds-btn:focus-visible,.btn:focus-visible,a.go:focus-visible,.tbbtn:focus-visible,.mkbtn:focus-visible{ outline:none; box-shadow:var(--ds-focus) }
+.ds-btn[disabled],.btn[disabled],.ds-btn[aria-disabled="true"],.btn[aria-disabled="true"]{ opacity:.5; cursor:not-allowed; transform:none }
+.ds-btn.primary,.btn.primary,a.go.primary{ background:var(--ds-blue-fill); border-color:var(--ds-blue-fill); color:var(--ds-on-blue) }
+.ds-btn.primary:hover,.btn.primary:hover,a.go.primary:hover{ box-shadow:var(--ds-shadow); border-color:var(--ds-blue-fill) }
+.ds-btn.ghost{ border-color:transparent; background:transparent; color:var(--ds-blue) }
+.ds-btn[aria-pressed="true"],.tbbtn[aria-pressed="true"]{ background:var(--ds-blue-fill); border-color:var(--ds-blue-fill); color:var(--ds-on-blue) }
+.mkbtn.mkdone[aria-pressed="true"],.ds-btn.ok[aria-pressed="true"]{ background:var(--ds-green); border-color:var(--ds-green); color:var(--ds-on-green) }
+.mkbtn.mkskip[aria-pressed="true"]{ background:var(--ds-dim); border-color:var(--ds-dim); color:var(--ds-card) }
+/* The DOOR: the one filled control on a card, two lines, what opens and what to do there. */
+.ds-door,.hero ul.steps > li.pick > a{ display:flex; align-items:center; gap:10px; width:100%; min-height:var(--ds-tap-xl); padding:8px 14px;
+  border-radius:var(--ds-r-md); background:var(--ds-blue-fill); color:var(--ds-on-blue); text-decoration:none; box-sizing:border-box; text-align:left }
+.ds-door .d1,.hero ul.steps > li.pick > a .st{ display:block; font:700 17px/1.25 var(--ds-font) }
+.ds-door .d2,.hero ul.steps > li.pick > a .sd{ display:block; font:500 var(--ds-fs-meta)/1.3 var(--ds-font); opacity:.9; margin-top:2px }
+.ds-door .sn,.hero ul.steps > li.pick > a .sn{ flex:0 0 auto; width:22px; height:22px; border-radius:50%; background:var(--ds-blue-soft); color:var(--ds-blue); font:700 12px/22px var(--ds-font); text-align:center }
+.ds-door::after,.hero ul.steps > li.pick > a::after{ content:""; margin-left:auto; width:8px; height:8px; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:rotate(-45deg); flex:0 0 auto }
+.ds-door:hover,.hero ul.steps > li.pick > a:hover{ box-shadow:var(--ds-shadow) }
+.ds-door:focus-visible,.hero ul.steps > li.pick > a:focus-visible{ outline:none; box-shadow:var(--ds-focus) }
+
+/* 7. SEGMENTED CONTROL (the time band). Button TEXT is a contract; only the shape changes. */
+/* .tband .tbbtns is named too: the Messages and Questions bands (inject-timeband.ps1) declare their
+   own flex-wrap container at that specificity, and the segmented frame around wrapped buttons read
+   as a grey slab with a hole in it. One shape on all three pages. */
+.tbbtns,.tband .tbbtns{ display:grid; grid-template-columns:repeat(3,1fr); gap:0; border:var(--ds-hair); border-radius:var(--ds-r-md); overflow:hidden; background:var(--ds-line) }
+.tbbtn{ min-height:var(--ds-tap-lg); flex-direction:column; gap:2px; padding:6px 8px; background:var(--ds-card) }
+.tbbtns > .tbbtn,.tband .tbbtns > .tbbtn{ border:0; border-radius:0 }
+.tbbtn .tbfit{ display:block; font:500 var(--ds-fs-small)/1.2 var(--ds-font); color:var(--ds-dim) }
+.tbbtn[aria-pressed="true"] .tbfit{ color:var(--ds-on-blue); opacity:.85 }
+/* The budget divider that speaks: #tbhid on the hub, .tbhid on Messages and Questions. Rows under it are hidden (.outplan), never dimmed. */
+#tbhid,.tbhid,.ds-fold{ display:flex; align-items:center; gap:var(--ds-sp-3); margin:var(--ds-sp-4) 0; color:var(--ds-dim); font:600 var(--ds-fs-meta)/1.35 var(--ds-font); text-align:center }
+#tbhid::before,#tbhid::after,.tbhid::before,.tbhid::after,.ds-fold::before,.ds-fold::after{ content:""; flex:1; border-top:1px dashed var(--ds-faint) }
+#tbhid:empty{ display:none }
+.outplan{ display:none !important }
+
+/* 8. THE HERO. His approved 2px blue frame, no shadow. The numeral sits on the title line. */
+div.hero{ border:2px solid var(--ds-blue); border-radius:var(--ds-r-lg); background:var(--ds-card); padding:14px; margin:0 0 var(--ds-sp-4) }
+.hero .kicker{ display:none }
+.hero .ds-tl{ display:flex; align-items:flex-start; gap:10px }
+.hero .n,.trow .num{ flex:0 0 auto; width:28px; height:28px; border-radius:50%; background:var(--ds-blue-fill); color:var(--ds-on-blue);
+  font:700 15px/28px var(--ds-font); text-align:center; display:inline-block }
+.hero h2{ font-size:22px; line-height:var(--ds-lh-snug); flex:1 1 auto; min-width:0 }
+.hero .facts{ display:flex; flex-wrap:wrap; gap:6px; margin:10px 0 }
+.hero .facts .chip{ display:inline-flex; align-items:center; min-height:24px; padding:0 9px; border-radius:var(--ds-r-pill); font:700 var(--ds-fs-small)/1 var(--ds-font); background:var(--ds-sunk); color:var(--ds-dim) }
+.hero .facts .chip.hot{ background:var(--ds-red-soft); color:var(--ds-red) }
+.hero .facts .chip.warm{ background:var(--ds-amber-soft); color:var(--ds-amber) }
+.hero .facts .chip.money,.hero .facts .chip.ok{ background:var(--ds-green-soft); color:var(--ds-green) }
+.hero .facts .chip.rmp,.rmp{ background:var(--ds-blue-soft); color:var(--ds-blue) }
+.hero p.lead{ font-size:17px; line-height:1.4; margin:0 0 var(--ds-sp-3) }
+.hero ul.steps{ list-style:none; margin:0; padding:0 }
+.hero ul.steps > li{ margin:0 0 var(--ds-sp-2) }
+.hero p.why{ font-size:var(--ds-fs-meta); color:var(--ds-dim); margin:var(--ds-sp-3) 0 0 }
+.hero p.why b{ color:var(--ds-ink) }
+.markbox{ margin-top:var(--ds-sp-3); border-top:var(--ds-hair); padding-top:var(--ds-sp-3) }
+.markbox .mklab{ font-size:var(--ds-fs-meta); color:var(--ds-dim); margin:0 0 var(--ds-sp-2) }
+.markbox .mkbtns{ display:flex; gap:var(--ds-sp-2) }
+.markbox .mkbtn{ flex:1 1 0; min-height:var(--ds-tap-lg) }
+.markbox .mkbtn.mkdone{ color:var(--ds-green); border-color:var(--ds-green) }
+.markbox .mkbtn.mkskip{ color:var(--ds-dim) }
+.markbox textarea.mknote{ width:100%; min-height:80px; border:var(--ds-hair); border-radius:var(--ds-r-md); padding:10px 12px; font:var(--ds-fs-body)/1.5 var(--ds-font); background:var(--ds-card); color:var(--ds-ink); box-sizing:border-box }
+.markbox .mkstate{ font-size:var(--ds-fs-meta); color:var(--ds-faint); margin:var(--ds-sp-2) 0 0 }
+.markbox .mkstate.on{ color:var(--ds-green) }
+/* The receipt ribbon after Done, in his own units. */
+.nowrib{ display:flex; align-items:center; gap:var(--ds-sp-2); min-height:var(--ds-tap); padding:0 12px; border-radius:var(--ds-r-md);
+  background:var(--ds-green-soft); color:var(--ds-green); font:700 var(--ds-fs-meta)/1.3 var(--ds-font); margin:0 0 var(--ds-sp-3) }
+/* All clear: the end state. Reached, never announced. */
+.ds-allclear{ border:2px solid var(--ds-green); border-radius:var(--ds-r-lg); background:var(--ds-card); padding:var(--ds-sp-6) var(--ds-sp-4); margin:0 0 var(--ds-sp-4); text-align:center }
+.ds-allclear .ds-tick{ width:54px; height:54px; border-radius:50%; background:var(--ds-green-soft); color:var(--ds-green); font:800 28px/54px var(--ds-font); margin:0 auto var(--ds-sp-3) }
+.ds-allclear .ds-say{ margin:0 0 var(--ds-sp-2) }
+.ds-allclear p{ color:var(--ds-dim); margin:0 }
+.ds-allclear p b{ color:var(--ds-ink) }
+
+/* 9. RANKED ROWS: numeral, body, one figure plus one qualifier. Hairlines, never boxes. */
+.list{ margin:0; padding:0 }
+.list > details.trowx{ border-top:var(--ds-hair) }
+.list > details.trowx:first-child{ border-top:0 }
+details.trowx > summary{ list-style:none; cursor:pointer; min-height:var(--ds-tap); padding:var(--ds-sp-3) 0 }
+details.trowx > summary::-webkit-details-marker{ display:none }
+span.trow{ display:grid; grid-template-columns:28px 1fr auto; gap:0 var(--ds-sp-3); align-items:start }
+.trow .body{ min-width:0 }
+.trow .t{ font-size:var(--ds-fs-body); font-weight:600; line-height:1.35; color:var(--ds-ink) }
+.trow .m,.trow .rsn,.trow .goes{ font-size:var(--ds-fs-meta); color:var(--ds-dim); margin-top:2px }
+.trow .rsn.hot{ color:var(--ds-red) } .trow .rsn.warm{ color:var(--ds-amber) }
+.trow .mins{ font-size:var(--ds-fs-body); font-weight:700; text-align:right; color:var(--ds-ink); white-space:nowrap }
+.trow .mq{ display:block; font-size:var(--ds-fs-small); font-weight:400; color:var(--ds-dim); text-align:right }
+.trow .arr{ display:none }
+details.trowx > .inner{ padding:0 0 var(--ds-sp-4) 40px }
+details.trowx.marked .num,.trow .num.done{ background:var(--ds-green) }
+details.trowx.marked .trow .t{ color:var(--ds-dim); text-decoration:line-through; text-decoration-thickness:1px }
+.num.quiet{ background:var(--ds-sunk); color:var(--ds-dim) }
+/* The pile of finished rows. */
+details#mkpile > summary{ min-height:var(--ds-tap); display:flex; align-items:center; gap:var(--ds-sp-2); color:var(--ds-dim); font:600 var(--ds-fs-meta)/1.3 var(--ds-font); cursor:pointer; list-style:none }
+
+/* 10. DISCLOSURE: the one shape for explanation. */
+details.ds-more > summary,details.heromore > summary,details.why > summary,details.fold > summary,details.wjob > summary{ list-style:none; cursor:pointer; min-height:var(--ds-tap);
+  display:flex; align-items:center; gap:8px; color:var(--ds-blue); font:600 var(--ds-fs-meta)/1.3 var(--ds-font); padding:0 }
+details.ds-more > summary::-webkit-details-marker,details.heromore > summary::-webkit-details-marker{ display:none }
+details.ds-more > summary::before,details.heromore > summary::before{ content:""; width:7px; height:7px; border-right:2px solid currentColor; border-bottom:2px solid currentColor;
+  transform:rotate(-45deg); margin:0 4px 0 2px; flex:0 0 auto }
+details.ds-more[open] > summary::before,details.heromore[open] > summary::before{ transform:rotate(45deg) }
+details.ds-more > .body,details.ds-more > div,details.heromore > .body{ padding:var(--ds-sp-1) 0 var(--ds-sp-2); color:var(--ds-dim); font-size:var(--ds-fs-meta); line-height:1.55 }
+.ds-kv{ margin:0 0 var(--ds-sp-2); font-size:var(--ds-fs-meta); line-height:1.55; color:var(--ds-dim) }
+.ds-kv b{ color:var(--ds-ink); margin-right:var(--ds-sp-1) }
+
+/* 11. PROGRESS: a 6px track always paired with its "N of M" beside it. */
+.ds-bar,.wbar,.rmapprog .bar{ display:block; height:6px; border-radius:var(--ds-r-pill); background:var(--ds-track); border:var(--ds-hair); overflow:hidden }
+.ds-bar > i,.wbar > i,.rmapprog .bar > i{ display:block; height:100%; background:var(--ds-green); border-radius:inherit }
+.ds-bar.goal > i{ background:var(--ds-blue) }
+.ds-bar > i.hatch{ background:repeating-linear-gradient(135deg,var(--ds-blue) 0 4px,var(--ds-blue-soft) 4px 8px) }
+.ds-fig{ font:700 var(--ds-fs-fig)/1.1 var(--ds-font); letter-spacing:-.02em; display:block }
+.ds-fig + .l,.ds-figl{ display:block; margin-top:var(--ds-sp-1); font:600 var(--ds-fs-small)/1.3 var(--ds-font); color:var(--ds-dim) }
+.ds-figs{ display:grid; grid-template-columns:1fr 1fr; gap:var(--ds-sp-3) var(--ds-sp-4) }
+@media (min-width:640px){ .ds-figs{ grid-template-columns:repeat(4,1fr) } }
+.ds-empty{ border:1px dashed var(--ds-line); border-radius:var(--ds-r-md); padding:14px; color:var(--ds-dim); text-align:center }
+.ds-good{ color:var(--ds-green); font-weight:600 }
+
+/* 12. THE FEEDBACK CONTROL: a quiet sign-off line pulled into the deck's lower padding.
+   Text, DOM shape and sibling position are contracts (FEEDBACK.md); only weight changes. */
+.fbka{ margin:-8px 0 8px }
+.fbka:last-child:not(.fbkwhole){ margin-bottom:72px }
+.fbka.fbkwhole:last-child{ margin-bottom:8px }
+.fbka .fbkbtn{ appearance:none; background:none; border:1px solid transparent; padding:0 var(--ds-sp-2); min-height:var(--ds-tap); width:100%;
+  text-align:right; justify-content:flex-end; color:var(--ds-faint); font:600 var(--ds-fs-meta)/1.3 var(--ds-font); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-radius:var(--ds-r-sm) }
+.fbka .fbkbtn::first-letter{ color:var(--ds-blue) }
+.fbka .fbkbtn:hover,.fbka .fbkbtn:focus-visible{ color:var(--ds-blue); background:var(--ds-blue-soft) }
+.fbka .fbkbtn.has{ color:var(--ds-blue); background:var(--ds-blue-soft); border-color:var(--ds-line); font-weight:700 }
+.fbktop{ margin:0 }
+.fbktop .fbkbtn,.fbkwhole > .fbkbtn{ text-align:left; justify-content:flex-start; padding-left:0; border-color:transparent; color:var(--ds-blue) }
+/* Photo heroes on the trip pages: the hoisted control needs its own ground. */
+.hero-in .fbktop,.banner-in .fbktop{ background:var(--ds-card); border-radius:var(--ds-r-sm); padding:4px 8px; display:inline-block }
+
+/* 13. ROW-LIST HELPERS used by several pages. */
+.ds-rowlist{ list-style:none; margin:0; padding:0 }
+.ds-rowlist > li{ border-top:var(--ds-hair); padding:var(--ds-sp-3) 0 }
+.ds-rowlist > li:first-child{ border-top:0 }
+.ds-link{ display:inline-flex; align-items:center; min-height:var(--ds-tap); color:var(--ds-blue); text-decoration:none; font-weight:600 }
+.ds-link:hover{ text-decoration:underline }
+.ds-scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch }
+</style>
+<script id="ds-ui-js">
+(function(){
+  /* DS-UI RUNTIME (SPEC.md C2). One IIFE, pure ASCII, fails silently, touches nothing the marks
+     engine or the time band own. Three jobs: the age, the spoken line, the budget buttons' second line.
+     Two guards the spec left to the implementer: #fresh is only written when this runtime already owns
+     it (data-dsage) or it is empty, so a page whose own script prints a slot-aware age keeps it until
+     that builder hands over with data-ownscript; and .tbfit is only written where the page has rows
+     this runtime can count, so a band on a page not yet on the anatomy never says "fits 0 things". */
+  var d=document, W=window;
+  function q(s,r){return (r||d).querySelector(s)}
+  function qa(s,r){return Array.prototype.slice.call((r||d).querySelectorAll(s))}
+  var WORDS=['zero','one','two','three','four','five','six','seven','eight','nine'], DOT=' '+String.fromCharCode(183)+' ';
+  function word(n){return (n>=0&&n<10)?WORDS[n]:String(n)}
+  function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+  function mins(m){m=Math.round(m||0);if(m<60)return m+'m';var h=Math.floor(m/60),r=m%60;return r?h+'h '+r+'m':h+'h'}
+  function fill(t,o){return t.replace(/\{(\w+)\}/g,function(_,k){return o[k]!=null?o[k]:''})}
+
+  /* 1. THE AGE. One writer for every age surface: .ds-age in the masthead and, if present, p.stamp#fresh. */
+  function age(){
+    try{
+      var el=q('[data-built]'); if(!el) return;
+      var t=Date.parse(el.getAttribute('data-built')); if(isNaN(t)) return;
+      var m=Math.max(0,Math.round((Date.now()-t)/60000));
+      var txt=m<1?'just updated':(m<60?m+' min ago':(m<1440?Math.floor(m/60)+'h '+(m%60)+'m ago':Math.floor(m/1440)+'d ago'));
+      var cls=m>240?'red':(m>100?'amber':'green');
+      qa('.ds-age').forEach(function(a){
+        var dot=q('.ds-dot',a); if(!dot){dot=d.createElement('span');dot.className='ds-dot';a.insertBefore(dot,a.firstChild)}
+        dot.className='ds-dot '+cls;
+        var s=q('.ds-agetx',a); if(!s){s=d.createElement('span');s.className='ds-agetx';a.appendChild(s)}
+        s.textContent='Updated '+txt;
+        var nx=a.getAttribute('data-next'); if(nx) s.textContent+=DOT+'next refresh about '+nx;
+      });
+      var f=q('#fresh');
+      if(f&&!f.getAttribute('data-ownscript')&&(f.getAttribute('data-dsage')||!f.textContent.replace(/\s+/g,''))){
+        f.setAttribute('data-dsage','1'); f.textContent='Updated '+txt+'.';
+      }
+    }catch(e){}
+  }
+
+  /* 2. THE SPOKEN LINE, ON-YOU CELL, NEXT LINE, ALL CLEAR. Recomputed from live rows on every tick. */
+  function live(){
+    var hero=q('.hero'), rows=qa('.list > details.trowx').filter(function(r){return !r.classList.contains('marked')&&!r.closest('#mkpilebody')&&!r.closest('.onair')});
+    var heroLive=hero&&!hero.classList.contains('marked')&&!hero.closest('#mkpilebody');
+    var items=(heroLive?[hero]:[]).concat(rows);
+    var total=+(d.body.getAttribute('data-ds-total')||items.length);
+    var left=items.length, done=Math.max(0,total-left);
+    var m=items.reduce(function(a,r){return a+(+r.getAttribute('data-min')||0)},0);
+    return {items:items,total:total,left:left,done:done,mins:m,first:items[0]||null};
+  }
+  function recount(){
+    try{
+      var s=live(), say=q('.ds-say[data-say]');
+      if(say){
+        var tpl=s.left===0?say.getAttribute('data-say-clear'):(s.done?say.getAttribute('data-say-ticked'):say.getAttribute('data-say'));
+        if(tpl) say.innerHTML=fill(tpl,{n:cap(word(s.total)),left:word(s.left),done:cap(word(s.done)),total:word(s.total),min:mins(s.mins),
+          first:s.first?(q('h2,.t',s.first)||{textContent:''}).textContent.trim():''});
+      }
+      var cell=q('.ds-cell.onyou .v'); if(cell) cell.textContent=s.left+(s.left===1?' task':' tasks')+DOT+mins(s.mins);
+      var cs=q('.ds-cell.onyou .s'); if(cs) cs.textContent=s.done?s.done+' of '+s.total+' done':'0 done so far';
+      var nx=q('a.ds-next'); if(nx){
+        if(s.first){ var id=s.first.id||''; if(!id){id='ds-first';s.first.id=id} nx.href='#'+id;
+          var nt=q('.t',nx), nm=q('.m',nx);
+          if(nt) nt.textContent=(q('h2,.trow .t',s.first)||{textContent:''}).textContent.trim();
+          if(nm) nm.textContent=mins(+s.first.getAttribute('data-min')||0);
+          nx.hidden=false; }
+        else nx.hidden=true;
+      }
+      var ac=q('.ds-allclear'); if(ac) ac.hidden=(s.left!==0);
+      /* the numeral is the state */
+      qa('.list > details.trowx.marked .num').forEach(function(n){n.classList.add('done')});
+    }catch(e){}
+  }
+  /* the budget buttons say what they buy, from data-min on the rows */
+  function fits(){
+    try{
+      var band=q('#tband'); if(!band) return;
+      var items=live().items; if(!items.length) return;
+      var rows=items.map(function(r){return +r.getAttribute('data-min')||0});
+      qa('.tbbtn',band).forEach(function(b){
+        var bud=+b.getAttribute('data-b')||0, n=0, acc=0;
+        if(bud===0){ n=rows.length; acc=rows.reduce(function(a,x){return a+x},0) } else { for(var i=0;i<rows.length;i++){ if(acc+rows[i]>bud) break; acc+=rows[i]; n++ } if(n===0&&rows.length) n=1; }
+        var f=q('.tbfit',b); if(!f){f=d.createElement('small');f.className='tbfit';b.appendChild(f)}
+        f.textContent=bud===0?(rows.length+DOT+mins(acc)):('fits '+n+(n===1?' thing':' things'));
+      });
+    }catch(e){}
+  }
+  W.dsUI={recount:recount,fits:fits,age:age};
+  function boot(){ age(); recount(); fits(); setInterval(age,60000); }
+  if(d.readyState==='loading') d.addEventListener('DOMContentLoaded',boot); else boot();
+  d.addEventListener('ds:tick',function(){recount();fits()});
+})();
+</script>
 
 <!-- THEME-END -->
 <!-- TOC-START -->
@@ -5046,7 +5385,7 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
      ================================================================================================ -->
 <style id="ds-toc">
 #dstoc,#dstoc *{box-sizing:border-box}
-#dstoc{font:500 13px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#dstoc{font:500 13px/1.35 var(--ds-font,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif)}
 
 /* THE RAIL. Vertically centred rather than pinned under the header, so it can never collide with
    the sticky tab strip whose height differs per page and changes when it wraps. */
@@ -5066,14 +5405,14 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
 /* THE PANEL, for every width where the rail does not fit. Same list, same markup, same handlers. */
 #dstocpanel{position:fixed;z-index:8900;left:10px;bottom:64px;width:min(300px,calc(100% - 20px));
   max-height:min(62vh,460px);overflow-y:auto;overscroll-behavior:contain;
-  background:var(--ds-card,#fff);border:1px solid var(--ds-line,#dfe3e9);border-radius:14px;
+  background:var(--ds-card,#fff);border:1px solid var(--ds-line,#dfe3e9);border-radius:var(--ds-r-lg,12px);
   box-shadow:var(--ds-shadow,0 8px 24px rgba(20,22,28,.18));padding:8px 6px}
 #dstocopen{position:fixed;z-index:8900;left:10px;bottom:12px;min-height:44px;padding:0 14px;
   display:inline-flex;align-items:center;gap:8px;cursor:pointer;
   background:var(--ds-card,#fff);color:var(--ds-ink,#171a1f);
   border:1px solid var(--ds-line,#dfe3e9);border-radius:22px;
   box-shadow:var(--ds-shadow,0 8px 24px rgba(20,22,28,.18));
-  font:600 13px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  font:600 13px/1 var(--ds-font,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif)}
 /* TWO FIXED BARS SHARED bottom:12px AND MET IN THE MIDDLE OF A PHONE. This one is pinned left,
    the feedback bar is pinned right with a higher z-index, and at 360px the pair are wider than
    the screen - so the feedback bar sat on top of this one and the label read "Jump" with its
@@ -5085,12 +5424,12 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
   #dstocopen span:last-child{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 }
 
-#dstoc .dstoch{font:600 12px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+#dstoc .dstoch{font:600 12px/1 var(--ds-font,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif);
   letter-spacing:.02em;color:var(--ds-faint,#848b95);padding:6px 10px 8px;text-transform:none}
 /* 40px floor on every row: it is a thumb target, not a line of text. */
 #dstoc .dstocrow{display:flex;align-items:center;gap:8px;width:100%;min-height:40px;
   padding:6px 10px;border:0;border-radius:9px;background:transparent;cursor:pointer;text-align:left;
-  color:var(--ds-dim,#555c66);font:500 13px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  color:var(--ds-dim,#555c66);font:500 13px/1.3 var(--ds-font,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif)}
 #dstoc .dstocrow:hover{background:var(--ds-sunk,#eef1f5);color:var(--ds-ink,#171a1f)}
 #dstoc .dstocrow.on{background:var(--ds-blue-soft,#e9eefc);color:var(--ds-ink,#171a1f);font-weight:700}
 /* TWO LINES, NOT ONE CLIPPED LINE, AND THE NUMBER CAME FROM A MEASUREMENT.
@@ -5112,7 +5451,7 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
 #dstoc .dstocrow .d.amber{background:var(--ds-amber,#8a5a12)}
 #dstoc .dstocrow .d.green{background:var(--ds-green,#1b6b3a)}
 #dstoc .dstocx{display:block;width:100%;min-height:40px;border:0;background:transparent;cursor:pointer;
-  color:var(--ds-dim,#555c66);font:600 12px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color:var(--ds-dim,#555c66);font:600 12px/1 var(--ds-font,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif);
   border-top:1px solid var(--ds-line,#dfe3e9);margin-top:4px}
 @media print{#dstoc{display:none}}
 </style>
