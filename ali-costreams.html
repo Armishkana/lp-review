@@ -118,7 +118,12 @@ h1{margin:0;letter-spacing:-.02em;text-wrap:balance}
 .nomid{color:var(--bad);font-weight:700}
 .num{background:var(--chip);color:var(--chip-ink);font-weight:700;font-size:12px;letter-spacing:.03em;border-radius:999px;padding:4px 10px;flex:none;font-variant-numeric:tabular-nums}
 .ctitle{font-weight:600;font-size:16px;line-height:1.3;flex:1;min-width:200px;text-wrap:balance}
-.watch{font-size:13px;font-weight:700;letter-spacing:.01em;color:var(--accent-ink);background:var(--accent);border-radius:10px;padding:10px 16px;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px}
+/* WATCH IS NOT THE JOB. It was filled in the same accent as .allbtn and it sits ABOVE it, so the
+   first two blue buttons on the page were "Watch" and "Use everything on this clip" and the eye had
+   to choose between them. One filled control per clip, and it is the one-tap answer; watching is a
+   quiet outline she reaches for only when she is unsure. */
+.watch{font-size:13px;font-weight:700;letter-spacing:.01em;color:var(--accent);background:transparent;border:1px solid var(--line);border-radius:10px;padding:10px 16px;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px}
+.watch:hover{border-color:var(--accent)}
 .covers{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:var(--s2)}
 .cov{display:flex;flex-direction:column;gap:var(--s1);border:1px solid var(--line);border-radius:10px;padding:var(--s1);background:var(--sunk)}
 .zoombtn{position:relative;border:0;padding:0;background:none;cursor:zoom-in;display:block;border-radius:8px;overflow:hidden}
@@ -347,7 +352,7 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 <div class="wrap">
 <header class="ds-mast" data-ds="mast">
   <h1>Ali co-streams - clip review</h1>
-  <p class="ds-say" data-ds="say" id="saysize"><b>7 clips</b> from 3 streams, newest first. Most are one tap, and everything saves itself.</p>
+  <p class="ds-say" data-ds="say" id="saysize"><b>6 clips</b> from 2 streams, newest first. Most are one tap, and everything saves itself.</p>
 
 <!-- THE AGE LINE. Same self-check as before - the page compares its own build time against the
      clock in HER browser, so it catches a stale copy however it got stale - but it is a dateline
@@ -356,9 +361,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
      #freshreload. "New today: 0" is GREY: zero new clips at seven in the evening is the ordinary
      state of the world, and DESIGN.md forbids painting a thing that has simply not happened yet
      with a warning colour. The delivery alarm lives in the ledger, which is where an alarm belongs. -->
-<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T06:58:13Z">
+<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T07:21:34Z">
   <span class="ds-dot" id="freshdot"></span>
-  <b id="freshtitle">Sun Sep 6, 14:58</b>
+  <b id="freshtitle">Sun Sep 6, 15:21</b>
   <span id="freshage"></span>
   <span class="newtoday none" id="newtoday" data-new="0"
         title="Clips whose covers finished in the last 24 hours">New today: 0</span>
@@ -396,7 +401,7 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 <div class="how ds-deck" data-ds="deck">
   <div class="ds-dh" data-ds="deckhead">
     <h2>&#128203; What to do</h2>
-    <span class="ds-count" data-ds="chip">7 clips</span>
+    <span class="ds-count" data-ds="chip">6 clips</span>
   </div>
   <p class="howshort"><b>Happy with a clip? Press <span class="kbd">Use everything on this clip</span>.</b> That is all seven answers in one tap.</p>
   <details class="howmore">
@@ -978,71 +983,6 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
     <textarea placeholder="About the VIDEO, not the covers. Even if you are using it - does it start badly? End badly? Anything confusing or repeated?"></textarea>
   </div>
 </section>
-<div class="streamhdr ds-dh" data-ds="deckhead"><h2>&#128994; Ali &amp; Armin - August 22</h2><span class="cnt ds-count" data-ds="chip">1 clips</span></div>
-<section class="clip" data-seg="2026-08-22-ali::1" data-stream="Ali &amp; Armin - August 22">
-  <div class="chead"><span class="num">Seg 1</span><span class="ctitle">Iran&#39;s Economic Death Spiral - Oil, Gasoline and a Three Month Countdown</span><a class="watch" data-ds="door" href="https://share.descript.com/view/26aWtNWN3dQ" target="_blank" rel="noopener">Watch</a></div>
-  <div class="viddec">
-    <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
-    <div class="dec">
-      <div class="decq">&#127909; Are you using this video?</div>
-      <div class="decbtns">
-        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using it</button>
-        <button class="db viddb" type="button" data-d="no" aria-pressed="false">Not using it</button>
-        <span class="saved" aria-live="polite"></span>
-      </div>
-    </div>
-    <div class="vidwhy" hidden><textarea class="vidtext" rows="2" placeholder="Why are you not using this video? e.g. it starts in the middle of a sentence; it repeats the same point twice; the ending is cut off"></textarea></div>
-    <div class="means none" aria-live="polite">Not answered yet.</div>
-  </div>
-  <div class="cliptime">Added Aug 24 &middot; Covers made Aug 24 &middot; Ready Aug 28 &middot; <b>11:11</b></div>
-  <div class="covers">
-    <div class="cov" data-var="A" data-head="IRAN LOSES 800 MILLION A DAY" data-title="The Regime Has Three to Four Months Before the Money Hits Zero">
-      <button class="zoombtn" type="button" aria-label="Enlarge cover A"><img src="img/2026-08-22-ali-S1-A.jpg" alt="Cover A: IRAN LOSES 800 MILLION A DAY" loading="lazy"><span class="zoomhint">Tap to enlarge</span></button>
-      <div class="covdec">
-        <div class="decq">&#128444;&#65039; This cover A</div>
-        <div class="decbtns">
-          <button class="db covdb" type="button" data-d="yes" aria-pressed="false">Using it</button>
-          <button class="db covdb" type="button" data-d="no" aria-pressed="false">Not using it</button>
-        </div>
-      </div>
-      <div class="ttlline"><b>A</b> - The Regime Has Three to Four Months Before the Money Hits Zero</div>
-      <div class="covdec">
-        <div class="decq">&#9999;&#65039; This title A</div>
-        <div class="decbtns">
-          <button class="db ttldb" type="button" data-d="yes" aria-pressed="false">Using it</button>
-          <button class="db ttldb" type="button" data-d="no" aria-pressed="false">Not using it</button>
-        </div>
-      </div>
-      <div class="ttlwhy" hidden><textarea class="ttltext" rows="2" placeholder="Why not this title? A few words is enough. e.g. it says secret and nobody said secret; it is about the last 20 seconds, not the video"></textarea></div>
-      <div class="covacts">
-        <button class="minibtn" type="button" data-copy="title">Copy title</button>
-        <a class="minibtn dlbtn" download="The Regime Has Three to Four Months Before the Money Hits Zero - A.jpg" href="#" title="The Regime Has Three to Four Months Before the Money Hits Zero - A.jpg">Save this cover</a>
-      </div>
-      <div class="covwhy" hidden><textarea class="whytext" rows="2" placeholder="Why not this cover? A few words is enough. e.g. that is not Armin, text covers his face, the hosts are too small"></textarea></div>
-    </div>
-  </div>
-  <div class="descbox">
-    <details class="descfold">
-      <summary>Description</summary>
-      <div class="desctext">Iran&#39;s oil revenue is collapsing and the regime is now losing an estimated 800 million dollars every single day.
-
-The Islamic Republic has said out loud that it will treat any Arab pipeline routed around the Strait of Hormuz as an act of war, which is a state telling its neighbours they may not sell their own oil from their own land. We go through why that threat exists, and why it is a confession rather than a warning.
-
-Then the numbers. President Masoud Pezeshkian is arguing the war has to end now, while the regime can still claim it is negotiating from strength, and he is right about the arithmetic even if he is wrong about the strength. Iranian light crude has swung from a three dollar fifty discount to a three dollar fifty premium in a single week, a seven dollar move, because China is buying the floating stockpile down to the last barrel. That stockpile has already fallen from about a hundred million barrels to about eighty million in thirty days, and when it is gone there is nothing behind it.
-
-Inside the country the gasoline shortfall is running at roughly twenty million litres a day against consumption of a hundred and thirty five million, and none of it can be imported through the blockade. Three to four months is the number the regime&#39;s own people are working with.
-
-Live every day: https://www.youtube.com/channel/UCAbKpmZxZBs4eMtgE1Da8bQ/streams
-
-Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=f076eb0a543d44c9a50eddfb14fdd1ae</div>
-    </details>
-    <button class="copyttl" type="button" data-copy="desc">Copy description</button>
-  </div>
-  <div class="fbnote">
-    <div class="lbl">Anything else about this video? (optional)</div>
-    <textarea placeholder="About the VIDEO, not the covers. Even if you are using it - does it start badly? End badly? Anything confusing or repeated?"></textarea>
-  </div>
-</section>
 </div>
 <!-- 🏷️ THIS BAR NOW SAYS WHAT KIND OF FEEDBACK IT CARRIES, BECAUSE THERE ARE TWO KINDS ON THIS PAGE.
      Armin, 2026-08-17: "It's very unclear what the separation is between the feedback on the page
@@ -1059,7 +999,7 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
      the two read as two different jobs instead of two spellings of one. -->
 <div class="bar">
   <span class="barscope">&#127916; The videos, covers and titles</span>
-  <span class="count" id="count">0 of 7 done</span>
+  <span class="count" id="count">0 of 6 done</span>
   <button type="button" id="submit">Copy my answers</button>
 </div>
 <div class="toast" id="toast"></div>

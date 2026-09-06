@@ -118,7 +118,12 @@ h1{margin:0;letter-spacing:-.02em;text-wrap:balance}
 .nomid{color:var(--bad);font-weight:700}
 .num{background:var(--chip);color:var(--chip-ink);font-weight:700;font-size:12px;letter-spacing:.03em;border-radius:999px;padding:4px 10px;flex:none;font-variant-numeric:tabular-nums}
 .ctitle{font-weight:600;font-size:16px;line-height:1.3;flex:1;min-width:200px;text-wrap:balance}
-.watch{font-size:13px;font-weight:700;letter-spacing:.01em;color:var(--accent-ink);background:var(--accent);border-radius:10px;padding:10px 16px;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px}
+/* WATCH IS NOT THE JOB. It was filled in the same accent as .allbtn and it sits ABOVE it, so the
+   first two blue buttons on the page were "Watch" and "Use everything on this clip" and the eye had
+   to choose between them. One filled control per clip, and it is the one-tap answer; watching is a
+   quiet outline she reaches for only when she is unsure. */
+.watch{font-size:13px;font-weight:700;letter-spacing:.01em;color:var(--accent);background:transparent;border:1px solid var(--line);border-radius:10px;padding:10px 16px;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px}
+.watch:hover{border-color:var(--accent)}
 .covers{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:var(--s2)}
 .cov{display:flex;flex-direction:column;gap:var(--s1);border:1px solid var(--line);border-radius:10px;padding:var(--s1);background:var(--sunk)}
 .zoombtn{position:relative;border:0;padding:0;background:none;cursor:zoom-in;display:block;border-radius:8px;overflow:hidden}
@@ -356,9 +361,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
      #freshreload. "New today: 0" is GREY: zero new clips at seven in the evening is the ordinary
      state of the world, and DESIGN.md forbids painting a thing that has simply not happened yet
      with a warning colour. The delivery alarm lives in the ledger, which is where an alarm belongs. -->
-<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T06:58:37Z">
+<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T07:21:56Z">
   <span class="ds-dot" id="freshdot"></span>
-  <b id="freshtitle">Sun Sep 6, 14:58</b>
+  <b id="freshtitle">Sun Sep 6, 15:21</b>
   <span id="freshage"></span>
   <span class="newtoday none" id="newtoday" data-new="0"
         title="Clips whose covers finished in the last 24 hours">New today: 0</span>
