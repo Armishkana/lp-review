@@ -146,7 +146,7 @@
 <header class="ds-mast" data-ds="mast">
   <h1>Pick the clips you want uploaded</h1>
   <p class="ds-say" data-ds="say" id="saysize" data-say-own="the page script rewrites it from the pick tally; the shared row model does not fit a picks page"><b>11 topics</b> from your last 1 stream, newest first. Tap <b>Upload</b> or <b>Skip</b> on each one.</p>
-  <p class="ds-age stamp" data-ds="age" data-built="2026-09-06T10:27:16Z"><span class="ds-dot"></span><b>Sep 6</b></p>
+  <p class="ds-age stamp" data-ds="age" data-built="2026-09-06T10:55:24Z"><span class="ds-dot"></span><b>Sep 6</b></p>
 </header>
   <!-- WHY THE TITLE IS AN h2 AND THE FOLD SITS INSIDE IT. As a top-level <details> this block was a
        segment titled by its own <summary>, which the section detector ranks deeper than the <h2> on
@@ -409,7 +409,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">11 topics across 1 streams. Updated 2026-09-06T10:27:16Z.</p>
+  <p class="built">11 topics across 1 streams. Updated 2026-09-06T10:50:02Z.</p>
 </div>
 
 <div class="bar">
@@ -714,7 +714,7 @@
    still obviously pressable, no longer competing with the page title above it. */
 .fbkwhole > .fbkbtn{font-weight:700}
 .fbkabout{margin:0 0 6px;font-size:13px;color:var(--fb-dim)}
-.fbkta{width:100%;min-height:104px;padding:10px 12px;border-radius:10px;
+.fbkta{width:100%;box-sizing:border-box;min-height:104px;padding:10px 12px;border-radius:10px;
   border:2px solid var(--fb-accent);background:var(--fb-card);color:var(--fb-ink);
   font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;resize:vertical}
 /* ================ WRITE WHILE YOU READ (2026-09-02, his note dz62a0rz) ======================
@@ -3503,6 +3503,9 @@
    mode arrives: some listen to the OS (@media), some to the data-theme attribute the artifact
    runtime stamps on <html>, some to both. Covering all four is also what finally makes the theme
    TOGGLE work on the pages that only ever listened to the OS. */
+/* TOKENS-START - written by apply-skin.ps1 from skins.json (skin chosen in ui-settings.json). Edit the
+   skin there, never these lines by hand: the next apply overwrites them. */
+/* skin: paper - Paper */
 :root{
   --ds-bg:#f7f8fa; --ds-card:#ffffff; --ds-sunk:#eef1f5;
   --ds-ink:#171a1f; --ds-dim:#555c66; --ds-faint:#848b95; --ds-line:#dfe3e9;
@@ -3517,10 +3520,6 @@
   :root{
     --ds-bg:#12141a; --ds-card:#1b1e25; --ds-sunk:#161920;
     --ds-ink:#eceef2; --ds-dim:#a4abb6; --ds-faint:#7e858f; --ds-line:#2d323b;
-    /* These four are chosen so WHITE still reads on top of them, because the pages hardcode
-       color:#fff on filled buttons and chips. A prettier pastel would have quietly made every
-       primary button unreadable in dark mode - the kind of regression a colour audit never
-       catches because it is looking at hue, not contrast. */
     --ds-blue:#5b86f0;  --ds-blue-soft:#18213c;  --ds-on-blue:#ffffff;
     --ds-green:#2f9e63; --ds-green-soft:#152a1f; --ds-on-green:#ffffff;
     --ds-amber:#d9a441; --ds-amber-soft:#2b2216; --ds-on-amber:#1a1409;
@@ -3549,6 +3548,7 @@
   --ds-bar:rgba(247,248,250,.92);
   --ds-shadow:0 1px 2px rgba(20,22,28,.05),0 8px 24px rgba(20,22,28,.06);
 }
+/* TOKENS-END */
 
 /* ---- 2. THE ALIASES ---------------------------------------------------------------------------
    Every colour name any of the thirteen pages invented, pointed at the four meanings above. A name
@@ -3618,10 +3618,12 @@
    same light blue and the white label the pages hardcode comes out at 3.4:1, which is under the bar
    for small bold type. Measured, not assumed: white on the dark --ds-blue is 3.44, white on
    --ds-blue-fill is 6.4. Light mode needs no split, so there the two are the same colour. */
+/* FILL-START - also written by apply-skin.ps1 */
 :root{ --ds-blue-fill:var(--ds-blue); }
 @media (prefers-color-scheme: dark){ :root{ --ds-blue-fill:#2f57c4; } }
 :root[data-theme="dark"]{ --ds-blue-fill:#2f57c4; }
 :root[data-theme="light"]{ --ds-blue-fill:var(--ds-blue); }
+/* FILL-END */
 /* .hero .n joined this list on 2026-08-12. It is the "1" badge on the first task, and the numbered
    badges below it are .num - so this rule was tinting the list and leaving the 1 on the page's own
    --accent. Two blues that are nearly the same is worse than two that obviously differ: it reads as
