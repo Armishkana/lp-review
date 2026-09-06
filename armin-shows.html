@@ -36,16 +36,40 @@ body{margin:0;background:var(--ground);color:var(--ink);
    and one age line; the autosave sentence lives inside the spoken line, and nothing else was
    deleted. See the ds-mast / ds-say / ds-age rules in theme.html for their type. */
 header.ds-mast{margin:0;gap:var(--s2)}
+/* ⛔ A NOWRAP GRID ITEM WIDENS THE WHOLE COLUMN. The hoisted whole-page feedback button is one
+   long unbreakable string ("+ Feedback about <emoji> <page name> as a whole"), and a grid track
+   sized 1fr takes its automatic minimum from that item's min-content - so the masthead grew wider
+   than a 360px phone and every line of the spoken line above it wrapped at the WRONG width and ran
+   off the screen. min-width:0 on the items is the fix; measured before and after at 360. */
+header.ds-mast,header.ds-mast>*{min-width:0}
+header.ds-mast .fbktop{max-width:100%}
 h1{font-size:clamp(21px,4.5vw,26px);line-height:1.15;margin:0;font-weight:700;letter-spacing:-.02em;text-wrap:balance}
 /* The age line is furniture (class "stamp" keeps the feedback detector off it) and it carries the
    delivery counter and the stale button, so those two need placement rules of their own. */
 .ds-age{flex-wrap:wrap;row-gap:4px}
 .ds-age b{font-weight:700;color:var(--dim)}
 .ds-age.stale b,.ds-age.stale{color:var(--bad)}
-.ds-age .newtoday{margin-left:auto}
+/* ---- THE NEXT-CLIP LINK AND THE ALL-CLEAR ----------------------------------------------------
+   These deliberately do NOT use the shared .ds-next / .ds-allclear class names, and that is a
+   collision, not a preference: theme.html's runtime owns both of those selectors and recounts them
+   from the To-Do List's row model (a .hero plus .list > details.trowx). A clip page has neither,
+   so its live() sees zero items, concludes "nothing left", hides the next link and shows the
+   all-clear - on a page where nine clips are untouched. Measured on the first build of this
+   redesign: the page opened with "All clear. Every clip is answered." above nine unanswered clips.
+   Until the shared runtime guards itself against pages with no rows, these carry their own names
+   and their own five lines of shape. Everything else here still reads a --ds-* token. */
+.clipnext{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 12px;text-decoration:none;
+  background:var(--ds-blue-soft,var(--sunk));border-radius:10px;font-weight:700;color:var(--accent)}
+.clipnext .k{flex:0 0 auto;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.clipnext .t{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink);font-weight:600}
+.clipnext .m{flex:0 0 auto;color:var(--dim)}
+.clipclear{border:2px solid var(--good);border-radius:12px;background:var(--surface);padding:var(--s4) var(--s3);text-align:center}
+.clipclear .tick{width:54px;height:54px;border-radius:50%;background:var(--ds-green-soft,var(--sunk));color:var(--good);font:800 28px/54px inherit;margin:0 auto var(--s2)}
+.clipclear p{margin:0 0 var(--s1);font-size:17px}
+.clipclear p+p{font-size:14px;color:var(--dim)}
 /* The one thing to do next, and the end state, in the same slot. */
 .ds-now{display:flex;flex-direction:column;gap:var(--s2)}
-.ds-now .ds-next{margin-top:0}
+.ds-now:empty{display:none}
 .how{border:1px solid var(--line);border-radius:12px;padding:var(--s3);display:flex;flex-direction:column;gap:var(--s2);font-size:15px;background:var(--surface)}
 .how h2{margin:0;font-size:18px;line-height:1.3;letter-spacing:-.01em;color:var(--ink);font-weight:700}
 .how .ds-dh{display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap}
@@ -315,7 +339,7 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 <div class="wrap">
 <header class="ds-mast" data-ds="mast">
   <h1>Armin's shows - clip review</h1>
-  <p class="ds-say" data-ds="say"><b>9 clips</b> from 5 streams, newest first. Most are one tap: press <b>Use everything on this clip</b>. Everything you type saves itself.</p>
+  <p class="ds-say" data-ds="say"><b>9 clips</b> from 5 streams, newest first. Most are one tap, and everything saves itself.</p>
 
 <!-- THE AGE LINE. Same self-check as before - the page compares its own build time against the
      clock in HER browser, so it catches a stale copy however it got stale - but it is a dateline
@@ -324,9 +348,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
      #freshreload. "New today: 0" is GREY: zero new clips at seven in the evening is the ordinary
      state of the world, and DESIGN.md forbids painting a thing that has simply not happened yet
      with a warning colour. The delivery alarm lives in the ledger, which is where an alarm belongs. -->
-<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T06:19:08Z">
+<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T06:33:44Z">
   <span class="ds-dot" id="freshdot"></span>
-  <b id="freshtitle">Updated Sun Sep 6, 14:19</b>
+  <b id="freshtitle">Sun Sep 6, 14:33</b>
   <span id="freshage"></span>
   <span class="newtoday none" id="newtoday" data-new="0"
         title="Clips whose covers finished in the last 24 hours">New today: 0</span>
@@ -343,10 +367,10 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
      all-clear takes its place. The all-clear has no heading on purpose: it is reached, never
      announced, and an unnamed block is invisible to the section detector. -->
 <div class="ds-now">
-  <a class="ds-next go" id="nextclip" href="#startclip"><span class="k">Next</span><span class="t" id="nextclipt">Start at the top</span><span class="m">&#8595;</span></a>
-  <div class="ds-allclear" id="allclear" hidden>
-    <div class="ds-tick">&#10003;</div>
-    <p class="ds-say"><b>All clear. Every clip is answered.</b></p>
+  <a class="clipnext" id="nextclip" href="#startclip" hidden><span class="k">Next</span><span class="t" id="nextclipt"></span><span class="m">&#8595;</span></a>
+  <div class="clipclear" id="allclear" hidden>
+    <div class="tick">&#10003;</div>
+    <p><b>All clear. Every clip is answered.</b></p>
     <p>Press <b>Copy my answers</b> at the bottom and send that one block to Armin.</p>
   </div>
 </div>
@@ -366,11 +390,11 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
     <h2>&#128203; What to do</h2>
     <span class="ds-count" data-ds="chip">9 clips</span>
   </div>
-  <p class="howshort"><b>Using everything on a clip? Press <span class="kbd">Use everything on this clip</span> - that answers all seven questions at once.</b>
-     Otherwise answer them one at a time. It all saves as you go, and you never have to finish the page.</p>
+  <p class="howshort"><b>Happy with a clip? Press <span class="kbd">Use everything on this clip</span>.</b> That is all seven answers in one tap.</p>
   <details class="howmore">
     <summary>The full instructions - covers, titles, subtitles, what to write</summary>
   <ol>
+    <li><b>Nothing is lost while you work.</b> Everything you type saves by itself. There is no save button, you cannot lose your work, and you never have to finish the page in one sitting. Close it whenever you like and come back.</li>
     <li><b>You do not have to get through all of them.</b> Armin decided this on 13 August, right after you said the dashboard was overwhelming because of how many videos there were to watch. His words: <i>&ldquo;you don&rsquo;t have to review all of them if it&rsquo;s overwhelming. Just review as many as you can.&rdquo;</i> That still stands. Start at the top, stop when you want to stop, and nothing below where you stopped is owed by you.</li>
     <li><b>If you are using everything on a clip, press one button.</b> <span class="kbd">Use everything on this clip</span> answers all seven questions at once - the video, all three covers, all three titles. Most clips should be one press and nothing else.</li>
     <li><b>The video first.</b> Press <span class="kbd">Watch</span>, then answer <b>Am I using this video?</b>
@@ -411,7 +435,7 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
     <div class="dec">
       <div class="decq">&#127909; Are you using this video?</div>
       <div class="decbtns">
-        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using this video</button>
+        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using it</button>
         <button class="db viddb" type="button" data-d="no" aria-pressed="false">Not using it</button>
         <span class="saved" aria-live="polite"></span>
       </div>
@@ -533,7 +557,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
     <div class="dec">
       <div class="decq">&#127909; Are you using this video?</div>
       <div class="decbtns">
-        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using this video</button>
+        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using it</button>
         <button class="db viddb" type="button" data-d="no" aria-pressed="false">Not using it</button>
         <span class="saved" aria-live="polite"></span>
       </div>
@@ -659,7 +683,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
     <div class="dec">
       <div class="decq">&#127909; Are you using this video?</div>
       <div class="decbtns">
-        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using this video</button>
+        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using it</button>
         <button class="db viddb" type="button" data-d="no" aria-pressed="false">Not using it</button>
         <span class="saved" aria-live="polite"></span>
       </div>
@@ -787,7 +811,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
     <div class="dec">
       <div class="decq">&#127909; Are you using this video?</div>
       <div class="decbtns">
-        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using this video</button>
+        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using it</button>
         <button class="db viddb" type="button" data-d="no" aria-pressed="false">Not using it</button>
         <span class="saved" aria-live="polite"></span>
       </div>
@@ -859,7 +883,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
     <div class="dec">
       <div class="decq">&#127909; Are you using this video?</div>
       <div class="decbtns">
-        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using this video</button>
+        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using it</button>
         <button class="db viddb" type="button" data-d="no" aria-pressed="false">Not using it</button>
         <span class="saved" aria-live="polite"></span>
       </div>
@@ -921,7 +945,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
     <div class="dec">
       <div class="decq">&#127909; Are you using this video?</div>
       <div class="decbtns">
-        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using this video</button>
+        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using it</button>
         <button class="db viddb" type="button" data-d="no" aria-pressed="false">Not using it</button>
         <span class="saved" aria-live="polite"></span>
       </div>
@@ -998,7 +1022,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
     <div class="dec">
       <div class="decq">&#127909; Are you using this video?</div>
       <div class="decbtns">
-        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using this video</button>
+        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using it</button>
         <button class="db viddb" type="button" data-d="no" aria-pressed="false">Not using it</button>
         <span class="saved" aria-live="polite"></span>
       </div>
@@ -1088,7 +1112,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
     <div class="dec">
       <div class="decq">&#127909; Are you using this video?</div>
       <div class="decbtns">
-        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using this video</button>
+        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using it</button>
         <button class="db viddb" type="button" data-d="no" aria-pressed="false">Not using it</button>
         <span class="saved" aria-live="polite"></span>
       </div>
@@ -1202,7 +1226,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
     <div class="dec">
       <div class="decq">&#127909; Are you using this video?</div>
       <div class="decbtns">
-        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using this video</button>
+        <button class="db viddb" type="button" data-d="yes" aria-pressed="false">Using it</button>
         <button class="db viddb" type="button" data-d="no" aria-pressed="false">Not using it</button>
         <span class="saved" aria-live="polite"></span>
       </div>
@@ -1475,7 +1499,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
     }
     if (vid !== 'yes') {
       m.classList.add('none');
-      m.textContent = 'Not answered yet. Start with the video: are you using it?';
+      m.textContent = 'Not answered yet.';
       return;
     }
     // THE ARITHMETIC HE SPELLED OUT, DONE BY THE PAGE INSTEAD OF BY HER. Three go up either way;
@@ -1739,8 +1763,12 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
       var seg = (next.getAttribute('data-seg') || '').split('::').pop();
       var ttl = next.querySelector('.ctitle');
       var t = document.getElementById('nextclipt');
-      if (t) { t.textContent = (done > 0 ? 'Seg ' + seg + ': ' : 'Start at Seg ' + seg + ': ') + (ttl ? ttl.textContent : ''); }
-      link.hidden = false;
+      if (t) { t.textContent = 'Seg ' + seg + ': ' + (ttl ? ttl.textContent : ''); }
+      // ONLY ONCE SHE HAS STARTED. On a page nobody has touched, "next" is the clip directly
+      // underneath it, so the link is pure duplication and it costs 64px of the one phone screen
+      // that decides whether the first decision is reachable. It appears the moment it can
+      // actually save her a scroll.
+      link.hidden = (done === 0);
       clear.hidden = true;
     } else {
       link.hidden = true;
