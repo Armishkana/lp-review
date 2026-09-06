@@ -15,7 +15,7 @@
      failure this vault keeps paying for: a check that goes quiet instead of red. It carries the
      same build time to the character, so every reader of [data-built] (the report builder in this
      page's own JS, and feedback-shared l.504) gets the same string whichever one it finds first. -->
-<meta name="ds-built" data-built="2026-09-06T13:04:28Z">
+<meta name="ds-built" data-built="2026-09-06T13:27:33Z">
 <style>
 /* Fallback palette only. Every one of these names is ALIASED onto a --ds-* token by theme.html,
    which is injected last with !important, so what you actually see on the page is the shared
@@ -382,9 +382,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
      #freshreload. "New today: 0" is GREY: zero new clips at seven in the evening is the ordinary
      state of the world, and DESIGN.md forbids painting a thing that has simply not happened yet
      with a warning colour. The delivery alarm lives in the ledger, which is where an alarm belongs. -->
-<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T13:04:28Z">
+<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T13:27:33Z">
   <span class="ds-dot" id="freshdot"></span>
-  <b id="freshtitle">Sun Sep 6, 21:04</b>
+  <b id="freshtitle">Sun Sep 6, 21:27</b>
   <span id="freshage"></span>
   <span class="newtoday none" id="newtoday" data-new="0"
         title="Clips whose covers finished in the last 24 hours">New today: 0</span>
@@ -4232,17 +4232,29 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
   // NAME THE KIND, NOT JUST THE COUNT. Armin, note ooeqt07f: "making it clear which one is the
   // feedback and which one is the notes on my tasks". Two buttons that both said a bare "Copy the
   // note" would have answered half his complaint and left the half that actually confuses him.
+  // THE NUMBER ON THE PILL COUNTS ONLY WHAT HE HAS NOT COPIED YET. Armin, 2026-09-06, note tuvsl8fw
+  // on the Roadmap, and it was his FIFTH time: "on every single dashboard, when I submit feedback to
+  // you on Claude, you have to remove from the feedback counter the things that have already been
+  // submitted. Why is the feedback from before still here?" The four earlier answers (08-09, 08-17,
+  // 09-04, 09-05) each fixed a different thing - the badge, the drop-at-receipt, the hand-copied
+  // note - and every one of them left THIS label reading notes.length, copied or not. So a note he
+  // had just handed over still counted as work outstanding on the very pill he presses to hand it
+  // over. A copied note stays in the list below, marked copied, until I receive it (his 08-10 rule:
+  // copying is not delivery); it just stops being a number. When everything is copied the pill
+  // says so in words and carries NO digit, which is the property feedback-clicktest.html now asserts.
+  function unsentCount(){ var u=0; for(var q=0;q<notes.length;q++){ if(!notes[q].sent) u++; } return u; }
   function barCopyLabel(){
-    var n=notes.length;
+    var n=unsentCount();
     if(MERGED){
       var h=hostCount(), t=n+h;
-      if(!t) return "Copy for Claude";
+      if(!t) return notes.length ? "Copied. Waiting for Claude" : "Copy for Claude";
       var parts=[];
       if(h){ parts.push(hostNoun(h)); }
       if(n){ parts.push(n+" note"+(n===1?"":"s")); }
       // One number first, always. The breakdown only when there are two kinds to tell apart.
       return "Copy all "+t+" for Claude"+(parts.length>1 ? " ("+parts.join(" + ")+")" : "");
     }
+    if(!n) return notes.length ? "Copied. Waiting for Claude" : "Copy my feedback";
     return "Copy "+n+" feedback note"+(n===1 ? "" : "s");
   }
 
@@ -4891,8 +4903,10 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
   }
   function barListLabel(){
     if(drawerOpen) return "Hide the list";
-    var n=notes.length, m=noteGroups().keys.length;
-    return "See my "+n+" note"+(n===1?"":"s")+" in "+m+" section"+(m===1?"":"s");
+    // Same rule as the pill: the number is what is still to copy. Copied notes are named as such.
+    var n=unsentCount(), c=notes.length-n, m=noteGroups().keys.length;
+    if(!n) return "See my "+c+" copied note"+(c===1?"":"s")+", waiting for Claude";
+    return "See my "+n+" note"+(n===1?"":"s")+" in "+m+" section"+(m===1?"":"s")+(c?" (+"+c+" copied)":"");
   }
   function paintDrawer(){
     if(!drawer||!drBody) return;

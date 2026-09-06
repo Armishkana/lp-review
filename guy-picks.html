@@ -146,7 +146,7 @@
 <header class="ds-mast" data-ds="mast">
   <h1>Pick the clips you want uploaded</h1>
   <p class="ds-say" data-ds="say" id="saysize" data-say-own="the page script rewrites it from the pick tally; the shared row model does not fit a picks page"><b>11 topics</b> from your last 1 stream, newest first. Tap <b>Upload</b> or <b>Skip</b> on each one.</p>
-  <p class="ds-age stamp" data-ds="age" data-built="2026-09-06T13:04:59Z"><span class="ds-dot"></span><b>Sep 6</b></p>
+  <p class="ds-age stamp" data-ds="age" data-built="2026-09-06T13:27:57Z"><span class="ds-dot"></span><b>Sep 6</b></p>
 </header>
   <!-- WHY THE TITLE IS AN h2 AND THE FOLD SITS INSIDE IT. As a top-level <details> this block was a
        segment titled by its own <summary>, which the section detector ranks deeper than the <h2> on
@@ -409,7 +409,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">11 topics across 1 streams. Updated 2026-09-06T13:04:59Z.</p>
+  <p class="built">11 topics across 1 streams. Updated 2026-09-06T13:27:57Z.</p>
 </div>
 
 <div class="bar">
@@ -2632,17 +2632,29 @@
   // NAME THE KIND, NOT JUST THE COUNT. Armin, note ooeqt07f: "making it clear which one is the
   // feedback and which one is the notes on my tasks". Two buttons that both said a bare "Copy the
   // note" would have answered half his complaint and left the half that actually confuses him.
+  // THE NUMBER ON THE PILL COUNTS ONLY WHAT HE HAS NOT COPIED YET. Armin, 2026-09-06, note tuvsl8fw
+  // on the Roadmap, and it was his FIFTH time: "on every single dashboard, when I submit feedback to
+  // you on Claude, you have to remove from the feedback counter the things that have already been
+  // submitted. Why is the feedback from before still here?" The four earlier answers (08-09, 08-17,
+  // 09-04, 09-05) each fixed a different thing - the badge, the drop-at-receipt, the hand-copied
+  // note - and every one of them left THIS label reading notes.length, copied or not. So a note he
+  // had just handed over still counted as work outstanding on the very pill he presses to hand it
+  // over. A copied note stays in the list below, marked copied, until I receive it (his 08-10 rule:
+  // copying is not delivery); it just stops being a number. When everything is copied the pill
+  // says so in words and carries NO digit, which is the property feedback-clicktest.html now asserts.
+  function unsentCount(){ var u=0; for(var q=0;q<notes.length;q++){ if(!notes[q].sent) u++; } return u; }
   function barCopyLabel(){
-    var n=notes.length;
+    var n=unsentCount();
     if(MERGED){
       var h=hostCount(), t=n+h;
-      if(!t) return "Copy for Claude";
+      if(!t) return notes.length ? "Copied. Waiting for Claude" : "Copy for Claude";
       var parts=[];
       if(h){ parts.push(hostNoun(h)); }
       if(n){ parts.push(n+" note"+(n===1?"":"s")); }
       // One number first, always. The breakdown only when there are two kinds to tell apart.
       return "Copy all "+t+" for Claude"+(parts.length>1 ? " ("+parts.join(" + ")+")" : "");
     }
+    if(!n) return notes.length ? "Copied. Waiting for Claude" : "Copy my feedback";
     return "Copy "+n+" feedback note"+(n===1 ? "" : "s");
   }
 
@@ -3291,8 +3303,10 @@
   }
   function barListLabel(){
     if(drawerOpen) return "Hide the list";
-    var n=notes.length, m=noteGroups().keys.length;
-    return "See my "+n+" note"+(n===1?"":"s")+" in "+m+" section"+(m===1?"":"s");
+    // Same rule as the pill: the number is what is still to copy. Copied notes are named as such.
+    var n=unsentCount(), c=notes.length-n, m=noteGroups().keys.length;
+    if(!n) return "See my "+c+" copied note"+(c===1?"":"s")+", waiting for Claude";
+    return "See my "+n+" note"+(n===1?"":"s")+" in "+m+" section"+(m===1?"":"s")+(c?" (+"+c+" copied)":"");
   }
   function paintDrawer(){
     if(!drawer||!drBody) return;
