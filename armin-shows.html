@@ -15,7 +15,7 @@
      failure this vault keeps paying for: a check that goes quiet instead of red. It carries the
      same build time to the character, so every reader of [data-built] (the report builder in this
      page's own JS, and feedback-shared l.504) gets the same string whichever one it finds first. -->
-<meta name="ds-built" data-built="2026-09-06T09:03:56Z">
+<meta name="ds-built" data-built="2026-09-06T09:26:54Z">
 <style>
 /* Fallback palette only. Every one of these names is ALIASED onto a --ds-* token by theme.html,
    which is injected last with !important, so what you actually see on the page is the shared
@@ -382,9 +382,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
      #freshreload. "New today: 0" is GREY: zero new clips at seven in the evening is the ordinary
      state of the world, and DESIGN.md forbids painting a thing that has simply not happened yet
      with a warning colour. The delivery alarm lives in the ledger, which is where an alarm belongs. -->
-<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T09:03:56Z">
+<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T09:26:54Z">
   <span class="ds-dot" id="freshdot"></span>
-  <b id="freshtitle">Sun Sep 6, 17:03</b>
+  <b id="freshtitle">Sun Sep 6, 17:26</b>
   <span id="freshage"></span>
   <span class="newtoday none" id="newtoday" data-new="0"
         title="Clips whose covers finished in the last 24 hours">New today: 0</span>
@@ -5451,7 +5451,15 @@ details.ds-more > .body,details.ds-more > div,details.heromore > .body{ padding:
 .fbka:last-child:not(.fbkwhole){ margin-bottom:72px }
 .fbka.fbkwhole:last-child{ margin-bottom:8px }
 .fbka .fbkbtn{ appearance:none; background:none; border:1px solid transparent; padding:0 var(--ds-sp-2); min-height:var(--ds-tap); width:100%;
-  text-align:right; justify-content:flex-end; color:var(--ds-faint); font:600 var(--ds-fs-meta)/1.3 var(--ds-font); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-radius:var(--ds-r-sm) }
+  text-align:right; justify-content:flex-end; color:var(--ds-faint); font:600 var(--ds-fs-meta)/1.3 var(--ds-font); border-radius:var(--ds-r-sm);
+  /* IT WRAPS RATHER THAN CLIPS, AND THE REASON IS WHICH END WAS BEING LOST. nowrap + overflow:hidden
+     on a flex line justified to the END clips the START of the label, so a long section name printed
+     "...edback on: (emoji) Disney tickets, Saturday 12 Septembe..." on the Japan money page - cut at
+     BOTH ends, with the words that say what the control does among the first casualties, and the
+     ellipsis never drawn because the overflow was on the left. Measured at 360 on 2026-09-06.
+     Two lines of 12px meta text cost less than a control nobody can read; the tap target only grows,
+     and it can no longer overflow the column that align-check.html measures against. */
+  white-space:normal; overflow-wrap:anywhere; padding-top:4px; padding-bottom:4px }
 .fbka .fbkbtn::first-letter{ color:var(--ds-blue) }
 .fbka .fbkbtn:hover,.fbka .fbkbtn:focus-visible{ color:var(--ds-blue); background:var(--ds-blue-soft) }
 .fbka .fbkbtn.has{ color:var(--ds-blue); background:var(--ds-blue-soft); border-color:var(--ds-line); font-weight:700 }

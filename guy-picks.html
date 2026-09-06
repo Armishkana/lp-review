@@ -40,9 +40,12 @@
   /* The masthead: what this page is, how big the job is, and how old the page is. */
   header.ds-mast,header.ds-mast>*{min-width:0}
   header.ds-mast .fbktop{max-width:100%}
-  .how{border:1px solid var(--line);border-radius:12px;padding:12px;margin:16px 0 0}
-  .how .ds-dh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .how h2{margin:0 0 8px;font-size:18px;line-height:1.3}
+  /* NO CARD AROUND IT. The h2 is here so the jump menu does not mix a page heading with a fold
+     (toc-test "menu mixes depths"), not because this is a section worth a box: boxing it cost about
+     65px above the first Upload button, measured at 360, and the fold proxy budget is about how far
+     down the first decision sits. A heading and a line, then the fold. */
+  .how{margin:14px 0 0}
+  .how h2{margin:0 0 4px;font-size:17px;line-height:1.3}
   .lede{color:var(--muted);font-size:13px;margin:0 0 12px}
   .lede b{color:var(--fg)}
   .ledemore>summary{cursor:pointer;list-style:none;min-height:40px;display:flex;align-items:center;gap:8px;
@@ -143,7 +146,7 @@
 <header class="ds-mast" data-ds="mast">
   <h1>Pick the clips you want uploaded</h1>
   <p class="ds-say" data-ds="say" id="saysize" data-say-own="the page script rewrites it from the pick tally; the shared row model does not fit a picks page"><b>11 topics</b> from your last 1 stream, newest first. Tap <b>Upload</b> or <b>Skip</b> on each one.</p>
-  <p class="ds-age stamp" data-ds="age" data-built="2026-09-06T08:59:27Z"><span class="ds-dot"></span><b>Sep 6</b></p>
+  <p class="ds-age stamp" data-ds="age" data-built="2026-09-06T09:21:29Z"><span class="ds-dot"></span><b>Sep 6</b></p>
 </header>
   <!-- WHY THE TITLE IS AN h2 AND THE FOLD SITS INSIDE IT. As a top-level <details> this block was a
        segment titled by its own <summary>, which the section detector ranks deeper than the <h2> on
@@ -152,8 +155,8 @@
        everything inside it (feedback rule c), so the fold keeps its words and stops being a second,
        shallower segment of its own. Same shape the three clip pages already use for "What to do".
        The emoji is not decoration: every segment title opens with one, unique on the page. -->
-  <section class="how ds-deck" data-ds="deck">
-  <div class="ds-dh" data-ds="deckhead"><h2>&#8505;&#65039; How this page works</h2></div>
+  <section class="how">
+  <h2>&#8505;&#65039; How this page works</h2>
   <p class="lede">Nothing goes out that you have not picked.</p>
   <details class="ledemore">
     <summary>The rest of it</summary>
@@ -406,7 +409,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">11 topics across 1 streams. Updated 2026-09-06T08:59:26Z.</p>
+  <p class="built">11 topics across 1 streams. Updated 2026-09-06T09:21:29Z.</p>
 </div>
 
 <div class="bar">
@@ -3924,7 +3927,15 @@ details.ds-more > .body,details.ds-more > div,details.heromore > .body{ padding:
 .fbka:last-child:not(.fbkwhole){ margin-bottom:72px }
 .fbka.fbkwhole:last-child{ margin-bottom:8px }
 .fbka .fbkbtn{ appearance:none; background:none; border:1px solid transparent; padding:0 var(--ds-sp-2); min-height:var(--ds-tap); width:100%;
-  text-align:right; justify-content:flex-end; color:var(--ds-faint); font:600 var(--ds-fs-meta)/1.3 var(--ds-font); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; border-radius:var(--ds-r-sm) }
+  text-align:right; justify-content:flex-end; color:var(--ds-faint); font:600 var(--ds-fs-meta)/1.3 var(--ds-font); border-radius:var(--ds-r-sm);
+  /* IT WRAPS RATHER THAN CLIPS, AND THE REASON IS WHICH END WAS BEING LOST. nowrap + overflow:hidden
+     on a flex line justified to the END clips the START of the label, so a long section name printed
+     "...edback on: (emoji) Disney tickets, Saturday 12 Septembe..." on the Japan money page - cut at
+     BOTH ends, with the words that say what the control does among the first casualties, and the
+     ellipsis never drawn because the overflow was on the left. Measured at 360 on 2026-09-06.
+     Two lines of 12px meta text cost less than a control nobody can read; the tap target only grows,
+     and it can no longer overflow the column that align-check.html measures against. */
+  white-space:normal; overflow-wrap:anywhere; padding-top:4px; padding-bottom:4px }
 .fbka .fbkbtn::first-letter{ color:var(--ds-blue) }
 .fbka .fbkbtn:hover,.fbka .fbkbtn:focus-visible{ color:var(--ds-blue); background:var(--ds-blue-soft) }
 .fbka .fbkbtn.has{ color:var(--ds-blue); background:var(--ds-blue-soft); border-color:var(--ds-line); font-weight:700 }
