@@ -15,7 +15,7 @@
      failure this vault keeps paying for: a check that goes quiet instead of red. It carries the
      same build time to the character, so every reader of [data-built] (the report builder in this
      page's own JS, and feedback-shared l.504) gets the same string whichever one it finds first. -->
-<meta name="ds-built" data-built="2026-09-06T08:28:10Z">
+<meta name="ds-built" data-built="2026-09-06T08:43:44Z">
 <style>
 /* Fallback palette only. Every one of these names is ALIASED onto a --ds-* token by theme.html,
    which is injected last with !important, so what you actually see on the page is the shared
@@ -370,7 +370,10 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 <div class="wrap">
 <header class="ds-mast" data-ds="mast">
   <h1>Armin's shows - clip review</h1>
-  <p class="ds-say" data-ds="say" id="saysize"><b>9 clips</b> from 5 streams, newest first. Most are one tap, and everything saves itself.</p>
+  <!-- data-say-own, not the three shared templates: theme.html's recount() counts a .hero plus
+       .list > details.trowx and this page has neither, so it would read zero items as "all done".
+       paint() below rewrites this line from the real clip tally instead. -->
+  <p class="ds-say" data-ds="say" id="saysize" data-say-own="paint() rewrites it from the clip tally; the shared row model does not fit a clip page"><b>9 clips</b> from 5 streams, newest first. Most are one tap, and everything saves itself.</p>
 
 <!-- THE AGE LINE. Same self-check as before - the page compares its own build time against the
      clock in HER browser, so it catches a stale copy however it got stale - but it is a dateline
@@ -379,9 +382,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
      #freshreload. "New today: 0" is GREY: zero new clips at seven in the evening is the ordinary
      state of the world, and DESIGN.md forbids painting a thing that has simply not happened yet
      with a warning colour. The delivery alarm lives in the ledger, which is where an alarm belongs. -->
-<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T08:28:10Z">
+<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T08:43:44Z">
   <span class="ds-dot" id="freshdot"></span>
-  <b id="freshtitle">Sun Sep 6, 16:28</b>
+  <b id="freshtitle">Sun Sep 6, 16:43</b>
   <span id="freshage"></span>
   <span class="newtoday none" id="newtoday" data-new="0"
         title="Clips whose covers finished in the last 24 hours">New today: 0</span>
@@ -460,7 +463,7 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 </div>
 <div class="streamhdr ds-dh" data-ds="deckhead"><h2>&#128308; English show, 1 September</h2><span class="new">Newest</span><span class="cnt ds-count" data-ds="chip">1 clip</span></div>
 <section class="clip" data-seg="2026-09-01-english::1" data-stream="English show, 1 September" id="startclip" data-ds="hero">
-  <div class="chead"><span class="num">Seg 1</span><span class="ctitle">Why the Strait of Hormuz Turned Lethal in 12 Hours</span><a class="watch" data-ds="door" href="https://share.descript.com/view/DWWeGTe51lR" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 1</span><span class="ctitle" data-ds="heroname">Why the Strait of Hormuz Turned Lethal in 12 Hours</span><a class="watch" data-ds="door" href="https://share.descript.com/view/DWWeGTe51lR" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -582,7 +585,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
 </section>
 <div class="streamhdr ds-dh" data-ds="deckhead"><h2>&#128309; English show, 31 August</h2><span class="cnt ds-count" data-ds="chip">1 clip</span></div>
 <section class="clip" data-seg="2026-08-31-english::1" data-stream="English show, 31 August">
-  <div class="chead"><span class="num">Seg 1</span><span class="ctitle">Iran&#39;s Own State TV Is Asking Why the Ships Keep Getting Through</span><a class="watch" data-ds="door" href="https://share.descript.com/view/4H0zBgFq63E" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 1</span><span class="ctitle" data-ds="heroname">Iran&#39;s Own State TV Is Asking Why the Ships Keep Getting Through</span><a class="watch" data-ds="door" href="https://share.descript.com/view/4H0zBgFq63E" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -708,7 +711,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
 </section>
 <div class="streamhdr ds-dh" data-ds="deckhead"><h2>&#128994; Skool panel, 30 August</h2><span class="cnt ds-count" data-ds="chip">1 clip</span></div>
 <section class="clip" data-seg="2026-08-30-english::4" data-stream="Skool panel, 30 August">
-  <div class="chead"><span class="num">Seg 4</span><span class="ctitle">An Atheist Defends Christian Scripture on a Live Panel</span><a class="watch" data-ds="door" href="https://share.descript.com/view/TDVHJ8K23Lc" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 4</span><span class="ctitle" data-ds="heroname">An Atheist Defends Christian Scripture on a Live Panel</span><a class="watch" data-ds="door" href="https://share.descript.com/view/TDVHJ8K23Lc" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -836,7 +839,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
 </section>
 <div class="streamhdr ds-dh" data-ds="deckhead"><h2>&#128993; Liberty Politics - August 28</h2><span class="cnt ds-count" data-ds="chip">3 clips</span></div>
 <section class="clip" data-seg="2026-08-28-english::1" data-stream="Liberty Politics - August 28">
-  <div class="chead"><span class="num">Seg 1</span><span class="ctitle">Iranians Are Cursing Their Own Regime, Not America</span><a class="watch" data-ds="door" href="https://share.descript.com/view/lRPWNWrob9a" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 1</span><span class="ctitle" data-ds="heroname">Iranians Are Cursing Their Own Regime, Not America</span><a class="watch" data-ds="door" href="https://share.descript.com/view/lRPWNWrob9a" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -908,7 +911,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
   </div>
 </section>
 <section class="clip" data-seg="2026-08-28-english::3" data-stream="Liberty Politics - August 28">
-  <div class="chead"><span class="num">Seg 3</span><span class="ctitle">Why There Is No Time Left To Remove The Islamic Republic</span><a class="watch" data-ds="door" href="https://share.descript.com/view/RgUERpxLjVG" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 3</span><span class="ctitle" data-ds="heroname">Why There Is No Time Left To Remove The Islamic Republic</span><a class="watch" data-ds="door" href="https://share.descript.com/view/RgUERpxLjVG" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -970,7 +973,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
   </div>
 </section>
 <section class="clip" data-seg="2026-08-28-english::10" data-stream="Liberty Politics - August 28">
-  <div class="chead"><span class="num">Seg 10</span><span class="ctitle">Immigrant Shop Owners Are Suing Mamdani Over His City Grocery Stores</span><a class="watch" data-ds="door" href="https://share.descript.com/view/qryay0gAvQm" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 10</span><span class="ctitle" data-ds="heroname">Immigrant Shop Owners Are Suing Mamdani Over His City Grocery Stores</span><a class="watch" data-ds="door" href="https://share.descript.com/view/qryay0gAvQm" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -1047,7 +1050,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
 </section>
 <div class="streamhdr ds-dh" data-ds="deckhead"><h2>&#128995; Liberty Politics - August 24</h2><span class="cnt ds-count" data-ds="chip">3 clips</span></div>
 <section class="clip" data-seg="2026-08-24-english::2" data-stream="Liberty Politics - August 24">
-  <div class="chead"><span class="num">Seg 2</span><span class="ctitle">Cut The Dollar Route And The Islamic Republic Runs Out Of Money</span><a class="watch" data-ds="door" href="https://share.descript.com/view/48MxdNYKVer" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 2</span><span class="ctitle" data-ds="heroname">Cut The Dollar Route And The Islamic Republic Runs Out Of Money</span><a class="watch" data-ds="door" href="https://share.descript.com/view/48MxdNYKVer" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -1137,7 +1140,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
   </div>
 </section>
 <section class="clip" data-seg="2026-08-24-english::3" data-stream="Liberty Politics - August 24">
-  <div class="chead"><span class="num">Seg 3</span><span class="ctitle">The Dollar Just Crossed 2 Million Rial And The Regime Is Blaming Everyone Else</span><a class="watch" data-ds="door" href="https://share.descript.com/view/7Dzoi4eDD87" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 3</span><span class="ctitle" data-ds="heroname">The Dollar Just Crossed 2 Million Rial And The Regime Is Blaming Everyone Else</span><a class="watch" data-ds="door" href="https://share.descript.com/view/7Dzoi4eDD87" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -1251,7 +1254,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
   </div>
 </section>
 <section class="clip" data-seg="2026-08-24-english::4" data-stream="Liberty Politics - August 24">
-  <div class="chead"><span class="num">Seg 4</span><span class="ctitle">Iran&#39;s Regime Elite Are Not Feeling The Sanctions At All</span><a class="watch" data-ds="door" href="https://share.descript.com/view/x5Zr8Mj4JHm" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 4</span><span class="ctitle" data-ds="heroname">Iran&#39;s Regime Elite Are Not Feeling The Sanctions At All</span><a class="watch" data-ds="door" href="https://share.descript.com/view/x5Zr8Mj4JHm" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
