@@ -146,7 +146,7 @@
 <header class="ds-mast" data-ds="mast">
   <h1>Pick the clips you want uploaded</h1>
   <p class="ds-say" data-ds="say" id="saysize" data-say-own="the page script rewrites it from the pick tally; the shared row model does not fit a picks page"><b>11 topics</b> from your last 1 stream, newest first. Tap <b>Upload</b> or <b>Skip</b> on each one.</p>
-  <p class="ds-age stamp" data-ds="age" data-built="2026-09-06T21:18:19Z"><span class="ds-dot"></span><b>Sep 6</b></p>
+  <p class="ds-age stamp" data-ds="age" data-built="2026-09-06T21:39:07Z"><span class="ds-dot"></span><b>Sep 6</b></p>
 </header>
   <!-- WHY THE TITLE IS AN h2 AND THE FOLD SITS INSIDE IT. As a top-level <details> this block was a
        segment titled by its own <summary>, which the section detector ranks deeper than the <h2> on
@@ -409,7 +409,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">11 topics across 1 streams. Updated 2026-09-06T21:15:09Z.</p>
+  <p class="built">11 topics across 1 streams. Updated 2026-09-06T21:39:07Z.</p>
 </div>
 
 <div class="bar">
@@ -2570,6 +2570,7 @@
   // still in the payload if he copies again, it just stops being counted as waiting.
   var HSKEY="fbkHostSent3::"+PAGE, hostSent={};
   try{ hostSent=JSON.parse(W.localStorage.getItem(HSKEY)||"{}")||{}; }catch(e){ hostSent={}; }
+  var hostSentPruned=false;
   // Pruned to what is actually pending, so this store cannot grow for the life of the browser and
   // a line that stopped being a pick cannot sit here influencing anything.
   function saveHostSent(){
@@ -2596,6 +2597,11 @@
   function hostCount(){
     if(!MERGED) return 0;
     var it=hostItems(); if(!it.length) return 0;
+    // Once, and ONLY once the host has actually reported something. A host page may register its
+    // button before the script that fills it (the To-Do List does exactly that), so an eager prune
+    // against an empty list would wipe the store on every load and every mark would count twice.
+    // "Nothing yet" and "nothing at all" are the same value here, so the guard is the whole fix.
+    if(!hostSentPruned){ hostSentPruned=true; saveHostSent(); }
     var left=hostUnsent().length;
     if(typeof PAGEBTN.items === "function") return left;
     if(!left) return 0;
