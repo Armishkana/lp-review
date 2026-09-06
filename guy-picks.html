@@ -146,7 +146,7 @@
 <header class="ds-mast" data-ds="mast">
   <h1>Pick the clips you want uploaded</h1>
   <p class="ds-say" data-ds="say" id="saysize" data-say-own="the page script rewrites it from the pick tally; the shared row model does not fit a picks page"><b>11 topics</b> from your last 1 stream, newest first. Tap <b>Upload</b> or <b>Skip</b> on each one.</p>
-  <p class="ds-age stamp" data-ds="age" data-built="2026-09-06T10:55:24Z"><span class="ds-dot"></span><b>Sep 6</b></p>
+  <p class="ds-age stamp" data-ds="age" data-built="2026-09-06T11:13:02Z"><span class="ds-dot"></span><b>Sep 6</b></p>
 </header>
   <!-- WHY THE TITLE IS AN h2 AND THE FOLD SITS INSIDE IT. As a top-level <details> this block was a
        segment titled by its own <summary>, which the section detector ranks deeper than the <h2> on
@@ -409,7 +409,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">11 topics across 1 streams. Updated 2026-09-06T10:50:02Z.</p>
+  <p class="built">11 topics across 1 streams. Updated 2026-09-06T11:13:01Z.</p>
 </div>
 
 <div class="bar">
@@ -2297,6 +2297,11 @@
     // The rail is the dock's own to own - nothing else writes either of these two.
     d.body.style.paddingRight = wide ? (Math.ceil(r.width)+"px") : dockRestore.pr;
     if(bar){ bar.style.right = wide ? (Math.ceil(r.width+12)+"px") : dockRestore.barR; }
+    // THE PAGE IS TOLD HOW MUCH OF THE VIEWPORT THE DOCK TOOK (2026-09-06). Anything full-bleed - the
+    // tab strip centres itself with 50% against 100vw - reads body padding as a narrower page and
+    // 100vw as the whole one, so with the dock open at 900px the strip slid 170px left and its right
+    // end fell under the drawer. Measured by width-sweep-test.html. The strip subtracts this.
+    try{ d.documentElement.style.setProperty("--fbk-dock", wide ? (Math.ceil(r.width)+"px") : "0px"); }catch(e){}
     paintBottomRoom();
   }
   // WHAT HE IS WRITING ABOUT, WHOLE. The drafts on the Messages page sit in <textarea rows="14">
@@ -2368,6 +2373,7 @@
     if(dockRestore){
       d.body.style.paddingRight=dockRestore.pr;
       if(bar){ bar.style.right=dockRestore.barR; }
+      try{ d.documentElement.style.removeProperty("--fbk-dock"); }catch(e){}
       subjectClose(dockRestore.subj);
     }
     dockRestore=null;

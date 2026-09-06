@@ -15,7 +15,7 @@
      failure this vault keeps paying for: a check that goes quiet instead of red. It carries the
      same build time to the character, so every reader of [data-built] (the report builder in this
      page's own JS, and feedback-shared l.504) gets the same string whichever one it finds first. -->
-<meta name="ds-built" data-built="2026-09-06T10:55:23Z">
+<meta name="ds-built" data-built="2026-09-06T11:13:01Z">
 <style>
 /* Fallback palette only. Every one of these names is ALIASED onto a --ds-* token by theme.html,
    which is injected last with !important, so what you actually see on the page is the shared
@@ -382,9 +382,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
      #freshreload. "New today: 0" is GREY: zero new clips at seven in the evening is the ordinary
      state of the world, and DESIGN.md forbids painting a thing that has simply not happened yet
      with a warning colour. The delivery alarm lives in the ledger, which is where an alarm belongs. -->
-<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T10:55:23Z">
+<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T11:13:01Z">
   <span class="ds-dot" id="freshdot"></span>
-  <b id="freshtitle">Sun Sep 6, 18:50</b>
+  <b id="freshtitle">Sun Sep 6, 19:13</b>
   <span id="freshage"></span>
   <span class="newtoday none" id="newtoday" data-new="0"
         title="Clips whose covers finished in the last 24 hours">New today: 0</span>
@@ -4036,6 +4036,11 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     // The rail is the dock's own to own - nothing else writes either of these two.
     d.body.style.paddingRight = wide ? (Math.ceil(r.width)+"px") : dockRestore.pr;
     if(bar){ bar.style.right = wide ? (Math.ceil(r.width+12)+"px") : dockRestore.barR; }
+    // THE PAGE IS TOLD HOW MUCH OF THE VIEWPORT THE DOCK TOOK (2026-09-06). Anything full-bleed - the
+    // tab strip centres itself with 50% against 100vw - reads body padding as a narrower page and
+    // 100vw as the whole one, so with the dock open at 900px the strip slid 170px left and its right
+    // end fell under the drawer. Measured by width-sweep-test.html. The strip subtracts this.
+    try{ d.documentElement.style.setProperty("--fbk-dock", wide ? (Math.ceil(r.width)+"px") : "0px"); }catch(e){}
     paintBottomRoom();
   }
   // WHAT HE IS WRITING ABOUT, WHOLE. The drafts on the Messages page sit in <textarea rows="14">
@@ -4107,6 +4112,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     if(dockRestore){
       d.body.style.paddingRight=dockRestore.pr;
       if(bar){ bar.style.right=dockRestore.barR; }
+      try{ d.documentElement.style.removeProperty("--fbk-dock"); }catch(e){}
       subjectClose(dockRestore.subj);
     }
     dockRestore=null;
