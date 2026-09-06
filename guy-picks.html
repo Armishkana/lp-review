@@ -30,30 +30,31 @@
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--fg);
-       font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       font:15px/1.5 ui-sans-serif,"Segoe UI",system-ui,sans-serif;
        overflow-x:hidden;-webkit-text-size-adjust:100%}
   [hidden]{display:none!important}
   .wrap{max-width:760px;margin:0 auto;padding:16px 14px 120px}
-  h1{font-size:22px;line-height:1.25;margin:0 0 6px}
+  /* Size and weight come from the shared layer (--ds-fs-h1). */
+  h1{line-height:1.25;margin:0 0 6px}
   /* The masthead: what this page is, how big the job is, and how old the page is. */
   header.ds-mast,header.ds-mast>*{min-width:0}
   header.ds-mast .fbktop{max-width:100%}
-  .lede{color:var(--muted);font-size:14px;margin:0 0 12px}
+  .lede{color:var(--muted);font-size:13px;margin:0 0 12px}
   .lede b{color:var(--fg)}
   .ledemore>summary{cursor:pointer;list-style:none;min-height:40px;display:flex;align-items:center;gap:8px;
     color:var(--accent);font-size:13px;font-weight:600}
   .ledemore>summary::-webkit-details-marker{display:none}
   .ledemore>summary::before{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);flex:0 0 auto;margin-left:2px}
   .ledemore[open]>summary::before{transform:rotate(45deg)}
-  .ledemore p{color:var(--muted);font-size:14px;margin:0 0 8px}
+  .ledemore p{color:var(--muted);font-size:13px;margin:0 0 8px}
   /* The end state: reached, never announced. Its own name, not .ds-allclear - the shared theme
      runtime owns that selector and recounts it from the To-Do List's row model, which this page
      does not have, so it would declare the page finished before a single pick was made. */
   .clipclear{border:2px solid var(--yes);border-radius:12px;background:var(--card);padding:24px 16px;text-align:center;margin:24px 0 0}
   .clipclear .tick{width:54px;height:54px;border-radius:50%;background:var(--yesbg);color:var(--yes);font:800 28px/54px inherit;margin:0 auto 8px}
-  .clipclear p{margin:0;font-size:17px;font-weight:700}
+  .clipclear p{margin:0;font-size:18px;font-weight:700}
   .stream{margin:16px 0 0}
-  .stream h2{font-size:17px;margin:0 0 4px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+  .stream h2{font-size:18px;margin:0 0 4px;padding-bottom:6px;border-bottom:1px solid var(--line)}
   .streamsub{color:var(--muted);font-size:13px;margin:0 0 8px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
         padding:14px;margin:0 0 12px}
@@ -70,14 +71,14 @@
   .descfold>summary::-webkit-details-marker{display:none}
   .descfold>summary::before{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);flex:0 0 auto;margin-left:2px}
   .descfold[open]>summary::before{transform:rotate(45deg)}
-  .desc{color:var(--muted);font-size:14px;margin:4px 0 10px;overflow-wrap:break-word}
+  .desc{color:var(--muted);font-size:13px;margin:4px 0 10px;overflow-wrap:break-word}
   .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 12px;font-size:13px}
   .pill{border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--muted);font-size:13px}
   .watch{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;
-         color:var(--accent);font-size:14px;font-weight:600;text-decoration:none}
+         color:var(--accent);font-size:15px;font-weight:600;text-decoration:none}
   .watch:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .picks{display:flex;gap:8px}
-  .btn{flex:1 1 0;min-height:48px;border-radius:10px;border:1.5px solid var(--line);
+  .btn{flex:1 1 0;min-height:48px;border-radius:10px;border:1px solid var(--line);
        background:transparent;color:var(--fg);font-size:15px;font-weight:650;cursor:pointer;
        padding:0 8px}
   .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -87,12 +88,20 @@
   /* A FULL-WIDTH LEFT-ALIGNED BORDERED BOX READS AS AN EMPTY TEXT FIELD, in both themes - it was
      the one control on this page you could look straight at and not know was a button. It is a
      button now: centred, its own glyph, sized like the two above it but quieter. */
-  .flag{width:100%;min-height:44px;border-radius:10px;border:1.5px solid var(--line);
-        background:transparent;color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;
+  .flag{width:100%;min-height:44px;border-radius:10px;border:1px solid var(--line);
+        background:transparent;color:var(--muted);font-size:15px;font-weight:600;cursor:pointer;
         padding:0 10px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
-  .flag[aria-pressed="true"]{background:var(--warnbg);border-color:var(--warn);color:var(--warn)}
+  /* ⛔ A CLASS-NAME COLLISION WITH THE SHARED LAYER, found by looking at the rendering rather than
+     at the code: theme.html carries .flag{border-left-color:var(--ds-blue)!important} for the
+     trip pages' country slab, and this page's "Title is wrong" BUTTON is also class .flag - so it
+     shipped with one blue edge and three grey ones, which reads as a rendering fault. The class
+     name is a contract here (the page JS and the picks report both key on it), so the collision is
+     answered with specificity rather than a rename: two classes beat one, !important against
+     !important. Same reason the pressed state below restates its own colour. */
+  .flagrow .flag{border-left-color:var(--line)!important}
+  .flagrow .flag[aria-pressed="true"],.flag[aria-pressed="true"]{background:var(--warnbg);border-color:var(--warn);border-left-color:var(--warn)!important;color:var(--warn)}
   .why{display:none;width:100%;margin-top:8px;min-height:72px;padding:10px;font-size:15px;
-       border-radius:10px;border:1.5px solid var(--warn);background:var(--bg);color:var(--fg);
+       border-radius:10px;border:1px solid var(--warn);background:var(--bg);color:var(--fg);
        font-family:inherit}
   .why.show{display:block}
   /* The left inset is the fence around the injected jump button, which owns the bottom-left corner
@@ -101,21 +110,21 @@
        border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));
        padding-left:64px;display:flex;gap:10px;align-items:center}
   @media (min-width:560px){ .bar{padding-left:140px} }
-  .count{flex:1 1 auto;font-size:14px;color:var(--muted);min-width:0}
+  .count{flex:1 1 auto;font-size:13px;color:var(--muted);min-width:0}
   .send{min-height:48px;border-radius:10px;border:none;background:var(--accent);color:var(--ds-on-blue,#fff);
         font-size:15px;font-weight:700;padding:0 18px;cursor:pointer;white-space:nowrap}
   .send:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
   /* Moved BELOW the cards it copies. A secondary action standing above the work reads as the first
      thing to do, and this one is for whoever is relaying the list, not for the person picking. */
-  .copylist{min-height:44px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);
-       color:var(--fg);font-size:14px;font-weight:600;padding:0 14px;margin:2px 0 14px;cursor:pointer}
+  .copylist{min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--card);
+       color:var(--fg);font-size:15px;font-weight:600;padding:0 14px;margin:2px 0 14px;cursor:pointer}
   .copylist:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
   .copylist.copied{border-color:var(--accent);color:var(--accent)}
   .out{display:none;margin-top:14px}
   .out.show{display:block}
-  .out textarea{width:100%;min-height:220px;padding:12px;font-size:14px;line-height:1.5;
-       border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--fg);
-       font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .out textarea{width:100%;min-height:220px;padding:12px;font-size:13px;line-height:1.5;
+       border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--fg);
+       font-family:ui-monospace,Consolas,"Cascadia Mono",monospace}
   .note{font-size:13px;color:var(--muted);margin:8px 0 0}
   .built{margin-top:28px;font-size:12px;color:var(--muted)}
 </style>
@@ -125,7 +134,7 @@
 <header class="ds-mast" data-ds="mast">
   <h1>Pick the clips you want uploaded</h1>
   <p class="ds-say" data-ds="say" id="saysize"><b>11 topics</b> from your last 1 stream, newest first. Tap <b>Upload</b> or <b>Skip</b> on each one.</p>
-  <p class="ds-age stamp" data-ds="age" data-built="2026-09-06T06:47:51Z"><span class="ds-dot"></span><b>Sep 6</b></p>
+  <p class="ds-age stamp" data-ds="age" data-built="2026-09-06T06:58:39Z"><span class="ds-dot"></span><b>Sep 6</b></p>
 </header>
   <p class="lede">Nothing goes out that you have not picked.</p>
   <details class="ledemore">
@@ -381,7 +390,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">11 topics across 1 streams. Updated 2026-09-06T06:47:51Z.</p>
+  <p class="built">11 topics across 1 streams. Updated 2026-09-06T06:58:38Z.</p>
 </div>
 
 <div class="bar">
