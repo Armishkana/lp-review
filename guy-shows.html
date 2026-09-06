@@ -1,5 +1,11 @@
 <title>Guy's shows - clip review</title>
 <script>window.__BOARD="clips-guy";window.__BOARDEMOJI="🎞️";</script>
+<!-- The two fixed elements on this page, declared with their reason so the standard check counts
+     them as measured rather than as unexplained chrome. The answers bar has to be fixed: the
+     shared feedback pill lifts itself off whatever host bar sits at the bottom of the page
+     (hostBottomBar), and a static bar would put the pill straight on top of the receipt. -->
+<meta name="ds-fixed-ok" content=".bar: the submit bar and its receipt; the feedback pill measures it and lifts off it, and clips-ui-test asserts they never overlap at 360">
+<meta name="ds-fixed-ok" content=".toast: a transient copy receipt, invisible at rest and pointer-events none, so it costs no fold">
 <style>
 /* Fallback palette only. Every one of these names is ALIASED onto a --ds-* token by theme.html,
    which is injected last with !important, so what you actually see on the page is the shared
@@ -339,7 +345,7 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 <div class="wrap">
 <header class="ds-mast" data-ds="mast">
   <h1>Guy's shows - clip review</h1>
-  <p class="ds-say" data-ds="say"><b>11 clips</b> from 1 stream, newest first. Most are one tap, and everything saves itself.</p>
+  <p class="ds-say" data-ds="say" id="saysize"><b>11 clips</b> from 1 stream, newest first. Most are one tap, and everything saves itself.</p>
 
 <!-- THE AGE LINE. Same self-check as before - the page compares its own build time against the
      clock in HER browser, so it catches a stale copy however it got stale - but it is a dateline
@@ -348,9 +354,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
      #freshreload. "New today: 0" is GREY: zero new clips at seven in the evening is the ordinary
      state of the world, and DESIGN.md forbids painting a thing that has simply not happened yet
      with a warning colour. The delivery alarm lives in the ledger, which is where an alarm belongs. -->
-<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T06:34:05Z">
+<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T06:47:50Z">
   <span class="ds-dot" id="freshdot"></span>
-  <b id="freshtitle">Sun Sep 6, 14:34</b>
+  <b id="freshtitle">Sun Sep 6, 14:47</b>
   <span id="freshage"></span>
   <span class="newtoday none" id="newtoday" data-new="0"
         title="Clips whose covers finished in the last 24 hours">New today: 0</span>
@@ -1620,7 +1626,11 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     if (h < 24) { return Math.round(h) + ' hours ago'; }
     return Math.round(h / 24) + ' days ago';
   }
-  ageEl.textContent = ago(ageH);
+  // The RELATIVE age ("Updated 4 min ago") is written by the shared theme runtime into every
+  // .ds-age, so this element stays empty unless the page is stale - two clocks side by side on one
+  // line is how "Sun Sep 6, 14:33 - 1 minutes ago - Updated 1 min ago" happened on the first build.
+  // The absolute stamp beside it is this page's own, and survives if the shared script never runs.
+  ageEl.textContent = '';
 
   if (ageH > STALE_H) {
     bar.classList.add('stale');
@@ -1961,6 +1971,20 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   // block is shown and hidden with the hidden attribute, because content that starts at opacity 0
   // can stay invisible forever if the frames never advance.
   function nextUp(done){
+    // THE SPOKEN LINE RECOUNTS ITSELF. It opens as the size of the job, becomes her progress the
+    // moment she answers anything, and says she is finished when she is. Written here and not with
+    // the shared theme runtime's data-say templates on purpose: that runtime counts the To-Do
+    // List's rows (a .hero plus .list > details.trowx), sees none on a clip page, and would
+    // conclude the page was finished before she had touched it.
+    var say = document.getElementById('saysize');
+    if (say) {
+      var total = clips.length;
+      if (done >= total && total > 0) {
+        say.innerHTML = '<b>All ' + total + ' clips answered.</b> Press Copy my answers at the bottom and send it to Armin.';
+      } else if (done > 0) {
+        say.innerHTML = '<b>' + done + ' of ' + total + ' clips answered.</b> Everything saves itself, so stop whenever you like.';
+      }
+    }
     var link  = document.getElementById('nextclip');
     var clear = document.getElementById('allclear');
     if (!link || !clear) { return; }
