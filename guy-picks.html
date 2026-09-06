@@ -1017,7 +1017,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">50 topics across 6 streams. Updated 2026-09-06T02:42:46Z.</p>
+  <p class="built">50 topics across 6 streams. Updated 2026-09-06T03:08:08Z.</p>
 </div>
 
 <div class="bar">
@@ -4279,6 +4279,7 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
   --ds-mono:ui-monospace,Consolas,"Cascadia Mono",monospace;
   --ds-fs-h1:24px; --ds-fs-h2:18px; --ds-fs-h3:16px; --ds-fs-body:15px;
   --ds-fs-meta:13px; --ds-fs-small:12px; --ds-fs-say:19px; --ds-fs-num:28px; --ds-fs-fig:34px;
+  --ds-fs-lead:17px; --ds-fs-hero:22px;
   --ds-lh:1.5; --ds-lh-snug:1.3; --ds-lh-tight:1.15;
   --ds-sp-1:4px; --ds-sp-2:8px; --ds-sp-3:12px; --ds-sp-4:16px; --ds-sp-5:20px; --ds-sp-6:24px; --ds-sp-7:32px; --ds-sp-8:48px;
   --ds-r-sm:8px; --ds-r-md:10px; --ds-r-lg:12px; --ds-r-pill:999px;
@@ -4294,10 +4295,10 @@ p a:not([class]), li a:not([class]){ padding-block:11px; }
 /* 2. BASE. */
 html{ scrollbar-width:thin; scrollbar-color:var(--ds-line) var(--ds-bg); }
 ::-webkit-scrollbar{ width:10px; height:10px }
-::-webkit-scrollbar-thumb{ background:var(--ds-line); border-radius:5px; border:2px solid var(--ds-bg) }
+::-webkit-scrollbar-thumb{ background:var(--ds-line); border-radius:var(--ds-r-pill); border:2px solid var(--ds-bg) }
 ::selection{ background:var(--ds-blue-soft); color:var(--ds-ink) }
 body{ font:var(--ds-fs-body)/var(--ds-lh) var(--ds-font); color:var(--ds-ink); background:var(--ds-bg); caret-color:var(--ds-blue); }
-:focus-visible{ outline:none; box-shadow:var(--ds-focus); border-radius:6px }
+:focus-visible{ outline:none; box-shadow:var(--ds-focus); border-radius:var(--ds-r-sm) }
 .wrap,main.wrap{ max-width:var(--ds-col); margin:0 auto; }
 h1,h2,h3,h4{ font-family:var(--ds-font); margin:0; }
 h1{ font-size:var(--ds-fs-h1); line-height:var(--ds-lh-tight); font-weight:700 }
@@ -4333,7 +4334,7 @@ h3{ font-size:var(--ds-fs-h3); line-height:var(--ds-lh-snug); font-weight:700 }
 .ds-cells{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--ds-line); border:var(--ds-hair); border-radius:var(--ds-r-lg); overflow:hidden }
 .ds-cell{ background:var(--ds-card); padding:10px 12px; min-height:56px; min-width:0 }
 .ds-cell .k{ font:600 var(--ds-fs-small)/1.2 var(--ds-font); color:var(--ds-faint); display:block }
-.ds-cell .v{ font:700 17px/1.2 var(--ds-font); color:var(--ds-ink); display:block; margin-top:2px; overflow-wrap:anywhere }
+.ds-cell .v{ font:700 var(--ds-fs-lead)/1.2 var(--ds-font); color:var(--ds-ink); display:block; margin-top:2px; overflow-wrap:anywhere }
 .ds-cell .s{ font:400 var(--ds-fs-small)/1.3 var(--ds-font); color:var(--ds-dim); display:block; margin-top:2px }
 .ds-cell .tl{ display:grid; grid-template-columns:auto 1fr; gap:0 var(--ds-sp-2); align-items:baseline }
 .ds-cell .tl .when{ font-weight:700 } .ds-cell .tl .away{ color:var(--ds-dim); font-size:var(--ds-fs-small) }
@@ -4378,7 +4379,7 @@ h3{ font-size:var(--ds-fs-h3); line-height:var(--ds-lh-snug); font-weight:700 }
 /* The DOOR: the one filled control on a card, two lines, what opens and what to do there. */
 .ds-door,.hero ul.steps > li.pick > a{ display:flex; align-items:center; gap:10px; width:100%; min-height:var(--ds-tap-xl); padding:8px 14px;
   border-radius:var(--ds-r-md); background:var(--ds-blue-fill); color:var(--ds-on-blue); text-decoration:none; box-sizing:border-box; text-align:left }
-.ds-door .d1,.hero ul.steps > li.pick > a .st{ display:block; font:700 17px/1.25 var(--ds-font) }
+.ds-door .d1,.hero ul.steps > li.pick > a .st{ display:block; font:700 var(--ds-fs-lead)/1.25 var(--ds-font) }
 .ds-door .d2,.hero ul.steps > li.pick > a .sd{ display:block; font:500 var(--ds-fs-meta)/1.3 var(--ds-font); opacity:.9; margin-top:2px }
 .ds-door .sn,.hero ul.steps > li.pick > a .sn{ flex:0 0 auto; width:22px; height:22px; border-radius:50%; background:var(--ds-blue-soft); color:var(--ds-blue); font:700 12px/22px var(--ds-font); text-align:center }
 .ds-door::after,.hero ul.steps > li.pick > a::after{ content:""; margin-left:auto; width:8px; height:8px; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:rotate(-45deg); flex:0 0 auto }
@@ -4406,14 +4407,14 @@ div.hero{ border:2px solid var(--ds-blue); border-radius:var(--ds-r-lg); backgro
 .hero .ds-tl{ display:flex; align-items:flex-start; gap:10px }
 .hero .n,.trow .num{ flex:0 0 auto; width:28px; height:28px; border-radius:50%; background:var(--ds-blue-fill); color:var(--ds-on-blue);
   font:700 15px/28px var(--ds-font); text-align:center; display:inline-block }
-.hero h2{ font-size:22px; line-height:var(--ds-lh-snug); flex:1 1 auto; min-width:0 }
+.hero h2{ font-size:var(--ds-fs-hero); line-height:var(--ds-lh-snug); flex:1 1 auto; min-width:0 }
 .hero .facts{ display:flex; flex-wrap:wrap; gap:6px; margin:10px 0 }
 .hero .facts .chip{ display:inline-flex; align-items:center; min-height:24px; padding:0 9px; border-radius:var(--ds-r-pill); font:700 var(--ds-fs-small)/1 var(--ds-font); background:var(--ds-sunk); color:var(--ds-dim) }
 .hero .facts .chip.hot{ background:var(--ds-red-soft); color:var(--ds-red) }
 .hero .facts .chip.warm{ background:var(--ds-amber-soft); color:var(--ds-amber) }
 .hero .facts .chip.money,.hero .facts .chip.ok{ background:var(--ds-green-soft); color:var(--ds-green) }
 .hero .facts .chip.rmp,.rmp{ background:var(--ds-blue-soft); color:var(--ds-blue) }
-.hero p.lead{ font-size:17px; line-height:1.4; margin:0 0 var(--ds-sp-3) }
+.hero p.lead{ font-size:var(--ds-fs-lead); line-height:1.4; margin:0 0 var(--ds-sp-3) }
 .hero ul.steps{ list-style:none; margin:0; padding:0 }
 .hero ul.steps > li{ margin:0 0 var(--ds-sp-2) }
 .hero p.why{ font-size:var(--ds-fs-meta); color:var(--ds-dim); margin:var(--ds-sp-3) 0 0 }
