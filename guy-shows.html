@@ -15,7 +15,7 @@
      failure this vault keeps paying for: a check that goes quiet instead of red. It carries the
      same build time to the character, so every reader of [data-built] (the report builder in this
      page's own JS, and feedback-shared l.504) gets the same string whichever one it finds first. -->
-<meta name="ds-built" data-built="2026-09-06T20:50:06Z">
+<meta name="ds-built" data-built="2026-09-06T21:18:19Z">
 <style>
 /* Fallback palette only. Every one of these names is ALIASED onto a --ds-* token by theme.html,
    which is injected last with !important, so what you actually see on the page is the shared
@@ -382,9 +382,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
      #freshreload. "New today: 0" is GREY: zero new clips at seven in the evening is the ordinary
      state of the world, and DESIGN.md forbids painting a thing that has simply not happened yet
      with a warning colour. The delivery alarm lives in the ledger, which is where an alarm belongs. -->
-<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T20:50:06Z">
+<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T21:18:19Z">
   <span class="ds-dot" id="freshdot"></span>
-  <b id="freshtitle">Mon Sep 7, 04:50</b>
+  <b id="freshtitle">Mon Sep 7, 05:15</b>
   <span id="freshage"></span>
   <span class="newtoday none" id="newtoday" data-new="0"
         title="Clips whose covers finished in the last 24 hours">New today: 0</span>
@@ -4284,17 +4284,85 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   // copy that really reached the clipboard. A page without text() keeps the two-row shape.
   var MERGED = !!(PAGEBTN && typeof PAGEBTN.text === "function");
   function hostText(){ if(!MERGED) return ""; var t = val(PAGEBTN.text); return t ? String(t) : ""; }
+
+  // ---- THE HOST'S OWN PICKS ARE HANDED OVER TOO, AND THE NUMBER HAS TO KNOW IT ---------------
+  // Armin, 2026-09-06, note 8pc0mo7x on the Dashboards page: "the counter for the feedback is not
+  // working properly. fix it. make it bug free. make it utterly perfect."
+  //
+  // MEASURED, in a browser, on the built page. He had one menu pick and one note. The pill read
+  // "Copy all 2 for Claude (1 pick + 1 note)". He pressed it, the copy succeeded, and the pill
+  // settled on "Copy all 1 for Claude" - because markSent() exists for NOTES and there was no
+  // equivalent for the host page's picks at all. hostCount() asked the host "how many picks are
+  // there", never "how many have not been handed over", so a pick he had already sent me counted
+  // as outstanding work for the rest of the session and could not be cleared by any honest act.
+  // The only control that could zero it was Clear all, which DELETES his notes: the number pushed
+  // him toward destroying his own words to make it read correctly.
+  //
+  // THIS IS THE SAME COMPLAINT AS note tuvsl8fw ("remove from the feedback counter the things that
+  // have already been submitted"), which was answered for notes on 2026-09-06 and left the host
+  // half untouched. So the fix goes in the SHARED component, once, not on the page that reported
+  // it - every merged page counts the same way from here, including the ones nobody has looked at.
+  //
+  // CONTENT-ADDRESSED, so it cannot lie. A pick is remembered by its exact text. Change the pick
+  // and the text changes, so it is unsent again by construction - there is no id to go stale and
+  // no flag to leave behind. Nothing is ever deleted: copying is still not delivery, the pick is
+  // still in the payload if he copies again, it just stops being counted as waiting.
+  var HSKEY="fbkHostSent3::"+PAGE, hostSent={};
+  try{ hostSent=JSON.parse(W.localStorage.getItem(HSKEY)||"{}")||{}; }catch(e){ hostSent={}; }
+  // Pruned to what is actually pending, so this store cannot grow for the life of the browser and
+  // a line that stopped being a pick cannot sit here influencing anything.
+  function saveHostSent(){
+    try{
+      var live=hostItems(), keep={};
+      for(var i=0;i<live.length;i++){ if(hostSent[live[i]]) keep[live[i]]=1; }
+      hostSent=keep;
+      W.localStorage.setItem(HSKEY, JSON.stringify(hostSent));
+    }catch(e){}
+  }
+  // A host page may list its picks one by one (items) so each is counted on its own. A page that
+  // does not is treated as one indivisible thing: its own count while anything is outstanding,
+  // zero once that exact payload has been copied.
+  function hostItems(){
+    if(!MERGED) return [];
+    if(typeof PAGEBTN.items === "function"){
+      var a=val(PAGEBTN.items), o=[];
+      if(a && a.length){ for(var i=0;i<a.length;i++){ var s=String(a[i]||""); if(s) o.push(s); } }
+      return o;
+    }
+    var t=hostText(); return t ? [t] : [];
+  }
+  function hostUnsent(){ var it=hostItems(), o=[]; for(var i=0;i<it.length;i++){ if(!hostSent[it[i]]) o.push(it[i]); } return o; }
   function hostCount(){
     if(!MERGED) return 0;
+    var it=hostItems(); if(!it.length) return 0;
+    var left=hostUnsent().length;
+    if(typeof PAGEBTN.items === "function") return left;
+    if(!left) return 0;
     var c = parseInt(val(PAGEBTN.count), 10);
-    if(isNaN(c)) return hostText() ? 1 : 0;
+    if(isNaN(c)) return 1;
     return c;
   }
+  // Called only after a copy that REALLY reached the clipboard - never on the refused path, where
+  // he has not got the text and nothing may be marked as handed over.
+  function markHostSent(list){
+    var it=(list && list.length) ? list : hostItems();
+    for(var i=0;i<it.length;i++){ var s=String(it[i]||""); if(s) hostSent[s]=1; }
+    saveHostSent();
+  }
+  // For a host page that copies through fbkCopyText itself (the Dashboards page's own Save buttons
+  // do, so the pick is handed over without the pill ever being pressed). Pass the exact lines that
+  // went out, or nothing to mark everything currently pending.
+  W.fbkHostHandedOver = function(list){ markHostSent(list); try{ paint(); }catch(e){} };
+  function forgetHostSent(){ hostSent={}; saveHostSent(); }
   function hostNoun(n){
     var base = (PAGEBTN && PAGEBTN.noun) ? String(val(PAGEBTN.noun) || "answer") : "answer";
     return n + " " + base + (n === 1 ? "" : "s");
   }
-  function mergedTotal(){ return notes.length + hostCount(); }
+  // The ROW is there while anything exists, sent or not - the same rule notes.length gives notes.
+  // The NUMBER on it counts only what is still waiting. Using the count for both would take the
+  // copy control off the screen the moment he handed everything over, leaving no way back if the
+  // paste never happened.
+  function mergedTotal(){ return notes.length + hostItems().length; }
   // CODE FROM ANOTHER FILE NEVER THROWS INTO THIS ONE. __PAGEBTN is supplied by the host dashboard,
   // so calling it is calling a stranger; an exception raised in there used to escape through
   // paintAction() and kill the rest of the feedback repaint (see paintTheCount above). A broken
@@ -4435,7 +4503,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     var n=unsentCount();
     if(MERGED){
       var h=hostCount(), t=n+h;
-      if(!t) return notes.length ? "Copied. Waiting for Claude" : "Copy for Claude";
+      if(!t) return (notes.length || hostItems().length) ? "Copied. Waiting for Claude" : "Copy for Claude";
       var parts=[];
       if(h){ parts.push(hostNoun(h)); }
       if(n){ parts.push(n+" note"+(n===1?"":"s")); }
@@ -4602,7 +4670,10 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
     if(MERGED){
       if(rowFb){ rowFb.hidden = !mergedTotal(); }
       // Clear is offered when there are notes to clear, or the host can clear its own marks.
-      var canHostClear = (typeof PAGEBTN.clear === "function") && hostCount() > 0;
+      // hostItems, not hostCount: a pick he has already handed over is still a pick he may want to
+      // drop, and offering Clear only while the number is above zero would take the control away
+      // at exactly the moment he wants it.
+      var canHostClear = (typeof PAGEBTN.clear === "function") && hostItems().length > 0;
       if(barClr){ barClr.hidden = !(notes.length || canHostClear); barClr.textContent = canHostClear ? "Clear all" : "Clear notes"; }
     } else {
       if(rowFb){ rowFb.hidden = !notes.length; }
@@ -4978,10 +5049,14 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
       if(!blocks.length){ openWhole(); return; }
       barLockUntil = nowMs()+3600;
       var total = list.length + hostCount();
+      var hostGoing = ht ? hostItems() : [];
       copyLadder(blocks.join("\n\n"), function(){
         barTxt.textContent="Copied - now paste it into the chat";
         fallEl.hidden=true;
         if(list.length){ markSent(list); }
+        // The picks that were actually IN this copy, and only those. Read before the copy, because
+        // by the time it resolves he may have ticked something else and that one has not gone.
+        if(hostGoing.length){ markHostSent(hostGoing); }
         if(typeof PAGEBTN.sent === "function"){ try{ PAGEBTN.sent(); }catch(e){} }
         flash("Copied all "+total+". Paste it into the chat with Claude, answers and notes together.");
       }, function(){
@@ -5015,6 +5090,9 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
       if(MERGED){
         notes=[]; save();
         if(typeof PAGEBTN.clear === "function"){ try{ PAGEBTN.clear(); }catch(e){} }
+        // The picks are gone, so what was remembered about them is meaningless. Left behind it
+        // would suppress the count for an identical pick he makes tomorrow.
+        forgetHostSent();
         paint();
         flash("Cleared. Nothing is waiting to be sent.");
         return;
