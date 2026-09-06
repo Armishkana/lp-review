@@ -15,7 +15,7 @@
      failure this vault keeps paying for: a check that goes quiet instead of red. It carries the
      same build time to the character, so every reader of [data-built] (the report builder in this
      page's own JS, and feedback-shared l.504) gets the same string whichever one it finds first. -->
-<meta name="ds-built" data-built="2026-09-06T08:41:28Z">
+<meta name="ds-built" data-built="2026-09-06T08:56:47Z">
 <style>
 /* Fallback palette only. Every one of these names is ALIASED onto a --ds-* token by theme.html,
    which is injected last with !important, so what you actually see on the page is the shared
@@ -370,7 +370,10 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 <div class="wrap">
 <header class="ds-mast" data-ds="mast">
   <h1>Guy's shows - clip review</h1>
-  <p class="ds-say" data-ds="say" id="saysize"><b>11 clips</b> from 1 stream, newest first. Most are one tap, and everything saves itself.</p>
+  <!-- data-say-own, not the three shared templates: theme.html's recount() counts a .hero plus
+       .list > details.trowx and this page has neither, so it would read zero items as "all done".
+       paint() below rewrites this line from the real clip tally instead. -->
+  <p class="ds-say" data-ds="say" id="saysize" data-say-own="paint() rewrites it from the clip tally; the shared row model does not fit a clip page"><b>11 clips</b> from 1 stream, newest first. Most are one tap, and everything saves itself.</p>
 
 <!-- THE AGE LINE. Same self-check as before - the page compares its own build time against the
      clock in HER browser, so it catches a stale copy however it got stale - but it is a dateline
@@ -379,9 +382,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
      #freshreload. "New today: 0" is GREY: zero new clips at seven in the evening is the ordinary
      state of the world, and DESIGN.md forbids painting a thing that has simply not happened yet
      with a warning colour. The delivery alarm lives in the ledger, which is where an alarm belongs. -->
-<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T08:41:28Z">
+<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T08:56:47Z">
   <span class="ds-dot" id="freshdot"></span>
-  <b id="freshtitle">Sun Sep 6, 16:41</b>
+  <b id="freshtitle">Sun Sep 6, 16:53</b>
   <span id="freshage"></span>
   <span class="newtoday none" id="newtoday" data-new="0"
         title="Clips whose covers finished in the last 24 hours">New today: 0</span>
@@ -462,7 +465,7 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
 <div class="streamhdr ds-dh" data-ds="deckhead"><h2>&#128308; Guy Landau Q&amp;A, Aug 8</h2><span class="new">Newest</span><span class="cnt ds-count" data-ds="chip">11 clips</span></div>
 <p class="streamsub" title="Guy Landau Q&amp;A - Netanyahu&#39;s leaked reversal on the ultra-Orthodox draft, whether Israel can actually conscript the Haredim, the drone gap nobody closed, Ben-Gvir&#39;s freelance diplomacy, Eisenkot&#39;s ten-point platform read line by line, how Hamas keeps rearming, the PLO&#39;s poverty economy, the Son of Hamas turning on Pahlavi, Kedar&#39;s eight-state model, Washington softening on Iran&#39;s bomb, and the Board of Peace roadmap Israel cannot accept (Aug 8)">Guy Landau Q&amp;A - Netanyahu&#39;s leaked reversal on the ultra-Orthodox draft, whether Israel can actually...</p>
 <section class="clip" data-seg="2026-08-08-guy::1" data-stream="Guy Landau Q&amp;A - Netanyahu&#39;s leaked reversal on the ultra-Orthodox draft, whether Israel can actually conscript the Haredim, the drone gap nobody closed, Ben-Gvir&#39;s freelance diplomacy, Eisenkot&#39;s ten-point platform read line by line, how Hamas keeps rearming, the PLO&#39;s poverty economy, the Son of Hamas turning on Pahlavi, Kedar&#39;s eight-state model, Washington softening on Iran&#39;s bomb, and the Board of Peace roadmap Israel cannot accept (Aug 8)" id="startclip" data-ds="hero">
-  <div class="chead"><span class="num">Seg 1</span><span class="ctitle">Netanyahu&#39;s Leaked Promise on the Haredi Draft</span><a class="watch" data-ds="door" href="https://share.descript.com/view/Flj3aDfmuNQ" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 1</span><span class="ctitle" data-ds="heroname">Netanyahu&#39;s Leaked Promise on the Haredi Draft</span><a class="watch" data-ds="door" href="https://share.descript.com/view/Flj3aDfmuNQ" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -566,7 +569,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   </div>
 </section>
 <section class="clip" data-seg="2026-08-08-guy::2" data-stream="Guy Landau Q&amp;A - Netanyahu&#39;s leaked reversal on the ultra-Orthodox draft, whether Israel can actually conscript the Haredim, the drone gap nobody closed, Ben-Gvir&#39;s freelance diplomacy, Eisenkot&#39;s ten-point platform read line by line, how Hamas keeps rearming, the PLO&#39;s poverty economy, the Son of Hamas turning on Pahlavi, Kedar&#39;s eight-state model, Washington softening on Iran&#39;s bomb, and the Board of Peace roadmap Israel cannot accept (Aug 8)">
-  <div class="chead"><span class="num">Seg 2</span><span class="ctitle">Inside Netzach Yehuda, the Haredi Combat Unit</span><a class="watch" data-ds="door" href="https://share.descript.com/view/jkSzGvYWDzV" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 2</span><span class="ctitle" data-ds="heroname">Inside Netzach Yehuda, the Haredi Combat Unit</span><a class="watch" data-ds="door" href="https://share.descript.com/view/jkSzGvYWDzV" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -670,7 +673,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   </div>
 </section>
 <section class="clip" data-seg="2026-08-08-guy::3" data-stream="Guy Landau Q&amp;A - Netanyahu&#39;s leaked reversal on the ultra-Orthodox draft, whether Israel can actually conscript the Haredim, the drone gap nobody closed, Ben-Gvir&#39;s freelance diplomacy, Eisenkot&#39;s ten-point platform read line by line, how Hamas keeps rearming, the PLO&#39;s poverty economy, the Son of Hamas turning on Pahlavi, Kedar&#39;s eight-state model, Washington softening on Iran&#39;s bomb, and the Board of Peace roadmap Israel cannot accept (Aug 8)">
-  <div class="chead"><span class="num">Seg 3</span><span class="ctitle">Israel&#39;s Unsolved Drone Problem After October 7</span><a class="watch" data-ds="door" href="https://share.descript.com/view/3AQokkwR9vv" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 3</span><span class="ctitle" data-ds="heroname">Israel&#39;s Unsolved Drone Problem After October 7</span><a class="watch" data-ds="door" href="https://share.descript.com/view/3AQokkwR9vv" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -774,7 +777,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   </div>
 </section>
 <section class="clip" data-seg="2026-08-08-guy::4" data-stream="Guy Landau Q&amp;A - Netanyahu&#39;s leaked reversal on the ultra-Orthodox draft, whether Israel can actually conscript the Haredim, the drone gap nobody closed, Ben-Gvir&#39;s freelance diplomacy, Eisenkot&#39;s ten-point platform read line by line, how Hamas keeps rearming, the PLO&#39;s poverty economy, the Son of Hamas turning on Pahlavi, Kedar&#39;s eight-state model, Washington softening on Iran&#39;s bomb, and the Board of Peace roadmap Israel cannot accept (Aug 8)">
-  <div class="chead"><span class="num">Seg 4</span><span class="ctitle">Why Ben-Gvir Is Not Israel&#39;s Donald Trump</span><a class="watch" data-ds="door" href="https://share.descript.com/view/fNHJ9xEnTLo" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 4</span><span class="ctitle" data-ds="heroname">Why Ben-Gvir Is Not Israel&#39;s Donald Trump</span><a class="watch" data-ds="door" href="https://share.descript.com/view/fNHJ9xEnTLo" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -878,7 +881,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   </div>
 </section>
 <section class="clip" data-seg="2026-08-08-guy::5" data-stream="Guy Landau Q&amp;A - Netanyahu&#39;s leaked reversal on the ultra-Orthodox draft, whether Israel can actually conscript the Haredim, the drone gap nobody closed, Ben-Gvir&#39;s freelance diplomacy, Eisenkot&#39;s ten-point platform read line by line, how Hamas keeps rearming, the PLO&#39;s poverty economy, the Son of Hamas turning on Pahlavi, Kedar&#39;s eight-state model, Washington softening on Iran&#39;s bomb, and the Board of Peace roadmap Israel cannot accept (Aug 8)">
-  <div class="chead"><span class="num">Seg 5</span><span class="ctitle">Eisenkot&#39;s Ten-Point Platform, Read Line by Line</span><a class="watch" data-ds="door" href="https://share.descript.com/view/IqqWyaobzQF" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 5</span><span class="ctitle" data-ds="heroname">Eisenkot&#39;s Ten-Point Platform, Read Line by Line</span><a class="watch" data-ds="door" href="https://share.descript.com/view/IqqWyaobzQF" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -982,7 +985,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   </div>
 </section>
 <section class="clip" data-seg="2026-08-08-guy::6" data-stream="Guy Landau Q&amp;A - Netanyahu&#39;s leaked reversal on the ultra-Orthodox draft, whether Israel can actually conscript the Haredim, the drone gap nobody closed, Ben-Gvir&#39;s freelance diplomacy, Eisenkot&#39;s ten-point platform read line by line, how Hamas keeps rearming, the PLO&#39;s poverty economy, the Son of Hamas turning on Pahlavi, Kedar&#39;s eight-state model, Washington softening on Iran&#39;s bomb, and the Board of Peace roadmap Israel cannot accept (Aug 8)">
-  <div class="chead"><span class="num">Seg 6</span><span class="ctitle">How Weapons Still Reach Hamas Through Aid</span><a class="watch" data-ds="door" href="https://share.descript.com/view/n9twhVcA29i" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 6</span><span class="ctitle" data-ds="heroname">How Weapons Still Reach Hamas Through Aid</span><a class="watch" data-ds="door" href="https://share.descript.com/view/n9twhVcA29i" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -1086,7 +1089,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   </div>
 </section>
 <section class="clip" data-seg="2026-08-08-guy::7" data-stream="Guy Landau Q&amp;A - Netanyahu&#39;s leaked reversal on the ultra-Orthodox draft, whether Israel can actually conscript the Haredim, the drone gap nobody closed, Ben-Gvir&#39;s freelance diplomacy, Eisenkot&#39;s ten-point platform read line by line, how Hamas keeps rearming, the PLO&#39;s poverty economy, the Son of Hamas turning on Pahlavi, Kedar&#39;s eight-state model, Washington softening on Iran&#39;s bomb, and the Board of Peace roadmap Israel cannot accept (Aug 8)">
-  <div class="chead"><span class="num">Seg 7</span><span class="ctitle">How the PLO Profits From Palestinian Poverty</span><a class="watch" data-ds="door" href="https://share.descript.com/view/7RYRWYbAi8n" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 7</span><span class="ctitle" data-ds="heroname">How the PLO Profits From Palestinian Poverty</span><a class="watch" data-ds="door" href="https://share.descript.com/view/7RYRWYbAi8n" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -1190,7 +1193,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   </div>
 </section>
 <section class="clip" data-seg="2026-08-08-guy::8" data-stream="Guy Landau Q&amp;A - Netanyahu&#39;s leaked reversal on the ultra-Orthodox draft, whether Israel can actually conscript the Haredim, the drone gap nobody closed, Ben-Gvir&#39;s freelance diplomacy, Eisenkot&#39;s ten-point platform read line by line, how Hamas keeps rearming, the PLO&#39;s poverty economy, the Son of Hamas turning on Pahlavi, Kedar&#39;s eight-state model, Washington softening on Iran&#39;s bomb, and the Board of Peace roadmap Israel cannot accept (Aug 8)">
-  <div class="chead"><span class="num">Seg 8</span><span class="ctitle">From Hamas Royalty to Shin Bet Informant</span><a class="watch" data-ds="door" href="https://share.descript.com/view/zf8okqCjJEX" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 8</span><span class="ctitle" data-ds="heroname">From Hamas Royalty to Shin Bet Informant</span><a class="watch" data-ds="door" href="https://share.descript.com/view/zf8okqCjJEX" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -1294,7 +1297,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   </div>
 </section>
 <section class="clip" data-seg="2026-08-08-guy::9" data-stream="Guy Landau Q&amp;A - Netanyahu&#39;s leaked reversal on the ultra-Orthodox draft, whether Israel can actually conscript the Haredim, the drone gap nobody closed, Ben-Gvir&#39;s freelance diplomacy, Eisenkot&#39;s ten-point platform read line by line, how Hamas keeps rearming, the PLO&#39;s poverty economy, the Son of Hamas turning on Pahlavi, Kedar&#39;s eight-state model, Washington softening on Iran&#39;s bomb, and the Board of Peace roadmap Israel cannot accept (Aug 8)">
-  <div class="chead"><span class="num">Seg 9</span><span class="ctitle">Mordechai Kedar&#39;s Emirates Model for Palestine</span><a class="watch" data-ds="door" href="https://share.descript.com/view/VOi2vJmMIBs" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 9</span><span class="ctitle" data-ds="heroname">Mordechai Kedar&#39;s Emirates Model for Palestine</span><a class="watch" data-ds="door" href="https://share.descript.com/view/VOi2vJmMIBs" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -1374,7 +1377,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   </div>
 </section>
 <section class="clip" data-seg="2026-08-08-guy::10" data-stream="Guy Landau Q&amp;A - Netanyahu&#39;s leaked reversal on the ultra-Orthodox draft, whether Israel can actually conscript the Haredim, the drone gap nobody closed, Ben-Gvir&#39;s freelance diplomacy, Eisenkot&#39;s ten-point platform read line by line, how Hamas keeps rearming, the PLO&#39;s poverty economy, the Son of Hamas turning on Pahlavi, Kedar&#39;s eight-state model, Washington softening on Iran&#39;s bomb, and the Board of Peace roadmap Israel cannot accept (Aug 8)">
-  <div class="chead"><span class="num">Seg 10</span><span class="ctitle">Trump and Rubio Just Softened on Iran&#39;s Bomb</span><a class="watch" data-ds="door" href="https://share.descript.com/view/ujUjD5FM1P7" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 10</span><span class="ctitle" data-ds="heroname">Trump and Rubio Just Softened on Iran&#39;s Bomb</span><a class="watch" data-ds="door" href="https://share.descript.com/view/ujUjD5FM1P7" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -1478,7 +1481,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
   </div>
 </section>
 <section class="clip" data-seg="2026-08-08-guy::11" data-stream="Guy Landau Q&amp;A - Netanyahu&#39;s leaked reversal on the ultra-Orthodox draft, whether Israel can actually conscript the Haredim, the drone gap nobody closed, Ben-Gvir&#39;s freelance diplomacy, Eisenkot&#39;s ten-point platform read line by line, how Hamas keeps rearming, the PLO&#39;s poverty economy, the Son of Hamas turning on Pahlavi, Kedar&#39;s eight-state model, Washington softening on Iran&#39;s bomb, and the Board of Peace roadmap Israel cannot accept (Aug 8)">
-  <div class="chead"><span class="num">Seg 11</span><span class="ctitle">Israel&#39;s Yellow Line Has Moved Past Salahuddin Road</span><a class="watch" data-ds="door" href="https://share.descript.com/view/QMY8c3bF6wB" target="_blank" rel="noopener">Watch</a></div>
+  <div class="chead"><span class="num">Seg 11</span><span class="ctitle" data-ds="heroname">Israel&#39;s Yellow Line Has Moved Past Salahuddin Road</span><a class="watch" data-ds="door" href="https://share.descript.com/view/QMY8c3bF6wB" target="_blank" rel="noopener">Watch</a></div>
   <div class="viddec">
     <div class="decbtns alldoor"><button class="allbtn" type="button">&#9989; Use everything on this clip</button></div>
     <div class="dec">
@@ -3097,6 +3100,18 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
       root.style.paddingLeft=cs.paddingLeft; root.style.paddingRight=cs.paddingRight;
     }
     apply();
+    // AND AGAIN ONCE THE PAGE HAS FINISHED PARSING. This block runs where it sits, which on every
+    // injected page is ABOVE the shared design system: inject-theme.ps1 puts <style id="ds-ui"> last
+    // in the document so it wins every tie, and #ds-ui is what narrows .wrap to --ds-col. So the
+    // measurement above reads the column's OLD width and freezes it inline, where it outranks every
+    // stylesheet - the Money page's block was pinned at 1248px beside a 704px column, and ten of the
+    // fourteen pages were out by up to 608px at 1920 (align-check.html, measured 2026-09-06).
+    // A width copied once is a width that is wrong as soon as anything else loads; re-take it when
+    // the document is parsed and again on load, which is the same reason the resize listener exists.
+    try{
+      if(d.readyState==="loading"){ d.addEventListener("DOMContentLoaded", apply); }
+      W.addEventListener("load", apply);
+    }catch(e){}
     try{ W.addEventListener("resize", apply); }catch(e){}
   })();
   var TITLE_SEL="h2,h3,h4,.sith,.calh,.btitle,legend";
@@ -5455,6 +5470,14 @@ html{ scrollbar-width:thin; scrollbar-color:var(--ds-line) var(--ds-bg); }
 body{ font:var(--ds-fs-body)/var(--ds-lh) var(--ds-font); color:var(--ds-ink); background:var(--ds-bg); caret-color:var(--ds-blue); }
 :focus-visible{ outline:none; box-shadow:var(--ds-focus); border-radius:var(--ds-r-sm) }
 .wrap,main.wrap{ max-width:var(--ds-col); margin:0 auto; }
+/* THE FEEDBACK BLOCK IS THE SAME COLUMN. It sits OUTSIDE .wrap on ten of the fourteen pages, and each
+   of those pages carried its own .fbk{max-width:<its own old column>} rule - 1248 on Money, 1020 on the
+   clip pages, 736 on Arm Us. Narrowing .wrap here without narrowing that left the block hanging up to
+   608px wider than the text above it at 1920 (align-check.html, 22 of 26 combinations, measured
+   2026-09-06). One rule beats eleven page edits, and it can only ever pull the block IN: max-width
+   never widens anything. Padding is left to each page so the block's text edge keeps matching its own
+   column's, which is what align-check compares. */
+.fbk{ max-width:var(--ds-col); margin-left:auto; margin-right:auto; }
 h1,h2,h3,h4{ font-family:var(--ds-font); margin:0; }
 h1{ font-size:var(--ds-fs-h1); line-height:var(--ds-lh-tight); font-weight:700 }
 h2{ font-size:var(--ds-fs-h2); line-height:var(--ds-lh-snug); font-weight:700 }

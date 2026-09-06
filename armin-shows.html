@@ -15,7 +15,7 @@
      failure this vault keeps paying for: a check that goes quiet instead of red. It carries the
      same build time to the character, so every reader of [data-built] (the report builder in this
      page's own JS, and feedback-shared l.504) gets the same string whichever one it finds first. -->
-<meta name="ds-built" data-built="2026-09-06T08:43:44Z">
+<meta name="ds-built" data-built="2026-09-06T09:03:56Z">
 <style>
 /* Fallback palette only. Every one of these names is ALIASED onto a --ds-* token by theme.html,
    which is injected last with !important, so what you actually see on the page is the shared
@@ -382,9 +382,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
      #freshreload. "New today: 0" is GREY: zero new clips at seven in the evening is the ordinary
      state of the world, and DESIGN.md forbids painting a thing that has simply not happened yet
      with a warning colour. The delivery alarm lives in the ledger, which is where an alarm belongs. -->
-<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T08:43:44Z">
+<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-06T09:03:56Z">
   <span class="ds-dot" id="freshdot"></span>
-  <b id="freshtitle">Sun Sep 6, 16:43</b>
+  <b id="freshtitle">Sun Sep 6, 17:03</b>
   <span id="freshage"></span>
   <span class="newtoday none" id="newtoday" data-new="0"
         title="Clips whose covers finished in the last 24 hours">New today: 0</span>
@@ -2885,6 +2885,18 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
       root.style.paddingLeft=cs.paddingLeft; root.style.paddingRight=cs.paddingRight;
     }
     apply();
+    // AND AGAIN ONCE THE PAGE HAS FINISHED PARSING. This block runs where it sits, which on every
+    // injected page is ABOVE the shared design system: inject-theme.ps1 puts <style id="ds-ui"> last
+    // in the document so it wins every tie, and #ds-ui is what narrows .wrap to --ds-col. So the
+    // measurement above reads the column's OLD width and freezes it inline, where it outranks every
+    // stylesheet - the Money page's block was pinned at 1248px beside a 704px column, and ten of the
+    // fourteen pages were out by up to 608px at 1920 (align-check.html, measured 2026-09-06).
+    // A width copied once is a width that is wrong as soon as anything else loads; re-take it when
+    // the document is parsed and again on load, which is the same reason the resize listener exists.
+    try{
+      if(d.readyState==="loading"){ d.addEventListener("DOMContentLoaded", apply); }
+      W.addEventListener("load", apply);
+    }catch(e){}
     try{ W.addEventListener("resize", apply); }catch(e){}
   })();
   var TITLE_SEL="h2,h3,h4,.sith,.calh,.btitle,legend";
@@ -5243,6 +5255,14 @@ html{ scrollbar-width:thin; scrollbar-color:var(--ds-line) var(--ds-bg); }
 body{ font:var(--ds-fs-body)/var(--ds-lh) var(--ds-font); color:var(--ds-ink); background:var(--ds-bg); caret-color:var(--ds-blue); }
 :focus-visible{ outline:none; box-shadow:var(--ds-focus); border-radius:var(--ds-r-sm) }
 .wrap,main.wrap{ max-width:var(--ds-col); margin:0 auto; }
+/* THE FEEDBACK BLOCK IS THE SAME COLUMN. It sits OUTSIDE .wrap on ten of the fourteen pages, and each
+   of those pages carried its own .fbk{max-width:<its own old column>} rule - 1248 on Money, 1020 on the
+   clip pages, 736 on Arm Us. Narrowing .wrap here without narrowing that left the block hanging up to
+   608px wider than the text above it at 1920 (align-check.html, 22 of 26 combinations, measured
+   2026-09-06). One rule beats eleven page edits, and it can only ever pull the block IN: max-width
+   never widens anything. Padding is left to each page so the block's text edge keeps matching its own
+   column's, which is what align-check compares. */
+.fbk{ max-width:var(--ds-col); margin-left:auto; margin-right:auto; }
 h1,h2,h3,h4{ font-family:var(--ds-font); margin:0; }
 h1{ font-size:var(--ds-fs-h1); line-height:var(--ds-lh-tight); font-weight:700 }
 h2{ font-size:var(--ds-fs-h2); line-height:var(--ds-lh-snug); font-weight:700 }

@@ -40,6 +40,9 @@
   /* The masthead: what this page is, how big the job is, and how old the page is. */
   header.ds-mast,header.ds-mast>*{min-width:0}
   header.ds-mast .fbktop{max-width:100%}
+  .how{border:1px solid var(--line);border-radius:12px;padding:12px;margin:16px 0 0}
+  .how .ds-dh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .how h2{margin:0 0 8px;font-size:18px;line-height:1.3}
   .lede{color:var(--muted);font-size:13px;margin:0 0 12px}
   .lede b{color:var(--fg)}
   .ledemore>summary{cursor:pointer;list-style:none;min-height:40px;display:flex;align-items:center;gap:8px;
@@ -139,25 +142,32 @@
 <div class="wrap">
 <header class="ds-mast" data-ds="mast">
   <h1>Pick the clips you want uploaded</h1>
-  <p class="ds-say" data-ds="say" id="saysize"><b>11 topics</b> from your last 1 stream, newest first. Tap <b>Upload</b> or <b>Skip</b> on each one.</p>
-  <p class="ds-age stamp" data-ds="age" data-built="2026-09-06T08:41:29Z"><span class="ds-dot"></span><b>Sep 6</b></p>
+  <p class="ds-say" data-ds="say" id="saysize" data-say-own="the page script rewrites it from the pick tally; the shared row model does not fit a picks page"><b>11 topics</b> from your last 1 stream, newest first. Tap <b>Upload</b> or <b>Skip</b> on each one.</p>
+  <p class="ds-age stamp" data-ds="age" data-built="2026-09-06T08:59:27Z"><span class="ds-dot"></span><b>Sep 6</b></p>
 </header>
+  <!-- WHY THE TITLE IS AN h2 AND THE FOLD SITS INSIDE IT. As a top-level <details> this block was a
+       segment titled by its own <summary>, which the section detector ranks deeper than the <h2> on
+       each stream below - so the jump menu listed a page heading and a fold side by side and
+       toc-test.html called it "menu mixes depths: ranks 2,5" at both widths. A titled block owns
+       everything inside it (feedback rule c), so the fold keeps its words and stops being a second,
+       shallower segment of its own. Same shape the three clip pages already use for "What to do".
+       The emoji is not decoration: every segment title opens with one, unique on the page. -->
+  <section class="how ds-deck" data-ds="deck">
+  <div class="ds-dh" data-ds="deckhead"><h2>&#8505;&#65039; How this page works</h2></div>
   <p class="lede">Nothing goes out that you have not picked.</p>
   <details class="ledemore">
-    <!-- The emoji is not decoration: a fold at the top level of the page is a named segment to the
-         feedback detector, and every segment title must open with an emoji unique on the page
-         (FEEDBACK.md rule 1). The coloured circles below belong to the streams. -->
-    <summary>&#8505;&#65039; How this page works</summary>
+    <summary>The rest of it</summary>
     <p>If a title does not match what you actually said, tap <b>Title is wrong</b> and say why. You do not have to rewrite it: a few words about what is wrong with it is plenty.</p>
     <p><b>Some of the older ones may already be on your channel.</b> Just skip those. There is no way for this page to tell yet.</p>
     <p>Each stream has its own coloured dot, and the feedback button under it carries the same dot, so you can always tell which stream a button belongs to.</p>
   </details>
+  </section>
   <section class="stream" data-ds="deck" data-stream="2026-08-08-guy">
     <h2 data-ds="deckhead">&#128308; August 8 stream</h2>
     <p class="streamsub">11 topics</p>
     <article class="card" data-key="2026-08-08-guy|1" data-len="3:41" data-ds="hero">
       <div class="segno">Topic 1</div>
-      <div class="title">Netanyahu&#39;s Leaked Promise on the Haredi Draft</div>
+      <div class="title" data-ds="heroname">Netanyahu&#39;s Leaked Promise on the Haredi Draft</div>
       <details class="descfold">
         <summary>What this topic is</summary>
         <p class="desc">Netanyahu passed two laws for the ultra-Orthodox right before the Knesset disbanded, one postponing arrests for draft-dodging until after the election. Now he has deliberately leaked a closed-door statement saying there will be no such law next time and anyone not studying Torah will enlist or go to jail. Guy explains why almost everyone reads it as an empty promise, and the one number that would make it real.</p>
@@ -168,7 +178,7 @@
         <a class="watch" href="https://share.descript.com/view/Flj3aDfmuNQ" target="_blank" rel="noopener">Watch this clip</a>
       </div>
       <div class="picks">
-        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn yes" data-ds="door" data-pick="yes" aria-pressed="false">Upload</button>
         <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
       </div>
       <div class="flagrow">
@@ -178,7 +188,7 @@
     </article>
     <article class="card" data-key="2026-08-08-guy|2" data-len="5:51">
       <div class="segno">Topic 2</div>
-      <div class="title">Inside Netzach Yehuda, the Haredi Combat Unit</div>
+      <div class="title" data-ds="heroname">Inside Netzach Yehuda, the Haredi Combat Unit</div>
       <details class="descfold">
         <summary>What this topic is</summary>
         <p class="desc">Netzach Yehuda is a combat unit built specifically around ultra-Orthodox life, and by most measures it worked. Guy and a Haredi caller work through why the wider draft question is so much harder: an enclave with its own education and its own systems, growing exponentially, and a state that has to integrate it slowly enough to be humane and fast enough to avoid collapse. Plus the new democratic Haredi party that could change who speaks for them.</p>
@@ -189,7 +199,7 @@
         <a class="watch" href="https://share.descript.com/view/jkSzGvYWDzV" target="_blank" rel="noopener">Watch this clip</a>
       </div>
       <div class="picks">
-        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn yes" data-ds="door" data-pick="yes" aria-pressed="false">Upload</button>
         <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
       </div>
       <div class="flagrow">
@@ -199,7 +209,7 @@
     </article>
     <article class="card" data-key="2026-08-08-guy|3" data-len="1:13">
       <div class="segno">Topic 3</div>
-      <div class="title">Israel&#39;s Unsolved Drone Problem After October 7</div>
+      <div class="title" data-ds="heroname">Israel&#39;s Unsolved Drone Problem After October 7</div>
       <details class="descfold">
         <summary>What this topic is</summary>
         <p class="desc">People warned about the drone threat for years and the IDF did not have an answer. Guy calls it a holdover from the pre-October 7 culture of complacency, and explains what is actually changing now: senior positions going to commanders with what Hebrew calls a knife between the teeth, and Zini, the new head of the Shin Bet, naming drones as a priority.</p>
@@ -210,7 +220,7 @@
         <a class="watch" href="https://share.descript.com/view/3AQokkwR9vv" target="_blank" rel="noopener">Watch this clip</a>
       </div>
       <div class="picks">
-        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn yes" data-ds="door" data-pick="yes" aria-pressed="false">Upload</button>
         <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
       </div>
       <div class="flagrow">
@@ -220,7 +230,7 @@
     </article>
     <article class="card" data-key="2026-08-08-guy|4" data-len="2:45">
       <div class="segno">Topic 4</div>
-      <div class="title">Why Ben-Gvir Is Not Israel&#39;s Donald Trump</div>
+      <div class="title" data-ds="heroname">Why Ben-Gvir Is Not Israel&#39;s Donald Trump</div>
       <details class="descfold">
         <summary>What this topic is</summary>
         <p class="desc">Guy says he probably agrees with what Ben-Gvir wrote, and that it is still the wrong thing for a security minister to publish without telling the foreign office. The comparison to Trump breaks down for a specific reason: Trump gave a voice to people who had none, while Israel already has several parties carrying Ben-Gvir&#39;s positions. Remove him and the votes redistribute, the voice survives, and only the damage abroad disappears.</p>
@@ -231,7 +241,7 @@
         <a class="watch" href="https://share.descript.com/view/fNHJ9xEnTLo" target="_blank" rel="noopener">Watch this clip</a>
       </div>
       <div class="picks">
-        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn yes" data-ds="door" data-pick="yes" aria-pressed="false">Upload</button>
         <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
       </div>
       <div class="flagrow">
@@ -241,7 +251,7 @@
     </article>
     <article class="card" data-key="2026-08-08-guy|5" data-len="12:06">
       <div class="segno">Topic 5</div>
-      <div class="title">Eisenkot&#39;s Ten-Point Platform, Read Line by Line</div>
+      <div class="title" data-ds="heroname">Eisenkot&#39;s Ten-Point Platform, Read Line by Line</div>
       <details class="descfold">
         <summary>What this topic is</summary>
         <p class="desc">Eisenkot is leading the prediction markets to be Israel&#39;s next prime minister and almost nobody can say what his foreign policy is. Guy reads all ten points of the published platform out loud and stops at each one to ask how. Mending the fractures, a new security doctrine, national service for all, a stronger economy: mostly things everyone says. He finds exactly one concrete policy worth supporting, and one interview line about October 7 that worries him.</p>
@@ -252,7 +262,7 @@
         <a class="watch" href="https://share.descript.com/view/IqqWyaobzQF" target="_blank" rel="noopener">Watch this clip</a>
       </div>
       <div class="picks">
-        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn yes" data-ds="door" data-pick="yes" aria-pressed="false">Upload</button>
         <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
       </div>
       <div class="flagrow">
@@ -262,7 +272,7 @@
     </article>
     <article class="card" data-key="2026-08-08-guy|6" data-len="0:35">
       <div class="segno">Topic 6</div>
-      <div class="title">How Weapons Still Reach Hamas Through Aid</div>
+      <div class="title" data-ds="heroname">How Weapons Still Reach Hamas Through Aid</div>
       <details class="descfold">
         <summary>What this topic is</summary>
         <p class="desc">If the Egyptian border is under IDF control and nothing ships into Gaza, how is Hamas rearming? Guy&#39;s answer: the aid shipments themselves, drones that carry weapons, and drones that are the weapon. Plus a route almost nobody talks about, radical Bedouin groups in the southern Negev flying them in.</p>
@@ -273,7 +283,7 @@
         <a class="watch" href="https://share.descript.com/view/n9twhVcA29i" target="_blank" rel="noopener">Watch this clip</a>
       </div>
       <div class="picks">
-        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn yes" data-ds="door" data-pick="yes" aria-pressed="false">Upload</button>
         <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
       </div>
       <div class="flagrow">
@@ -283,7 +293,7 @@
     </article>
     <article class="card" data-key="2026-08-08-guy|7" data-len="1:11">
       <div class="segno">Topic 7</div>
-      <div class="title">How the PLO Profits From Palestinian Poverty</div>
+      <div class="title" data-ds="heroname">How the PLO Profits From Palestinian Poverty</div>
       <details class="descfold">
         <summary>What this topic is</summary>
         <p class="desc">A Hebron Arab interviewed by Joseph Cohen argues that dismantling Palestinian identity is a precondition for peace, and Guy thinks the argument is stronger than it sounds. The PLO is funded on the visible destitution of the people it claims to represent, which creates a trap with no exit: lift them out of poverty and the reason to send money disappears.</p>
@@ -294,7 +304,7 @@
         <a class="watch" href="https://share.descript.com/view/7RYRWYbAi8n" target="_blank" rel="noopener">Watch this clip</a>
       </div>
       <div class="picks">
-        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn yes" data-ds="door" data-pick="yes" aria-pressed="false">Upload</button>
         <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
       </div>
       <div class="flagrow">
@@ -304,7 +314,7 @@
     </article>
     <article class="card" data-key="2026-08-08-guy|8" data-len="1:17">
       <div class="segno">Topic 8</div>
-      <div class="title">From Hamas Royalty to Shin Bet Informant</div>
+      <div class="title" data-ds="heroname">From Hamas Royalty to Shin Bet Informant</div>
       <details class="descfold">
         <summary>What this topic is</summary>
         <p class="desc">Mosab Hassan Yousef is the son of a Hamas founder who went into an Israeli prison as a member, came out an informant for the Shin Bet, renounced Islam, and has been hunted ever since. Guy respects him and cannot understand his recent turn against the Shah, against Reza Pahlavi and against the war, and offers the explanation he finds most likely.</p>
@@ -315,7 +325,7 @@
         <a class="watch" href="https://share.descript.com/view/zf8okqCjJEX" target="_blank" rel="noopener">Watch this clip</a>
       </div>
       <div class="picks">
-        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn yes" data-ds="door" data-pick="yes" aria-pressed="false">Upload</button>
         <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
       </div>
       <div class="flagrow">
@@ -325,7 +335,7 @@
     </article>
     <article class="card" data-key="2026-08-08-guy|9" data-len="2:18">
       <div class="segno">Topic 9</div>
-      <div class="title">Mordechai Kedar&#39;s Emirates Model for Palestine</div>
+      <div class="title" data-ds="heroname">Mordechai Kedar&#39;s Emirates Model for Palestine</div>
       <details class="descfold">
         <summary>What this topic is</summary>
         <p class="desc">Mordechai Kedar&#39;s argument starts from something measurable: Palestinians marry inside their own clans, so by the usual definition they are not one people. His alternative is the UAE structure, seven or eight self-governing city states instead of one authority. Guy points out that Hebron already tried it, publishing a Wall Street Journal piece asking to secede and join the Abraham Accords, then backed off.</p>
@@ -336,7 +346,7 @@
         <a class="watch" href="https://share.descript.com/view/VOi2vJmMIBs" target="_blank" rel="noopener">Watch this clip</a>
       </div>
       <div class="picks">
-        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn yes" data-ds="door" data-pick="yes" aria-pressed="false">Upload</button>
         <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
       </div>
       <div class="flagrow">
@@ -346,7 +356,7 @@
     </article>
     <article class="card" data-key="2026-08-08-guy|10" data-len="0:45">
       <div class="segno">Topic 10</div>
-      <div class="title">Trump and Rubio Just Softened on Iran&#39;s Bomb</div>
+      <div class="title" data-ds="heroname">Trump and Rubio Just Softened on Iran&#39;s Bomb</div>
       <details class="descfold">
         <summary>What this topic is</summary>
         <p class="desc">Guy tracks a change of one word. Trump moved from saying Iran can never have a nuclear weapon to saying Iran cannot have one, Karoline Leavitt qualified it with as long as Trump has something to say about it, and Rubio added certainly not while this president is in power. Guy reads that as Washington preparing to lower its demands rather than drop them, and still thinks the plan is to get past the midterms first.</p>
@@ -357,7 +367,7 @@
         <a class="watch" href="https://share.descript.com/view/ujUjD5FM1P7" target="_blank" rel="noopener">Watch this clip</a>
       </div>
       <div class="picks">
-        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn yes" data-ds="door" data-pick="yes" aria-pressed="false">Upload</button>
         <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
       </div>
       <div class="flagrow">
@@ -367,7 +377,7 @@
     </article>
     <article class="card" data-key="2026-08-08-guy|11" data-len="5:05">
       <div class="segno">Topic 11</div>
-      <div class="title">Israel&#39;s Yellow Line Has Moved Past Salahuddin Road</div>
+      <div class="title" data-ds="heroname">Israel&#39;s Yellow Line Has Moved Past Salahuddin Road</div>
       <details class="descfold">
         <summary>What this topic is</summary>
         <p class="desc">The yellow marker blocks along Gaza&#39;s main road have moved, and in places they are now past Salahuddin. Guy explains what that does to Hamas, why the disarmament deal on the table would turn Gaza into Lebanon with a puppet government, and reads out the statement from Smotrich and Strook demanding Netanyahu halt the international force. Then, live on air, the head of the Peace Council tells Netanyahu to stop the strikes.</p>
@@ -378,7 +388,7 @@
         <a class="watch" href="https://share.descript.com/view/QMY8c3bF6wB" target="_blank" rel="noopener">Watch this clip</a>
       </div>
       <div class="picks">
-        <button type="button" class="btn yes" data-pick="yes" aria-pressed="false">Upload</button>
+        <button type="button" class="btn yes" data-ds="door" data-pick="yes" aria-pressed="false">Upload</button>
         <button type="button" class="btn no" data-pick="no" aria-pressed="false">Skip</button>
       </div>
       <div class="flagrow">
@@ -396,7 +406,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">11 topics across 1 streams. Updated 2026-09-06T08:41:29Z.</p>
+  <p class="built">11 topics across 1 streams. Updated 2026-09-06T08:59:26Z.</p>
 </div>
 
 <div class="bar">
@@ -1348,6 +1358,18 @@
       root.style.paddingLeft=cs.paddingLeft; root.style.paddingRight=cs.paddingRight;
     }
     apply();
+    // AND AGAIN ONCE THE PAGE HAS FINISHED PARSING. This block runs where it sits, which on every
+    // injected page is ABOVE the shared design system: inject-theme.ps1 puts <style id="ds-ui"> last
+    // in the document so it wins every tie, and #ds-ui is what narrows .wrap to --ds-col. So the
+    // measurement above reads the column's OLD width and freezes it inline, where it outranks every
+    // stylesheet - the Money page's block was pinned at 1248px beside a 704px column, and ten of the
+    // fourteen pages were out by up to 608px at 1920 (align-check.html, measured 2026-09-06).
+    // A width copied once is a width that is wrong as soon as anything else loads; re-take it when
+    // the document is parsed and again on load, which is the same reason the resize listener exists.
+    try{
+      if(d.readyState==="loading"){ d.addEventListener("DOMContentLoaded", apply); }
+      W.addEventListener("load", apply);
+    }catch(e){}
     try{ W.addEventListener("resize", apply); }catch(e){}
   })();
   var TITLE_SEL="h2,h3,h4,.sith,.calh,.btitle,legend";
@@ -3706,6 +3728,14 @@ html{ scrollbar-width:thin; scrollbar-color:var(--ds-line) var(--ds-bg); }
 body{ font:var(--ds-fs-body)/var(--ds-lh) var(--ds-font); color:var(--ds-ink); background:var(--ds-bg); caret-color:var(--ds-blue); }
 :focus-visible{ outline:none; box-shadow:var(--ds-focus); border-radius:var(--ds-r-sm) }
 .wrap,main.wrap{ max-width:var(--ds-col); margin:0 auto; }
+/* THE FEEDBACK BLOCK IS THE SAME COLUMN. It sits OUTSIDE .wrap on ten of the fourteen pages, and each
+   of those pages carried its own .fbk{max-width:<its own old column>} rule - 1248 on Money, 1020 on the
+   clip pages, 736 on Arm Us. Narrowing .wrap here without narrowing that left the block hanging up to
+   608px wider than the text above it at 1920 (align-check.html, 22 of 26 combinations, measured
+   2026-09-06). One rule beats eleven page edits, and it can only ever pull the block IN: max-width
+   never widens anything. Padding is left to each page so the block's text edge keeps matching its own
+   column's, which is what align-check compares. */
+.fbk{ max-width:var(--ds-col); margin-left:auto; margin-right:auto; }
 h1,h2,h3,h4{ font-family:var(--ds-font); margin:0; }
 h1{ font-size:var(--ds-fs-h1); line-height:var(--ds-lh-tight); font-weight:700 }
 h2{ font-size:var(--ds-fs-h2); line-height:var(--ds-lh-snug); font-weight:700 }
