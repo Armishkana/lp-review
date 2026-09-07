@@ -146,7 +146,7 @@
 <header class="ds-mast" data-ds="mast">
   <h1>Pick the clips you want uploaded</h1>
   <p class="ds-say" data-ds="say" id="saysize" data-say-own="the page script rewrites it from the pick tally; the shared row model does not fit a picks page"><b>11 topics</b> from your last 1 stream, newest first. Tap <b>Upload</b> or <b>Skip</b> on each one.</p>
-  <p class="ds-age stamp" data-ds="age" data-built="2026-09-07T02:29:51Z"><span class="ds-dot"></span><b>Sep 7</b></p>
+  <p class="ds-age stamp" data-ds="age" data-built="2026-09-07T02:53:04Z"><span class="ds-dot"></span><b>Sep 7</b></p>
 </header>
   <!-- WHY THE TITLE IS AN h2 AND THE FOLD SITS INSIDE IT. As a top-level <details> this block was a
        segment titled by its own <summary>, which the section detector ranks deeper than the <h2> on
@@ -409,7 +409,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">11 topics across 1 streams. Updated 2026-09-07T02:29:50Z.</p>
+  <p class="built">11 topics across 1 streams. Updated 2026-09-07T02:53:04Z.</p>
 </div>
 
 <div class="bar">
@@ -3663,6 +3663,7 @@
         AMBER  waiting on someone, needs attention, not yet a problem.
         RED    urgent or very important ONLY. Overdue, broken, rejected, money going out.
      ================================================================================================ -->
+<!-- FONTS-START --><!-- FONTS-END -->
 <style id="ds-theme">
 /* ---- 1. THE TOKENS ---------------------------------------------------------------------------
    Declared in all four contexts the pages between them use, because they do not agree on how dark
@@ -3671,7 +3672,9 @@
    TOGGLE work on the pages that only ever listened to the OS. */
 /* TOKENS-START - written by apply-skin.ps1 from skins.json (skin chosen in ui-settings.json). Edit the
    skin there, never these lines by hand: the next apply overwrites them. */
-/* skin: paper - Paper */
+/* skin: paper - Paper. Dark blues and greens are chosen so WHITE still reads on them,
+   because the pages hardcode color:#fff on filled buttons and chips - a prettier pastel would quietly make
+   every primary button unreadable in dark mode, which a hue audit never catches. */
 :root{
   --ds-bg:#f7f8fa; --ds-card:#ffffff; --ds-sunk:#eef1f5;
   --ds-ink:#171a1f; --ds-dim:#555c66; --ds-faint:#848b95; --ds-line:#dfe3e9;
@@ -4119,6 +4122,9 @@ details.ds-more > .body,details.ds-more > div,details.heromore > .body{ padding:
 .ds-link{ display:inline-flex; align-items:center; min-height:var(--ds-tap); color:var(--ds-blue); text-decoration:none; font-weight:600 }
 .ds-link:hover{ text-decoration:underline }
 .ds-scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch }
+/* WORLD-START - written by apply-skin.ps1 from skins.json (the skin's world block: fonts, ground, headings, glass). Empty for a colours-only skin. */
+/* world: paper - none */
+/* WORLD-END */
 </style>
 <script id="ds-ui-js">
 (function(){
@@ -4207,6 +4213,9 @@ details.ds-more > .body,details.ds-more > div,details.heromore > .body{ padding:
     }catch(e){}
   }
   W.dsUI={recount:recount,fits:fits,age:age};
+  /* FONTS-START / WORLD-START above this script are the skin's WORLD half (2026-09-07, his note
+     m14so703: "not just colors ... I should feel like I'm being immersed in that world"). Both
+     blocks are written by apply-skin.ps1 from skins.json; a colours-only skin leaves them empty. */
   function boot(){ age(); recount(); fits(); setInterval(age,60000); }
   if(d.readyState==='loading') d.addEventListener('DOMContentLoaded',boot); else boot();
   d.addEventListener('ds:tick',function(){recount();fits()});
