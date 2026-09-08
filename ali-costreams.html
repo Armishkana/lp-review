@@ -15,7 +15,7 @@
      failure this vault keeps paying for: a check that goes quiet instead of red. It carries the
      same build time to the character, so every reader of [data-built] (the report builder in this
      page's own JS, and feedback-shared l.504) gets the same string whichever one it finds first. -->
-<meta name="ds-built" data-built="2026-09-08T02:23:33Z">
+<meta name="ds-built" data-built="2026-09-08T02:51:29Z">
 <style>
 /* Fallback palette only. Every one of these names is ALIASED onto a --ds-* token by theme.html,
    which is injected last with !important, so what you actually see on the page is the shared
@@ -382,9 +382,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
      #freshreload. "New today: 0" is GREY: zero new clips at seven in the evening is the ordinary
      state of the world, and DESIGN.md forbids painting a thing that has simply not happened yet
      with a warning colour. The delivery alarm lives in the ledger, which is where an alarm belongs. -->
-<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-08T02:23:33Z">
+<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-08T02:51:29Z">
   <span class="ds-dot" id="freshdot"></span>
-  <b id="freshtitle">Tue Sep 8, 10:23</b>
+  <b id="freshtitle">Tue Sep 8, 10:51</b>
   <span id="freshage"></span>
   <span class="newtoday none" id="newtoday" data-new="0"
         title="Clips whose covers finished in the last 24 hours">New today: 0</span>
@@ -2517,7 +2517,7 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
    moves every time its contents change - and the movement reads as a fault even when every
    individual state is correct. Nothing here animates; it was pure reflow. */
 .fbkbar{position:fixed;right:12px;bottom:12px;z-index:9000;display:flex;flex-direction:column;
-  gap:0;align-items:stretch;width:min(17rem, calc(100vw - 24px));
+  gap:0;align-items:stretch;width:min(17rem, calc(100vw - var(--sbw, 0px) - 24px));
   background:var(--fb-card);border:1px solid var(--fb-line);border-radius:14px;
   box-shadow:0 4px 14px rgba(0,0,0,.18);overflow:hidden}
 .fbkbar[hidden]{display:none}
@@ -2562,7 +2562,7 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
   font:600 13px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 .fbkbarlist[hidden]{display:none}
 .fbkbarlist.open{background:var(--fb-soft)}
-.fbkdrawer{position:fixed;right:12px;bottom:170px;z-index:9001;width:min(24rem, calc(100vw - 24px));
+.fbkdrawer{position:fixed;right:12px;bottom:170px;z-index:9001;width:min(24rem, calc(100vw - var(--sbw, 0px) - 24px));
   max-height:min(60vh, 540px);overflow:auto;background:var(--fb-card);border:1px solid var(--fb-line);
   border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.22);color:var(--fb-ink);
   font:400 13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
@@ -3495,6 +3495,15 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
     }
     function sync(){
       for(var i=0;i<anchors.length;i++){
+        // THE ONE HE IS WRITING IN IS NEVER TOUCHED. Armin, note 1k4vrhbe, 2026-09-08: "the
+        // feedback window on the right, if you don't use it for a while, just collapses and goes
+        // away... make it so that the feedback on the right side on all the dashboards just stays
+        // there while I'm using it." He dictates, so his hands leave the keyboard for minutes at a
+        // time and every one of this page's own repaints lands in that gap. The docked composer is
+        // a FIXED box living inside this anchor, so display:none on the anchor takes the whole
+        // box off the screen with his half-written words in it. Nothing about the page's churn is
+        // ever a reason to move or hide the thing he is typing into.
+        if(W.__fbkOpenAt===i){ if(anchors[i].style.display!==""){ anchors[i].style.display=""; } continue; }
         var want = (visible(secs[i].after) || hasNotes(i)) ? "" : "none";
         if(anchors[i].style.display !== want){ anchors[i].style.display = want; }
       }
@@ -3507,6 +3516,10 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
       for(var i=0;i<anchors.length;i++){
         var a=anchors[i], ref=secs[i] && secs[i].after;
         if(!a || !ref || !ref.parentNode) continue;      // its block left the page: leave his notes be
+        // AND NEVER MOVE THE ONE HE IS WRITING IN. Re-parenting a subtree blurs a focused
+        // contenteditable inside it and drops any dictation in progress, so a correct re-anchor at
+        // the wrong moment costs him the sentence he is speaking. It goes home when he closes it.
+        if(W.__fbkOpenAt===i) continue;
         if(ref.nextSibling===a) continue;                // already home
         try{ ref.parentNode.insertBefore(a, ref.nextSibling); }catch(e){}
       }
@@ -4031,12 +4044,58 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
     paintBottomRoom();
   }
 
+  // ===================== THE BOX COMES BACK BY ITSELF ========================================
+  // Armin, note 1k4vrhbe, 2026-09-08: "the feedback window on the right, if you don't use it for a
+  // while, just collapses and goes away... because I do speech-to-text. Multiple times while I was
+  // doing this, it just collapsed and went away."
+  //
+  // MEASURED FIRST, and the measurement is what decided this fix. A copy of the real Messages page
+  // was run headless with the composer open through 6.5 simulated minutes - every one of that
+  // page's own timers, its 60-second clock and its 120-second staleness check, firing repeatedly -
+  // and the docked box was still there, still the right size, at every tick. So the page's own
+  // clock does not close it. What is left is the page GOING AWAY underneath it: the staleness
+  // guard reloads the page whenever a newer copy has been published and he touches a card, and the
+  // frame this page lives in can be re-mounted by the viewer around it. Both destroy the composer
+  // and neither leaves a trace to find afterwards.
+  //
+  // So rather than hunt a trigger that only exists in his window, the open state is written down.
+  // His words were already safe - typing is saving - but the BOX was not, and a box that vanishes
+  // reads exactly like words that vanished. Whatever kills the page, it opens again on the same
+  // section with the same text still in it.
+  //
+  // THE GENERAL FORM, which is the part worth keeping: ANY STATE THAT LIVES ONLY IN A PAGE'S
+  // MEMORY IS DESTROYED BY EVERY RELOAD, AND A RELOAD IS SOMETHING THE PAGE DOES TO ITSELF. If
+  // losing it would look to him like losing his work, it is not memory, it is storage.
+  var OKEY="fbkOpen3::"+PAGE;
+  function rememberOpen(i){
+    try{
+      if(i===null || i===undefined){ W.localStorage.removeItem(OKEY); return; }
+      // The label, not just the index: these pages are rebuilt between visits and section 4 today
+      // is not section 4 tomorrow, so an index alone would reopen the box on the wrong card.
+      W.localStorage.setItem(OKEY, JSON.stringify({ i:i, label:(i>=0 && secs[i]) ? secs[i].label : "" }));
+    }catch(e){}
+  }
+  function reopenLast(){
+    var saved=null;
+    try{ saved=JSON.parse(W.localStorage.getItem(OKEY)||"null"); }catch(e){ saved=null; }
+    if(!saved) return;
+    var i=saved.i;
+    if(i===-1){ try{ openEditor(-1); }catch(e){} return; }
+    // Match by label first; fall back to the index only if the label is gone from the page.
+    var at=-2;
+    for(var k=0;k<secs.length;k++){ if(secs[k].label===saved.label){ at=k; break; } }
+    if(at===-2 && typeof i==="number" && secs[i]) at=i;
+    if(at>=0){ try{ openEditor(at); }catch(e){} }
+  }
+
   function closeEditor(){
     if(openAt===null) return;
     commit();                       // READ IT BEFORE DESTROYING IT. This ordering is the whole fix.
     dockOff();
     var hh=holder(openAt); if(hh){ hh.querySelector(".fbkin").innerHTML=""; }
-    openAt=null; editing=null; paint();
+    openAt=null; editing=null;
+    W.__fbkOpenAt=null; rememberOpen(null);
+    paint();
   }
 
   function openEditor(i, noteId){
@@ -4045,6 +4104,7 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
     if(openAt===i && (noteId==null || editing===noteId)){ closeEditor(); return; }
     closeEditor();
     openAt=i;
+    W.__fbkOpenAt=i; rememberOpen(i);
     // Reopening a section returns him to what he already wrote there, rather than a blank box that
     // makes it look like the words are gone.
     var existing=null;
@@ -5182,7 +5242,12 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
   paintStorage();
 
   paint();
+  // AFTER the first paint, so the sections and their anchors exist to open into. Wrapped because a
+  // restore that throws must never take the whole box down with it - the worst honest outcome here
+  // is that he taps the button himself, which is where he was before this existed.
+  try{ reopenLast(); }catch(e){}
   W.__FBK={ get notes(){ return notes; }, payload:payload, paint:paint,
+            reopenLast:reopenLast,
             commit:function(){ commit(); paint(); }, storageOk:function(){ return storageOk; },
             // For the click-test: mark everything handed over exactly as a successful copy does,
             // without needing a working clipboard in the harness.
@@ -6449,4 +6514,199 @@ html.ds-full #dstocrail,html.ds-full #dstocpanel,html.ds-full #dstocopen{display
 </script>
 
 <!-- TOC-END -->
+<!-- DOITFIRST-START -->
+<!-- DOITFIRST-FRAGMENT v1 - generated home: projects/hub/doitfirst.html. DO NOT EDIT A COPY OF THIS. -->
+<!--
+  ============================ WHY THIS EXISTS ==================================================
+  Armin, note 1k4vrhbe, 2026-09-08, on the Messages page:
+    "for the messages and the explanations that you have for each message, you could make it so
+     that I have to click something for the explanations to drop down. I don't want to have to see
+     a wall of text unless I want to see the explanations... I want the message pages to be so that
+     when I come here, it's just more about what I could just do: click, click, click, and get it
+     done... This is a general rule for all dashboards going forward."
+
+  ---- WHY A FRAGMENT AND NOT A RULE, AND NOT A CHECKER ------------------------------------------
+  Every length gate in this vault measures TEXT: plain-check counts prose per card, page-weight
+  counts an explain block, fold-weight counts what is behind a tap. All of them were green while he
+  was scrolling past four hundred words to reach a Send button. What none of them measures is ORDER
+  - whether the thing he DOES is above the thing he READS - because order is not a length and no
+  word count can see it.
+
+  A written standard would not have helped either: it would have had to be remembered by every
+  session that hand-writes a card, on twelve boards, forever. So this is a TRANSFORM, applied at
+  render time to every card on every dashboard by the one injector chain every page builder already
+  passes through. A session that never reads this file still cannot ship a card that opens with a
+  wall of text, because the wall is folded before he sees it.
+
+  ---- WHAT IT FOLDS, AND WHAT IT MUST NEVER FOLD ------------------------------------------------
+  FOLDS:   the background rows - .who (who this is and the history), and each .row inside .rows
+           (the labelled "what she told you / what it is worth / why this is here" blocks), and
+           .why. These are the sentences that explain; none of them is a thing he does.
+  NEVER:   anything he acts on or must SEE to judge - a button, a link, an input, a textarea
+           carrying a draft, an image, an iframe, a PDF page - and never .sumbox, which is the one
+           short line saying what the card is. A node containing any of those is skipped outright
+           rather than trusted to a class name, because the cost of hiding a control he needs is
+           the whole card, and the cost of leaving one explanation visible is one paragraph.
+           This is the same bar as card-sense-check dimensions 9 and 12: a card that asks him to
+           judge a thing SHOWS the thing.
+
+  Closed by default, every time, on purpose. He is not asked to remember a preference; the page
+  opens ready to act and the reading is one tap away when he wants it.
+
+  No animation anywhere in here. A <details> either is or is not open. The vault's standing rule is
+  that nothing on his pages may hide content and animate it back, because wherever animation frames
+  do not advance the content stays invisible permanently.
+-->
+<style>
+  details.dif{margin:10px 0 2px 0;border-top:1px solid var(--line,rgba(128,128,128,.28));padding-top:8px}
+  details.dif>summary{
+    cursor:pointer;list-style:none;display:flex;align-items:center;gap:.5rem;
+    font-size:.92rem;line-height:1.45;padding:8px 2px;min-height:40px;
+    color:var(--muted,#6b7280);font-weight:600;-webkit-tap-highlight-color:transparent}
+  details.dif>summary::-webkit-details-marker{display:none}
+  /* A CHARACTER, NOT A BORDER TRICK. The first version drew the arrow as a zero-size box with a
+     6px left border, which is the standard CSS triangle and is also indistinguishable, to a
+     stylesheet reader, from the coloured slab down a card's edge that dashboard-standard-check
+     exists to catch. It failed that gate on all 16 pages at once. A glyph says the same thing in
+     one declaration and cannot be mistaken for a decoration. */
+  details.dif>summary::before{content:"\25B8";flex:0 0 auto;font-size:.9em;line-height:1}
+  details.dif[open]>summary::before{content:"\25BE"}
+  details.dif>summary:hover{color:var(--ink,#111827)}
+  details.dif>summary:focus-visible{outline:2px solid var(--accent,#2563eb);outline-offset:2px;border-radius:6px}
+  details.dif>.difbody{padding-top:2px}
+</style>
+<script>
+(function(){
+  "use strict";
+  var d=document;
+  if(d.documentElement.getAttribute("data-difv")==="1") return;   // one copy per page, ever
+  d.documentElement.setAttribute("data-difv","1");
+
+  // A node holding any of these is never folded. Order of the list is not significant; the test is
+  // "does he press it, type in it, read a message out of it, or look at a picture in it".
+  var KEEP="a,button,input,select,textarea,img,iframe,video,canvas,svg,object,embed,[data-draft],.doit,.acts,.msg,.subj,.sumbox";
+  // The classes that carry background prose on these boards today. .who and .row/.rows and .why are
+  // the shared vocabulary across Messages, Roadmap, Funnel and the hub; a board that invents a new
+  // one adds it here, in this one place, rather than in its own builder.
+  var PICK=[".who",".rows > .row",".why"];
+
+  function foldable(el){
+    if(!el || el.nodeType!==1) return false;
+    // ALREADY BEHIND A TAP, BY ANY MEANS. Not just this transform's own folds: the To-Do List and
+    // the Roadmap were written with 57 and 52 hand-made <details> of their own, and a fold nested
+    // inside a fold is two taps to reach one paragraph - which is the complaint, not the fix.
+    if(el.closest("details")) return false;
+    if(el.matches(KEEP)) return false;
+    if(el.querySelector(KEEP)) return false;             // holds something he acts on or must see
+    var t=(el.textContent||"").trim();
+    return t.length>0;
+  }
+
+  function words(s){ s=(s||"").replace(/\s+/g," ").trim(); return s ? s.split(" ").length : 0; }
+
+  function summaryText(n){
+    // Says plainly that it can be skipped. Never "read more", which reads like an instruction.
+    return n===1 ? "Why this. Open it only if you want it."
+                 : "Why this, in " + n + " parts. Open it only if you want it.";
+  }
+
+  // ---- WHAT COUNTS AS ONE THING, WITHOUT KNOWING A SINGLE PAGE'S MARKUP ------------------------
+  // Measured 2026-09-08, and it is the reason this is not written as `article.card`: the first
+  // version of this file keyed on that class, and on the four other boards it was pointed at the
+  // count of matching cards was ZERO - the Messages page uses article.card, the Roadmap and Funnel
+  // use bare .rows/.row, the Money page and the clips dashboards use their own classes again. A
+  // transform that has to know each page's class names is a transform that silently does nothing
+  // on the next page anybody builds, which is exactly the shape of failure he was reporting.
+  //
+  // So the unit is defined by BEHAVIOUR: the nearest block around this paragraph that also holds
+  // something he can press. That definition carries its own limit, and the limit is the point.
+  // A page with nothing to press - the Money page, a reference page - has no unit anywhere, so
+  // nothing on it folds and it is left exactly as it was. Folding is only ever right where the
+  // reading is standing in front of a DOING; on a page that is only for reading it would just hide
+  // the page.
+  function unitOf(el){
+    var n=el.parentElement, hops=0;
+    while(n && n!==d.body && hops<8){
+      if(n.querySelector("a.btn,button,.doit,ol.doit")) return n;
+      n=n.parentElement; hops++;
+    }
+    return null;
+  }
+
+  function doUnit(card, picked){
+    if(card.getAttribute("data-dif")) return;
+    card.setAttribute("data-dif","1");
+    if(!picked.length) return;
+
+    // A card whose background is one short line is not a wall, and folding it costs him a tap to
+    // read twelve words. The floor is the point at which folding actually buys something.
+    var total=0;
+    for(var w=0;w<picked.length;w++){ total+=words(picked[w].textContent); }
+    if(total<45) return;
+
+    // Document order, so the fold reads the way the card was written.
+    picked.sort(function(a,b){
+      var pos=a.compareDocumentPosition(b);
+      if(pos & Node.DOCUMENT_POSITION_FOLLOWING) return -1;
+      if(pos & Node.DOCUMENT_POSITION_PRECEDING) return 1;
+      return 0;
+    });
+
+    var det=d.createElement("details");
+    det.className="dif";
+    var sum=d.createElement("summary");
+    sum.textContent=summaryText(picked.length);
+    det.appendChild(sum);
+    var body=d.createElement("div");
+    body.className="difbody";
+    det.appendChild(body);
+
+    // The fold takes the place of the FIRST thing it swallows, so the order of the card is
+    // otherwise untouched: the title, the short line and everything he presses stay where the card
+    // put them and only the explanation moves down into the tap.
+    var first=picked[0];
+    first.parentNode.insertBefore(det, first);
+    for(var k=0;k<picked.length;k++){ body.appendChild(picked[k]); }
+
+    // An empty .rows left behind would keep its own margins and draw a gap nothing fills.
+    var rows=card.querySelectorAll(".rows");
+    for(var r=0;r<rows.length;r++){
+      if(!rows[r].children.length){ rows[r].style.display="none"; }
+    }
+  }
+
+  function run(){
+    var units=[], bag=[];
+    for(var p=0;p<PICK.length;p++){
+      var found=d.querySelectorAll(PICK[p]);
+      for(var i=0;i<found.length;i++){
+        var el=found[i];
+        if(!foldable(el)) continue;
+        var u=unitOf(el);
+        if(!u) continue;                       // nothing to press around it: a reading page, leave it
+        var at=units.indexOf(u);
+        if(at<0){ units.push(u); bag.push([el]); }
+        else if(bag[at].indexOf(el)<0){ bag[at].push(el); }
+      }
+    }
+    for(var k=0;k<units.length;k++){ try{ doUnit(units[k], bag[k]); }catch(e){} }
+  }
+
+  // Cards on these boards arrive at load and are re-inserted at runtime when the page re-sorts
+  // itself. Marking each card means re-running is free and moving one changes nothing.
+  function boot(){
+    run();
+    try{
+      var t=null;
+      new MutationObserver(function(){
+        if(t) return;
+        t=setTimeout(function(){ t=null; run(); },120);
+      }).observe(d.body,{childList:true,subtree:true});
+    }catch(e){}
+  }
+  if(d.readyState==="loading"){ d.addEventListener("DOMContentLoaded",boot); } else { boot(); }
+})();
+</script>
+
+<!-- DOITFIRST-END -->
 </body></html>

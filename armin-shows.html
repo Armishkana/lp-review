@@ -15,7 +15,7 @@
      failure this vault keeps paying for: a check that goes quiet instead of red. It carries the
      same build time to the character, so every reader of [data-built] (the report builder in this
      page's own JS, and feedback-shared l.504) gets the same string whichever one it finds first. -->
-<meta name="ds-built" data-built="2026-09-08T02:36:31Z">
+<meta name="ds-built" data-built="2026-09-08T02:50:17Z">
 <style>
 /* Fallback palette only. Every one of these names is ALIASED onto a --ds-* token by theme.html,
    which is injected last with !important, so what you actually see on the page is the shared
@@ -382,9 +382,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
      #freshreload. "New today: 0" is GREY: zero new clips at seven in the evening is the ordinary
      state of the world, and DESIGN.md forbids painting a thing that has simply not happened yet
      with a warning colour. The delivery alarm lives in the ledger, which is where an alarm belongs. -->
-<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-08T02:36:31Z">
+<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-08T02:50:17Z">
   <span class="ds-dot" id="freshdot"></span>
-  <b id="freshtitle">Tue Sep 8, 10:36</b>
+  <b id="freshtitle">Tue Sep 8, 10:50</b>
   <span id="freshage"></span>
   <span class="newtoday none" id="newtoday" data-new="0"
         title="Clips whose covers finished in the last 24 hours">New today: 0</span>
@@ -2441,7 +2441,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
    moves every time its contents change - and the movement reads as a fault even when every
    individual state is correct. Nothing here animates; it was pure reflow. */
 .fbkbar{position:fixed;right:12px;bottom:12px;z-index:9000;display:flex;flex-direction:column;
-  gap:0;align-items:stretch;width:min(17rem, calc(100vw - 24px));
+  gap:0;align-items:stretch;width:min(17rem, calc(100vw - var(--sbw, 0px) - 24px));
   background:var(--fb-card);border:1px solid var(--fb-line);border-radius:14px;
   box-shadow:0 4px 14px rgba(0,0,0,.18);overflow:hidden}
 .fbkbar[hidden]{display:none}
@@ -2486,7 +2486,7 @@ Join our daily group calls: https://www.skool.com/libertypolitics/about</div>
   font:600 13px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
 .fbkbarlist[hidden]{display:none}
 .fbkbarlist.open{background:var(--fb-soft)}
-.fbkdrawer{position:fixed;right:12px;bottom:170px;z-index:9001;width:min(24rem, calc(100vw - 24px));
+.fbkdrawer{position:fixed;right:12px;bottom:170px;z-index:9001;width:min(24rem, calc(100vw - var(--sbw, 0px) - 24px));
   max-height:min(60vh, 540px);overflow:auto;background:var(--fb-card);border:1px solid var(--fb-line);
   border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.22);color:var(--fb-ink);
   font:400 13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
@@ -6488,12 +6488,13 @@ html.ds-full #dstocrail,html.ds-full #dstocpanel,html.ds-full #dstocopen{display
     font-size:.92rem;line-height:1.45;padding:8px 2px;min-height:40px;
     color:var(--muted,#6b7280);font-weight:600;-webkit-tap-highlight-color:transparent}
   details.dif>summary::-webkit-details-marker{display:none}
-  details.dif>summary::before{
-    content:"";flex:0 0 auto;width:0;height:0;
-    border-left:6px solid currentColor;border-top:5px solid transparent;border-bottom:5px solid transparent}
-  details.dif[open]>summary::before{
-    border-left:5px solid transparent;border-right:5px solid transparent;
-    border-top:6px solid currentColor;border-bottom:0}
+  /* A CHARACTER, NOT A BORDER TRICK. The first version drew the arrow as a zero-size box with a
+     6px left border, which is the standard CSS triangle and is also indistinguishable, to a
+     stylesheet reader, from the coloured slab down a card's edge that dashboard-standard-check
+     exists to catch. It failed that gate on all 16 pages at once. A glyph says the same thing in
+     one declaration and cannot be mistaken for a decoration. */
+  details.dif>summary::before{content:"\25B8";flex:0 0 auto;font-size:.9em;line-height:1}
+  details.dif[open]>summary::before{content:"\25BE"}
   details.dif>summary:hover{color:var(--ink,#111827)}
   details.dif>summary:focus-visible{outline:2px solid var(--accent,#2563eb);outline-offset:2px;border-radius:6px}
   details.dif>.difbody{padding-top:2px}
@@ -6515,7 +6516,10 @@ html.ds-full #dstocrail,html.ds-full #dstocpanel,html.ds-full #dstocopen{display
 
   function foldable(el){
     if(!el || el.nodeType!==1) return false;
-    if(el.closest("details.dif")) return false;          // already inside a fold
+    // ALREADY BEHIND A TAP, BY ANY MEANS. Not just this transform's own folds: the To-Do List and
+    // the Roadmap were written with 57 and 52 hand-made <details> of their own, and a fold nested
+    // inside a fold is two taps to reach one paragraph - which is the complaint, not the fix.
+    if(el.closest("details")) return false;
     if(el.matches(KEEP)) return false;
     if(el.querySelector(KEEP)) return false;             // holds something he acts on or must see
     var t=(el.textContent||"").trim();
@@ -6530,18 +6534,32 @@ html.ds-full #dstocrail,html.ds-full #dstocpanel,html.ds-full #dstocopen{display
                  : "Why this, in " + n + " parts. Open it only if you want it.";
   }
 
-  function doCard(card){
+  // ---- WHAT COUNTS AS ONE THING, WITHOUT KNOWING A SINGLE PAGE'S MARKUP ------------------------
+  // Measured 2026-09-08, and it is the reason this is not written as `article.card`: the first
+  // version of this file keyed on that class, and on the four other boards it was pointed at the
+  // count of matching cards was ZERO - the Messages page uses article.card, the Roadmap and Funnel
+  // use bare .rows/.row, the Money page and the clips dashboards use their own classes again. A
+  // transform that has to know each page's class names is a transform that silently does nothing
+  // on the next page anybody builds, which is exactly the shape of failure he was reporting.
+  //
+  // So the unit is defined by BEHAVIOUR: the nearest block around this paragraph that also holds
+  // something he can press. That definition carries its own limit, and the limit is the point.
+  // A page with nothing to press - the Money page, a reference page - has no unit anywhere, so
+  // nothing on it folds and it is left exactly as it was. Folding is only ever right where the
+  // reading is standing in front of a DOING; on a page that is only for reading it would just hide
+  // the page.
+  function unitOf(el){
+    var n=el.parentElement, hops=0;
+    while(n && n!==d.body && hops<8){
+      if(n.querySelector("a.btn,button,.doit,ol.doit")) return n;
+      n=n.parentElement; hops++;
+    }
+    return null;
+  }
+
+  function doUnit(card, picked){
     if(card.getAttribute("data-dif")) return;
     card.setAttribute("data-dif","1");
-
-    var picked=[];
-    for(var p=0;p<PICK.length;p++){
-      var found=card.querySelectorAll(PICK[p]);
-      for(var i=0;i<found.length;i++){
-        var el=found[i];
-        if(picked.indexOf(el)<0 && foldable(el)) picked.push(el);
-      }
-    }
     if(!picked.length) return;
 
     // A card whose background is one short line is not a wall, and folding it costs him a tap to
@@ -6582,8 +6600,20 @@ html.ds-full #dstocrail,html.ds-full #dstocpanel,html.ds-full #dstocopen{display
   }
 
   function run(){
-    var cards=d.querySelectorAll("article.card");
-    for(var i=0;i<cards.length;i++){ try{ doCard(cards[i]); }catch(e){} }
+    var units=[], bag=[];
+    for(var p=0;p<PICK.length;p++){
+      var found=d.querySelectorAll(PICK[p]);
+      for(var i=0;i<found.length;i++){
+        var el=found[i];
+        if(!foldable(el)) continue;
+        var u=unitOf(el);
+        if(!u) continue;                       // nothing to press around it: a reading page, leave it
+        var at=units.indexOf(u);
+        if(at<0){ units.push(u); bag.push([el]); }
+        else if(bag[at].indexOf(el)<0){ bag[at].push(el); }
+      }
+    }
+    for(var k=0;k<units.length;k++){ try{ doUnit(units[k], bag[k]); }catch(e){} }
   }
 
   // Cards on these boards arrive at load and are re-inserted at runtime when the page re-sorts
