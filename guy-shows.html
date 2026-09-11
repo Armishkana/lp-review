@@ -15,7 +15,7 @@
      failure this vault keeps paying for: a check that goes quiet instead of red. It carries the
      same build time to the character, so every reader of [data-built] (the report builder in this
      page's own JS, and feedback-shared l.504) gets the same string whichever one it finds first. -->
-<meta name="ds-built" data-built="2026-09-11T14:06:39Z">
+<meta name="ds-built" data-built="2026-09-11T14:20:50Z">
 <style>
 /* Fallback palette only. Every one of these names is ALIASED onto a --ds-* token by theme.html,
    which is injected last with !important, so what you actually see on the page is the shared
@@ -382,9 +382,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
      #freshreload. "New today: 0" is GREY: zero new clips at seven in the evening is the ordinary
      state of the world, and DESIGN.md forbids painting a thing that has simply not happened yet
      with a warning colour. The delivery alarm lives in the ledger, which is where an alarm belongs. -->
-<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-11T14:06:39Z">
+<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-11T14:20:50Z">
   <span class="ds-dot" id="freshdot"></span>
-  <b id="freshtitle">Fri Sep 11, 22:06</b>
+  <b id="freshtitle">Fri Sep 11, 22:20</b>
   <span id="freshage"></span>
   <span class="newtoday none" id="newtoday" data-new="0"
         title="Clips whose covers finished in the last 24 hours">New today: 0</span>
@@ -2643,7 +2643,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
 .fbkgot>summary::after{content:'\203A';margin-left:6px;font-size:16px}
 .fbkgot[open]>summary::after{content:'\2039'}
 </style>
-<script id="fbkHandled" type="application/json">{"pages":{"Armin's shows - clip review":[{"id":"9exzg228","said":"This is such a big wall of text at the top of the page that makes me have to scroll down so much to get to the parts of the page that I need. The areas at the top are too much. You have to change the user interface in a way that makes it a lot more user friendly.","did":"Measured it before touching it: the instructions block was 1053px and 744 words, and on your phone at 360px it was 3297px - it pushed the first clip 4129px down, five screens of reading before the first thing you came to do. It is now a two-line summary plus a tap to open the rest: 277px and 54 words, first clip 1077px down. Nothing was deleted, all of it is one tap away. Same on all three clip dashboards."},{"id":"9j3v513o","said":"Right now this page is very buggy and faulty, and the user interface doesn't make any sense! Unclear separation between page feedback and video/cover/title feedback; the counter does not go up when I click or write; things are not being saved; the copy-paste collection does not work; the page slows down and becomes glitchy when I click.","did":"You were reading the page correctly and the page was lying to you. Your answers WERE being saved - clicking 'Using this video' wrote 25KB to storage - but the only number on screen counted FINISHED clips, and a clip needs all seven answers, so everything you did left it on zero. It now counts every answer and moves on each one, including back down when you undo. The two feedback controls were also physically sitting on top of each other and both just said 'feedback': they are now separated and each says what it collects ('The videos, covers and titles' vs the page pill). The copy button did contain your answers - one line buried in 110 'NOT ANSWERED' rows - so it now opens with a short list of exactly what you answered. A refused save used to be swallowed silently; it now turns the bar red and says so. The slowdown was real: it re-scanned all 111 clips and wrote 25KB on every single keystroke, so typing one sentence did that 40 times - now once. Fixed in the shared builder, so Ali's and Guy's pages got all of it too. 117 checks now run against all three pages at phone width, and I broke the pages three ways on purpose first to prove the checks actually catch it."}]}}</script>
+<script id="fbkHandled" type="application/json">{"pages":{"Armin\u0027s shows - clip review":[{"id":"9exzg228","said":"This is such a big wall of text at the top of the page that makes me have to scroll down so much to get to the parts of the page that I need. The areas at the top are too much. You have to change the user interface in a way that makes it a lot more user friendly.","did":"Measured it before touching it: the instructions block was 1053px and 744 words, and on your phone at 360px it was 3297px - it pushed the first clip 4129px down, five screens of reading before the first thing you came to do. It is now a two-line summary plus a tap to open the rest: 277px and 54 words, first clip 1077px down. Nothing was deleted, all of it is one tap away. Same on all three clip dashboards."},{"id":"9j3v513o","said":"Right now this page is very buggy and faulty, and the user interface doesn\u0027t make any sense! Unclear separation between page feedback and video/cover/title feedback; the counter does not go up when I click or write; things are not being saved; the copy-paste collection does not work; the page slows down and becomes glitchy when I click.","did":"You were reading the page correctly and the page was lying to you. Your answers WERE being saved - clicking \u0027Using this video\u0027 wrote 25KB to storage - but the only number on screen counted FINISHED clips, and a clip needs all seven answers, so everything you did left it on zero. It now counts every answer and moves on each one, including back down when you undo. The two feedback controls were also physically sitting on top of each other and both just said \u0027feedback\u0027: they are now separated and each says what it collects (\u0027The videos, covers and titles\u0027 vs the page pill). The copy button did contain your answers - one line buried in 110 \u0027NOT ANSWERED\u0027 rows - so it now opens with a short list of exactly what you answered. A refused save used to be swallowed silently; it now turns the bar red and says so. The slowdown was real: it re-scanned all 111 clips and wrote 25KB on every single keystroke, so typing one sentence did that 40 times - now once. Fixed in the shared builder, so Ali\u0027s and Guy\u0027s pages got all of it too. 117 checks now run against all three pages at phone width, and I broke the pages three ways on purpose first to prove the checks actually catch it."}]}}</script>
 <!-- NOTES I HAVE RECEIVED BUT NOT YET FINISHED. Ids only, deliberately: this list carries no text
      of his, so none of the scrubbing that guards the handled register above can be forgotten here.
      A row lands here the moment read-feedback.ps1 parses a paste of his, which is the only evidence
@@ -2662,11 +2662,7 @@ Talk to Guy in his group calls: https://www.skool.com/libertypolitics/about?ref=
      It is a map so the hub, which embeds this fragment whole, can find its own row;
      inject-feedback.ps1 narrows it to one row per page so a note on one board does not re-dirty
      the other twelve. -->
-<<<<<<< HEAD
-<script id="fbkWatermark" type="application/json">{"dashboards":"2026-09-07 11:01","roadmap":"2026-09-07 12:36","funnel":"2026-09-07 18:12","send":"2026-09-08 12:30","hub":"2026-09-09 12:42","clips-armin":"2026-09-11 13:14","clips-ali":"2026-09-11 13:14","clips-guy":"2026-09-11 13:14"}</script>
-=======
-<script id="fbkWatermark" type="application/json">{"dashboards":"2026-09-07 11:01","roadmap":"2026-09-07 12:36","funnel":"2026-09-07 18:12","send":"2026-09-08 12:30","clips-armin":"2026-09-11 10:04","clips-ali":"2026-09-11 10:04","clips-guy":"2026-09-11 10:04","hub":"2026-09-11 10:54"}</script>
->>>>>>> origin/claude/trusting-darwin-ftc3va
+<script id="fbkWatermark" type="application/json">{"clips-guy":"2026-09-11 13:14"}</script>
 <div class="fbk" id="fbk">
 <!-- DELIBERATELY ALMOST EMPTY WHEN THERE ARE NO NOTES. Armin, 2026-08-09, on the Messages page:
      "There's so much text and unnecessary stuff at the bottom of the screen that I don't know what
