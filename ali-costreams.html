@@ -15,7 +15,7 @@
      failure this vault keeps paying for: a check that goes quiet instead of red. It carries the
      same build time to the character, so every reader of [data-built] (the report builder in this
      page's own JS, and feedback-shared l.504) gets the same string whichever one it finds first. -->
-<meta name="ds-built" data-built="2026-09-14T04:58:51Z">
+<meta name="ds-built" data-built="2026-09-14T05:24:01Z">
 <style>
 /* Fallback palette only. Every one of these names is ALIASED onto a --ds-* token by theme.html,
    which is injected last with !important, so what you actually see on the page is the shared
@@ -382,9 +382,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
      #freshreload. "New today: 0" is GREY: zero new clips at seven in the evening is the ordinary
      state of the world, and DESIGN.md forbids painting a thing that has simply not happened yet
      with a warning colour. The delivery alarm lives in the ledger, which is where an alarm belongs. -->
-<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-14T04:58:51Z">
+<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-14T05:24:01Z">
   <span class="ds-dot" id="freshdot"></span>
-  <b id="freshtitle">Mon Sep 14, 12:58</b>
+  <b id="freshtitle">Mon Sep 14, 13:23</b>
   <span id="freshage"></span>
   <span class="newtoday none" id="newtoday" data-new="0"
         title="The newest cover on this page finished 13 days ago. Nothing has been drawn since.">Nothing new for 13 days</span>
@@ -5071,6 +5071,20 @@ details.ds-more > .body,details.ds-more > div,details.heromore > .body{ padding:
   function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
   function mins(m){m=Math.round(m||0);if(m<60)return m+'m';var h=Math.floor(m/60),r=m%60;return r?h+'h '+r+'m':h+'h'}
   function fill(t,o){return t.replace(/\{(\w+)\}/g,function(_,k){return o[k]!=null?o[k]:''})}
+  /* RELATIVE AGE, ONE WORDING FOR EVERY SURFACE. age() uses it for the page's own stamp; rels()
+     uses it for any element carrying data-relutc.
+     WHY data-relutc EXISTS (2026-09-14, found while working rework row
+     2026-08-21-pages-rebuilt-but-never-republished): build-hub.ps1 baked the string "0.2h ago"
+     into the BYTES at build time. That is two defects in one line. (1) It LIED to him: a board
+     rebuilt at 02:36Z still read "0.2h ago" when he opened the page at 09:00Z, on the one row
+     whose entire job is telling him how fresh a dashboard is. (2) It changed the file's hash on
+     every rebuild for no reason but the clock, so publish-freshness-check reported the page BEHIND
+     within minutes of every publish, forever - which is the treadmill that row describes.
+     An absolute stamp in the markup plus this function fixes both at once: the bytes now only move
+     when the underlying build genuinely moves, and the number he reads is computed as he reads it.
+     GENERAL FORM, worth more than this span: NEVER BAKE A RELATIVE TIME INTO A GENERATED ARTIFACT.
+     It is stale the moment it is written and it defeats every content-hash comparison downstream. */
+  function relText(m){m=Math.max(0,Math.round(m));return m<1?'just now':(m<60?m+' min ago':(m<1440?Math.floor(m/60)+'h '+(m%60)+'m ago':Math.floor(m/1440)+'d ago'))}
 
   /* 1. THE AGE. One writer for every age surface: .ds-age in the masthead and, if present, p.stamp#fresh. */
   function age(){
@@ -5078,7 +5092,9 @@ details.ds-more > .body,details.ds-more > div,details.heromore > .body{ padding:
       var el=q('[data-built]'); if(!el) return;
       var t=Date.parse(el.getAttribute('data-built')); if(isNaN(t)) return;
       var m=Math.max(0,Math.round((Date.now()-t)/60000));
-      var txt=m<1?'just updated':(m<60?m+' min ago':(m<1440?Math.floor(m/60)+'h '+(m%60)+'m ago':Math.floor(m/1440)+'d ago'));
+      /* relText also corrects a live wording bug here: this line used to say 'just updated' under
+         a minute, which the caller below renders as "Updated just updated". */
+      var txt=relText(m);
       var cls=m>240?'red':(m>100?'amber':'green');
       qa('.ds-age').forEach(function(a){
         var dot=q('.ds-dot',a); if(!dot){dot=d.createElement('span');dot.className='ds-dot';a.insertBefore(dot,a.firstChild)}
@@ -5091,6 +5107,20 @@ details.ds-more > .body,details.ds-more > div,details.heromore > .body{ padding:
       if(f&&!f.getAttribute('data-ownscript')&&(f.getAttribute('data-dsage')||!f.textContent.replace(/\s+/g,''))){
         f.setAttribute('data-dsage','1'); f.textContent='Updated '+txt+'.';
       }
+    }catch(e){}
+  }
+
+  /* 1b. EVERY OTHER AGE ON THE PAGE. Any element with data-relutc has its text replaced by a
+     relative age computed NOW, on the same tick as the masthead stamp. The markup keeps an
+     absolute date as its server-rendered fallback, so a viewer with no JS still reads something
+     true rather than something frozen. Silent and per-element: one unparseable stamp cannot stop
+     the others. */
+  function rels(){
+    try{
+      qa('[data-relutc]').forEach(function(el){
+        var t=Date.parse(el.getAttribute('data-relutc')); if(isNaN(t)) return;
+        el.textContent=relText((Date.now()-t)/60000);
+      });
     }catch(e){}
   }
 
@@ -5145,7 +5175,7 @@ details.ds-more > .body,details.ds-more > div,details.heromore > .body{ padding:
   /* FONTS-START / WORLD-START above this script are the skin's WORLD half (2026-09-07, his note
      m14so703: "not just colors ... I should feel like I'm being immersed in that world"). Both
      blocks are written by apply-skin.ps1 from skins.json; a colours-only skin leaves them empty. */
-  function boot(){ age(); recount(); fits(); setInterval(age,60000); }
+  function boot(){ age(); rels(); recount(); fits(); setInterval(function(){age();rels()},60000); }
   if(d.readyState==='loading') d.addEventListener('DOMContentLoaded',boot); else boot();
   d.addEventListener('ds:tick',function(){recount();fits()});
 })();
