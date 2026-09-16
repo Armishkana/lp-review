@@ -15,7 +15,7 @@
      failure this vault keeps paying for: a check that goes quiet instead of red. It carries the
      same build time to the character, so every reader of [data-built] (the report builder in this
      page's own JS, and feedback-shared l.504) gets the same string whichever one it finds first. -->
-<meta name="ds-built" data-built="2026-09-16T01:16:47Z">
+<meta name="ds-built" data-built="2026-09-16T01:29:30Z">
 <style>
 /* Fallback palette only. Every one of these names is ALIASED onto a --ds-* token by theme.html,
    which is injected last with !important, so what you actually see on the page is the shared
@@ -382,9 +382,9 @@ dialog img{display:block;max-width:94vw;max-height:88vh}
      #freshreload. "New today: 0" is GREY: zero new clips at seven in the evening is the ordinary
      state of the world, and DESIGN.md forbids painting a thing that has simply not happened yet
      with a warning colour. The delivery alarm lives in the ledger, which is where an alarm belongs. -->
-<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-16T01:16:47Z">
+<p class="ds-age stamp" id="freshbar" data-ds="age" data-built="2026-09-16T01:29:30Z">
   <span class="ds-dot" id="freshdot"></span>
-  <b id="freshtitle">Wed Sep 16, 09:16</b>
+  <b id="freshtitle">Wed Sep 16, 09:29</b>
   <span id="freshage"></span>
   <span class="newtoday none" id="newtoday" data-new="0"
         title="The newest cover on this page finished 15 days ago. Nothing has been drawn since.">Nothing new for 15 days</span>
@@ -3307,7 +3307,10 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
     // MEASURED BEFORE ANYTHING CHANGES. subjectOpen() below expands read-only boxes and opens
     // folds inside the subject, and if any of that grows above the fold the page slides under him
     // even with no scroll call at all - the same lost place by a different route.
-    var subjBlk=(i>=0 && secs[i]) ? secs[i].after : null;
+    // The BLOCK when the section has one, otherwise its own anchor. A section whose block is
+    // missing used to fall through to "no subject", so nothing brought him to it and he wrote about
+    // a part of the page he could not see - found on the guy-picks board by feedback-scroll-test.
+    var subjBlk=(i>=0) ? ((secs[i] && secs[i].after) || anchors[i] || null) : null;
     var keepTop=0, wasVisible=false;
     if(subjBlk){
       try{
@@ -4632,6 +4635,12 @@ Talk to Ali in his group calls: https://www.skool.com/libertypolitics/about?ref=
             handledCount:handled.length, board:BOARD, built:BUILT, page:PAGE,
             theme:d.documentElement.getAttribute("data-fbk"), pageBg:paintedBg(d.body),
             sections:function(){ var o=[]; for(var k=0;k<secs.length;k++){ o.push(secs[k].label); } return o; },
+            // THE BLOCK A NOTE IS ABOUT, for harnesses. feedback-scroll-test.html has to know where
+            // the subject sits on screen before and after the box opens, and it was guessing the
+            // mapping from DOM order, which is wrong on boards whose button sits above its block -
+            // producing failures that were really the suite measuring the wrong element. The page
+            // knows the answer, so it says it rather than being guessed at.
+            subjectFor:function(i){ return (i>=0 && secs[i]) ? (secs[i].after || anchors[i] || null) : null; },
             // WHETHER A SEGMENT IS ACTUALLY ON SCREEN, because a list of labels cannot answer that
             // and every harness that reads it has to guess. These pages hide cards at runtime - the
             // Messages page filters sent ones away - and the control for a hidden card is hidden with

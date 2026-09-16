@@ -146,7 +146,7 @@
 <header class="ds-mast" data-ds="mast">
   <h1>Pick the clips you want uploaded</h1>
   <p class="ds-say" data-ds="say" id="saysize" data-say-own="the page script rewrites it from the pick tally; the shared row model does not fit a picks page"><b>11 topics</b> from your last 1 stream, newest first. Tap <b>Upload</b> or <b>Skip</b> on each one.</p>
-  <p class="ds-age stamp" data-ds="age" data-built="2026-09-16T01:16:22Z"><span class="ds-dot"></span><b>Sep 16</b></p>
+  <p class="ds-age stamp" data-ds="age" data-built="2026-09-16T01:31:02Z"><span class="ds-dot"></span><b>Sep 16</b></p>
 </header>
   <!-- WHY THE TITLE IS AN h2 AND THE FOLD SITS INSIDE IT. As a top-level <details> this block was a
        segment titled by its own <summary>, which the section detector ranks deeper than the <h2> on
@@ -409,7 +409,7 @@
     <textarea id="report" readonly></textarea>
     <p class="note">Copied. Paste it straight into Telegram.</p>
   </div>
-  <p class="built">11 topics across 1 streams. Updated 2026-09-16T01:03:23Z.</p>
+  <p class="built">11 topics across 1 streams. Updated 2026-09-16T01:31:02Z.</p>
 </div>
 
 <div class="bar">
@@ -2545,7 +2545,10 @@
     // MEASURED BEFORE ANYTHING CHANGES. subjectOpen() below expands read-only boxes and opens
     // folds inside the subject, and if any of that grows above the fold the page slides under him
     // even with no scroll call at all - the same lost place by a different route.
-    var subjBlk=(i>=0 && secs[i]) ? secs[i].after : null;
+    // The BLOCK when the section has one, otherwise its own anchor. A section whose block is
+    // missing used to fall through to "no subject", so nothing brought him to it and he wrote about
+    // a part of the page he could not see - found on the guy-picks board by feedback-scroll-test.
+    var subjBlk=(i>=0) ? ((secs[i] && secs[i].after) || anchors[i] || null) : null;
     var keepTop=0, wasVisible=false;
     if(subjBlk){
       try{
@@ -3870,6 +3873,12 @@
             handledCount:handled.length, board:BOARD, built:BUILT, page:PAGE,
             theme:d.documentElement.getAttribute("data-fbk"), pageBg:paintedBg(d.body),
             sections:function(){ var o=[]; for(var k=0;k<secs.length;k++){ o.push(secs[k].label); } return o; },
+            // THE BLOCK A NOTE IS ABOUT, for harnesses. feedback-scroll-test.html has to know where
+            // the subject sits on screen before and after the box opens, and it was guessing the
+            // mapping from DOM order, which is wrong on boards whose button sits above its block -
+            // producing failures that were really the suite measuring the wrong element. The page
+            // knows the answer, so it says it rather than being guessed at.
+            subjectFor:function(i){ return (i>=0 && secs[i]) ? (secs[i].after || anchors[i] || null) : null; },
             // WHETHER A SEGMENT IS ACTUALLY ON SCREEN, because a list of labels cannot answer that
             // and every harness that reads it has to guess. These pages hide cards at runtime - the
             // Messages page filters sent ones away - and the control for a hidden card is hidden with
